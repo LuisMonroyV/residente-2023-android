@@ -1,0 +1,112 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar>
+    <ion-title>Aviso de visita ocasional</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()"
+                  color="danger"
+                  >
+        Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="guardarAviso()"
+        novalidate="novalidate"
+        #formAviso="ngForm">
+    <ion-card>
+      <ion-list>
+        <ion-item lines="none">
+          <!-- <ion-icon color="primary" name="calendar-outline" slot="start"></ion-icon> -->
+          <!-- <ion-label>Fecha:</ion-label> -->
+          <ion-datetime 
+                        cancelText="Cancelar"
+                        displayFormat="DD MMM YYYY" 
+                        doneText="OK"
+                        first-day-of-week="1"
+                        [min]="fechaHoyIso"
+                        mode="ios"
+                        monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
+                        name="fechaAviso"
+                        [(ngModel)]="fechaString"
+                        pickerFormat="DD MMM YYYY"
+                        presentation="date"
+                        required
+                        size="cover"
+                        >
+          </ion-datetime>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-icon name="storefront-outline" slot="start" color="primary" size="large"></ion-icon>
+          <!-- <ion-label>Empresa: </ion-label> -->
+          <ion-input type="text"
+                    name="empresa"
+                    [(ngModel)]="nuevoAviso.empresa" 
+                    mode="ios"
+                    #empresaInput
+                    style="padding-left: 10px;"
+                    color="primary"
+                    placeholder="nombre de la empresa"
+                    >
+          </ion-input>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-icon name="person-outline" slot="start" color="primary" size="large"></ion-icon>
+          <!-- <ion-label>Nombre: </ion-label> -->
+          <ion-input type="text"
+                    name="nota"
+                    [(ngModel)]="nuevoAviso.nota" 
+                    mode="ios"
+                    style="padding-left: 10px;"
+                    color="primary"
+                    placeholder="nombre de la persona"
+                    >
+          </ion-input>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-icon name="car-sport-outline" slot="start" color="primary" size="large"></ion-icon>
+          <!-- <ion-label>Patente: </ion-label> -->
+          <ion-input type="text"
+                    name="patente"
+                    [(ngModel)]="nuevoAviso.patente" 
+                    mode="ios"
+                    style="padding-left: 10px;"
+                    maxlength="6"
+                    color="primary"
+                    placeholder="patente del vehículo"
+                    >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-icon slot="start" name="notifications-circle-sharp" color="primary" size="large"></ion-icon>
+          <ion-label position="stacked">RECIBIR NOTIFICACIONES</ion-label>        
+          <ion-grid fixed>
+            <ion-row>
+              <ion-col size="4" class="ion-align-items-left">
+                <ion-toggle color="success" 
+                            name="notificaciones"
+                            [(ngModel)]="fbSrvc.persona.notificaciones" 
+                            mode="ios"
+                            (ionChange)="actualizarPersona()"
+                            >
+                </ion-toggle>
+              </ion-col>
+              <ion-col size="8" class="ion-align-items-start ion-align-self-center">
+                <ion-badge *ngIf="!fbSrvc.persona.notificaciones" color="light" mode="ios">Desactivado</ion-badge>
+                <ion-badge *ngIf="fbSrvc.persona.notificaciones" color="success" mode="ios">Activado</ion-badge>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+      </ion-list>  
+      <ion-button type="submit"
+                expand="block" 
+                [disabled]="!formAviso.valid|| (nuevoAviso.empresa.length + nuevoAviso.patente.length + nuevoAviso.nota.length === 0)"
+                >
+      Guardar Cambios
+      </ion-button>
+      <ion-ripple-effect type="bounded"></ion-ripple-effect>
+    </ion-card>
+  </form>
+</ion-content>

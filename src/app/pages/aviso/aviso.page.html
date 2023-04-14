@@ -1,0 +1,68 @@
+<app-header *ngIf="!fbSrvc.persona.esMenordeEdad" titulo="Aviso de Visitas" qr="SI"></app-header>
+<app-header *ngIf="fbSrvc.persona.esMenordeEdad" titulo="Aviso de Visitas" qr="NO"></app-header>
+<ion-content>
+  <div id="container">
+    <ion-card *ngIf="misAvisos.length > 0">
+      <div class="ion-text-center ion-padding">
+        <ion-badge color="primary" mode="ios">
+         Hoy
+        </ion-badge>
+      </div>
+      <ion-grid style="padding-right: 10px;"
+                fixed 
+                >
+        <ion-row *ngFor="let item of misAvisos; let i=index"
+                 >
+          <ion-col size="1">{{i+1}}</ion-col>
+          <ion-col *ngIf="item.empresa"> {{item.empresa}} </ion-col>
+          <ion-col *ngIf="item.nota"> {{item.nota}} </ion-col>
+          <ion-col *ngIf="item.patente"> {{item.patente}}</ion-col>
+          <ion-col size="2" class="ion-text-right">
+            <ion-icon name="remove-circle-sharp"
+                      color="danger"
+                      (click)="borrarAviso(i)"
+                      size="large"
+                      >
+            </ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+
+    <ion-card *ngIf="misAvisosProgramados.length > 0">
+      <div class="ion-text-center ion-padding">
+        <ion-badge color="primary" mode="ios">
+          Programados
+         </ion-badge>
+       </div>
+      <ion-grid fixed>
+        <ion-row *ngFor="let item of misAvisosProgramados; let i=index"
+                 >
+          <ion-col size="2">{{ item.fecha | fechaCorta: 'DD-MMM' : ''}}</ion-col>
+          <ion-col *ngIf="item.empresa"> {{item.empresa}} </ion-col>
+          <ion-col *ngIf="item.nota"> {{item.nota}} </ion-col>
+          <ion-col *ngIf="item.patente"> {{item.patente}} </ion-col>
+          <ion-col size="2" class="ion-text-right">
+            <ion-icon name="remove-circle-sharp"
+                      color="danger"
+                      (click)="borrarAvisoProgramado(i)"
+                      size="large"
+                      >
+            </ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+    <div *ngIf="(misAvisos.length + misAvisosProgramados.length) === 0"
+         class="ion-text-center"
+         style="padding-top: 50%;"
+         >
+      <img class="ion-padding" src="assets/images/no-data-10.png"/>
+    </div>
+  </div>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="nuevoAviso()">
+        <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

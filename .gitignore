@@ -1,0 +1,11 @@
+node_modules
+*.mode1v3
+*.perspectivev3
+*.pbxuser
+.DS_Store
+build/
+platforms/
+resources/
+plugins/
+www/
+.angular/

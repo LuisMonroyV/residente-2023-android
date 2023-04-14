@@ -1,0 +1,7 @@
+{
+  "name": "residente2022",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

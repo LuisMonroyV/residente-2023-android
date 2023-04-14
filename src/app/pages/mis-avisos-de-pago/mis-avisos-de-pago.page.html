@@ -1,0 +1,150 @@
+<app-header titulo="Mis avisos de pago"></app-header>
+<ion-content>
+  <ion-segment *ngIf="fbSrvc.persona.esAdmin"
+               (ionChange)="segmentChanged($event)" 
+               mode="ios"
+               color="secondary"
+               value="misAvisos">
+    <ion-segment-button value="misAvisos">
+      <ion-label>Mis Avisos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="todos">
+      <ion-label>Por Revisar
+        <ion-badge *ngIf="avisosDePagoPendientes.length > 0" 
+                   color="success" 
+                   mode="ios">
+          {{avisosDePagoPendientes.length}}
+        </ion-badge>
+      </ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  <div *ngIf="seccion === 'misAvisos'">
+    <div *ngIf="misAvisosDePago.length > 0">
+      <!-- PENDIENTES -->
+      <div *ngFor="let aviso of misAvisosDePago">
+        <ion-card *ngIf="aviso.estadoAviso === '0-Pendiente'">
+          <ion-card-header>
+            <ion-badge color="warning" style="float: right;">Pendiente</ion-badge>
+            <ion-card-subtitle>Avisado el día {{ aviso.fechaAviso | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-card-subtitle>
+            <ion-card-subtitle style="margin-top: 15px;">
+              <span *ngFor="let mes of aviso.mesesPagados"> 
+                <strong> Cuota: {{ mes.fecha | fechaCorta : 'MMMM-YYYY' : '' }}</strong>
+                <br> 
+              </span>
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-text color="warning">Observaciones : </ion-text> {{ aviso.obsResidente ?  aviso.obsResidente : 'Sin observaciones.'}}
+          </ion-card-content>
+        </ion-card>
+      </div>
+      <!-- APROBADO Y RECHAZADOS POR FECHA -->
+      <ion-card *ngFor="let aviso of misAvisosDePago">
+        <div *ngIf="aviso.estadoAviso === '-1-Rechazado' || aviso.estadoAviso === '1-Aprobado'">
+          <ion-card-header>
+            <ion-badge *ngIf="aviso.estadoAviso === '1-Aprobado'" color="primary" style="float: right;">Aprobado</ion-badge>
+            <ion-badge *ngIf="aviso.estadoAviso === '-1-Rechazado'" color="danger" style="float: right;">Rechazado</ion-badge>
+            <ion-card-subtitle>Avisado el día {{ aviso.fechaAviso | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-card-subtitle>
+            <ion-card-subtitle *ngIf="aviso.estadoAviso === '-1-Rechazado'">Rechazado el día {{ aviso.fechaRechazo | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-card-subtitle>
+            <ion-card-subtitle *ngIf="aviso.estadoAviso === '1-Aprobado'">Aprobado el día {{ aviso.fechaAprobacion | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-card-subtitle>
+            <ion-card-subtitle style="margin-top: 15px;">
+              <span *ngFor="let mes of aviso.mesesPagados"> 
+                <strong> Cuota: {{ mes.fecha | fechaCorta : 'MMMM-YYYY' : '' }}</strong>
+                <br> 
+              </span>
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content >
+            <ion-text *ngIf="aviso.estadoAviso === '-1-Rechazado'" color="danger">Observaciones : </ion-text> 
+            <ion-text *ngIf="aviso.estadoAviso === '1-Aprobado'" color="primary">Observaciones : </ion-text> 
+            {{ aviso.obsRevisor ?  aviso.obsRevisor : 'Sin observaciones.' }}        
+          </ion-card-content>
+        </div>
+      </ion-card>
+    </div>
+    <div *ngIf="misAvisosDePago.length === 0"
+         class="ion-text-center"
+         style="padding-top: 50%;"
+         >
+      <img class="ion-padding" src="assets/images/no-data-10.png"/>
+    </div>
+  </div>
+  <div *ngIf="seccion === 'todos'">
+    <div *ngIf="avisosDePagoPendientes.length > 0">
+      <ion-list #listaPendientes>
+        <ion-item-sliding *ngFor="let avisoP of avisosDePagoPendientes">
+          <ion-item>
+            <ion-card style="width: 100%;" color="light">
+              <ion-card-header>
+                <ion-badge style="float: right;" color="primary">{{ avisoP.idDireccion }}</ion-badge>
+                <br>
+                <ion-card-subtitle style="display: inline-block;">
+                  Avisado el día {{ avisoP.fechaAviso | fechaCorta : 'DD-MMM-YYYY' : ''}}
+                </ion-card-subtitle>
+                <ion-card-subtitle style="margin-top: 15px;">
+                  <span *ngFor="let mes of avisoP.mesesPagados"> 
+                    <ion-grid fixed>
+                      <ion-row>
+                        <ion-col size="6">
+                          <strong> {{ mes.fecha | fechaCorta : 'MMMM-YYYY' : '' }} : </strong>  
+                        </ion-col>
+                        <ion-col size="6">
+                          <ion-thumbnail style="display: inline-block; vertical-align: middle;">
+                            <a [href]="mes.documento" target="_blank" rel="noopener noreferrer">            
+                              <img style="border-radius: 10px; height: -webkit-fill-available;" 
+                                   [src]="mes.documento" />
+                            </a>
+                          </ion-thumbnail>                          
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                    <!-- <br> -->
+                  </span> 
+                </ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content *ngIf="avisoP.estadoAviso === '0-Pendiente'" >
+                <p><ion-text color="primary"> Transfiere: </ion-text>{{ avisoP.transfiere }}</p>
+                <p><ion-text color="primary"> Obs. del residente: </ion-text>{{ avisoP.obsResidente ?  avisoP.obsResidente : 'Sin observaciones.'}}</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-item>
+          <ion-item-options side="start">
+            <ion-item-option color="primary"
+                             (click)="aprobar(avisoP)"
+                             >
+              <ion-icon name="thumbs-up-sharp"
+                        slot="icon-only"
+                        size="large"
+                        >
+              </ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+  
+          <ion-item-options side="end">
+            <ion-item-option color="danger"
+                             (click)="rechazar(avisoP)"
+                             >
+              <ion-icon name="thumbs-down-sharp"
+                        slot="icon-only"
+                        size="large"
+                        >
+              </ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </div>
+    <div *ngIf="avisosDePagoPendientes.length === 0"
+         class="ion-text-center"
+         style="padding-top: 50%;"
+         >
+      <img class="ion-padding" src="assets/images/no-data-10.png"/>
+    </div>
+  </div>
+  <ion-fab vertical="center" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="nuevoAvisoPago()" color="success">
+        <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

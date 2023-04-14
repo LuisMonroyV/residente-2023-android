@@ -1,0 +1,41 @@
+<app-header titulo="Emergencia"></app-header>
+<ion-content color="warning" class="ion-text-center">
+  <form (ngSubmit)="siguiente('')"
+        novalidate="novalidate"
+        #formAlerta="ngForm">
+    <ion-card class="ion-padding" color="warning">
+      <img *ngIf="fbSrvc.pasoAlerta === 0"
+           [src]="fbSrvc.imagenEmergenciaActivar" 
+           (click)="siguiente('')"
+           />
+      <ion-grid fixed *ngIf="fbSrvc.pasoAlerta === 1">
+        <ion-row>
+          <ion-col size="6">
+            <img [src]="fbSrvc.imagenEmergenciaSeguridad" (click)="siguiente('por seguridad')"/>
+          </ion-col>
+          <ion-col size="6">
+            <img [src]="fbSrvc.imagenEmergenciaMedica" (click)="siguiente('médica')"/>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            <img [src]="fbSrvc.imagenEmergenciaIncendio" (click)="siguiente('por incendio')"/>
+          </ion-col>
+          <ion-col size="6">
+            <img [src]="fbSrvc.imagenEmergenciaOtra" (click)="siguiente('')"/>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div *ngIf="fbSrvc.alertaEnviada" class="ion-text-center">
+        <ion-row>
+          <ion-col>
+            <img [src]="fbSrvc.imagenEmergenciaSeleccionada" (click)="siguiente('')"/>
+          </ion-col>
+        </ion-row>
+        <ion-text>
+          <h3>{{ fbSrvc.textoAlerta }}</h3>
+        </ion-text>
+      </div>
+    </ion-card>
+  </form>
+</ion-content>

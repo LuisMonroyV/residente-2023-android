@@ -1,0 +1,60 @@
+<ion-card class="selectable" color="light" *ngIf="noticias.length > 0 && fbSrvc.expandidoNoticias">
+    <ion-card-header>
+        <ion-card-subtitle class="tam-18" (click)="fbSrvc.expandidoNoticias = !fbSrvc.expandidoNoticias">
+            <ion-grid>
+                <ion-row>
+                    <ion-col size="2">
+                        <ion-icon color="primary" name="remove-circle-outline" size="large">
+                        </ion-icon>
+                    </ion-col>
+                    <ion-col size="7" class="ion-text-center">
+                        <strong class="initial tam-30 text-encabezados">Noticias </strong>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-badge color="primary" mode="ios">
+                            {{noticias.length}}
+                        </ion-badge>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-card-subtitle>
+    </ion-card-header>
+    <ion-list class="ion-no-padding ql-editor padding-t-20 margin-b-20"  *ngFor="let noticia of noticias">
+        <ion-grid fixed>
+            <ion-row>
+                <ion-col class="diseño-1" >
+                    <strong class="tam-45 text-titular">{{ noticia.titulo }}</strong>  <br>      
+                    <ion-text class="tam-12" color="primary"><i> por @{{noticia.creadaPor}} {{noticia.fecha | fechaCorta : '' : 'pasado' }}</i></ion-text>
+                    <a [href]="noticia.urlImagen" target="blank"><img [src]="noticia.urlImagen" /> </a>
+                    <br><br>
+                    <ion-text [innerHTML]="noticia.texto"></ion-text>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <!-- <ion-item-divider class="padding-t-20" color="light"></ion-item-divider> -->
+    </ion-list>
+    <!-- <hr> -->
+</ion-card>
+<ion-card *ngIf="noticias.length > 0 && !fbSrvc.expandidoNoticias"  color="light" >
+    <ion-card-header>
+        <ion-card-subtitle class="tam-18" (click)="fbSrvc.expandidoNoticias = !fbSrvc.expandidoNoticias">
+            <ion-grid>
+                <ion-row>
+                    <ion-col size="2">
+                        <ion-icon color="primary" name="add-circle-outline" size="large">
+                        </ion-icon>
+                    </ion-col>
+                    <ion-col size="7" class="ion-text-center">
+                        <strong class="initial tam-30 text-encabezados">Noticias </strong>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-badge color="primary" mode="ios">{{noticias.length}}</ion-badge>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-card-subtitle>
+    </ion-card-header>
+</ion-card>
+<ion-card *ngIf="noticias.length === 0" class="ion-text-center ion-padding" color="medium">
+    <ion-card-subtitle>No hay noticias aún.</ion-card-subtitle>
+</ion-card>

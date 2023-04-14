@@ -1,0 +1,101 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Activación de Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>PASO 1: Validación de Email</ion-label>
+      <ion-icon name="remove-circle-sharp"
+                size="large"
+                color="danger"
+                *ngIf="!fbSrvc.parametros.verificado"
+                class="ion-padding"
+                >
+      </ion-icon>
+      <ion-icon name="checkmark-done-sharp"
+                size="large"
+                color="primary"
+                *ngIf="fbSrvc.parametros.verificado"
+                class="ion-padding"
+                >
+      </ion-icon>
+    </ion-list-header>
+    <ion-card *ngIf="!fbSrvc.parametros.verificado">
+        <ion-card-content class="ion-text-center">
+          <h2>Activa tu cuenta mediante el correo electrónico que te enviamos a <strong> {{ fbSrvc.persona.email }}</strong>, llegará en unos minutos con el asunto Verificación de email Comunidad Segura.</h2>
+        </ion-card-content>  
+        <div class="ion-text-end ion-padding">
+          <ion-button (click)="reenviar()" 
+                      fill="clear" 
+                      [disabled]="fbSrvc.enviado || fbSrvc.persona.estado === '1-rechazado'"
+                      >
+            Reenviar Correo
+          </ion-button>
+          <ion-text color="warning" *ngIf="fbSrvc.enviado">
+            <i>( reenviado )</i>
+          </ion-text>
+        </div>
+    </ion-card>
+  </ion-list>
+  
+  <ion-list>
+    <ion-list-header>
+      <ion-label>PASO 2: Validación de Administrador</ion-label>
+      <ion-icon name="remove-circle-sharp"
+                size="large"
+                color="danger"
+                *ngIf="!fbSrvc.parametros.validado"
+                class="ion-padding"
+                >
+      </ion-icon>
+      <ion-icon name="checkmark-done-sharp"
+                size="large"
+                color="primary"
+                *ngIf="fbSrvc.parametros.validado"
+                class="ion-padding"
+                >
+      </ion-icon>
+    </ion-list-header>
+    <ion-card *ngIf="!fbSrvc.parametros.validado">
+        <ion-card-content class="ion-text-center">
+          <h2>{{ fbSrvc.persona.obs }}</h2>
+        </ion-card-content>  
+    </ion-card>
+  </ion-list>
+  <div class="ion-padding ion-text-center">
+    <ion-button (click)="irLogin()" 
+                *ngIf="fbSrvc.persona.estado === '0-nuevo'"
+                >  
+      Entrar
+    </ion-button>
+    <div *ngIf="fbSrvc.persona.estado === '1-rechazado' || fbSrvc.persona.estado === '3-suspendido'">
+      <ion-button *ngIf="fbSrvc.persona.estado === '1-rechazado'"
+                  (click)="eliminarCuenta()" 
+                  color="warning"
+                  [disabled]="eliminando"
+                  >
+        Reintentar Registro
+      </ion-button>
+      <ion-button *ngIf="fbSrvc.persona.estado === '3-suspendido'"
+                  (click)="eliminarCuenta()" 
+                  color="warning"
+                  [disabled]="eliminando"
+                  >
+        Eliminar cuenta
+      </ion-button>
+      <br>
+      <ion-text color="danger">Esto eliminará todos sus datos ingresados para poder empezar nuevamente.</ion-text>
+    </div>
+  </div>
+  <div class="ion-text-end ion-padding" *ngIf="fbSrvc.persona.estado === '0-nuevo' || fbSrvc.persona.estado === '2-vigente'">
+    <ion-chip color="primary" mode="ios" outline="true">
+      <ion-icon name="alarm-outline" color="primary"></ion-icon>
+      <ion-text color="primary">
+        <i> <ion-text> Próximo chequeo  {{ siguienteRevision }}</ion-text></i>
+      </ion-text>
+    </ion-chip>
+  </div>
+</ion-content>

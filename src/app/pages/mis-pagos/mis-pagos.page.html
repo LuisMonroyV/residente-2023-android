@@ -1,0 +1,172 @@
+<app-header titulo="Mis Pagos"></app-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="fbSrvc.persona.esAdmin" class="ion-text-center upper">
+    <ion-select cancelText="Cancelar"
+                (ionChange)="idNum = ''"
+                mode="ios"
+                [(ngModel)]="idDir"                    
+                [placeholder]="idDir"
+                [value]="idDir"
+                >
+        <ion-select-option *ngFor="let item of fbSrvc.calles"
+                           [value]="item.descCalle"
+                           >
+          {{item.descCalle}}
+        </ion-select-option>
+    </ion-select>
+    <!-- <div > -->
+      <ion-input type="text" 
+                 placeholder="número"
+                 [(ngModel)]="idNum"
+                 >
+      </ion-input>
+      <ion-button (click)="getPagosDir()">
+        <ion-icon name="reload-outline" size="small"></ion-icon>        
+      </ion-button>
+    <!-- </div> -->
+  </div>
+  <div class="ion-text-center">
+    <span>Mi estado: <ion-chip [color]="colorEstado">{{estadoMisPagos}} </ion-chip></span>
+  </div>
+  <div *ngFor="let ano of anos; let a=index">
+    <ion-card *ngIf="misPagos"
+              class="ion-text-center"
+              >
+      <ion-card-header>
+        <ion-card-title>Pagos {{ano}} </ion-card-title>
+        </ion-card-header>
+      <ion-grid fixed 
+                class="ion-text-center"
+                > 
+        <ion-row>
+          <ion-col *ngFor="let trim1 of trimestre1; let i=index" size="3">
+            <div *ngIf="misPagos[trim1.num]">
+              <ion-text class="tam-18">{{ trim1.mes }}</ion-text>
+              <ion-icon *ngIf="misPagos[trim1.num+(a*12)].comentario && misPagos[trim1.num+(a*12)].comentario.length > 0 && misPagos[trim1.num+(a*12)].ano === ano && misPagos[trim1.num+(a*12)].mes === (trim1.num+1)"
+                        name="chatbox"
+                        color="warning" 
+                        mode="ios"
+                        (click)="mostrarMensaje(misPagos[trim1.num+(a*12)].comentario)">{{misPagos[trim1.num+(a*12)].comentario}}
+              </ion-icon>
+              <br>
+              <ion-icon name="checkmark-done-sharp"
+                        color="primary"
+                        size='large'
+                        *ngIf="misPagos[trim1.num+(a*12)].pagado && misPagos[trim1.num+(a*12)].ano === ano && misPagos[trim1.num+(a*12)].mes === (trim1.num+1)"
+                        (click)="pagar(trim1.num+(a*12))" >
+              </ion-icon>
+              <ion-icon name="close-sharp"
+                        color="danger"
+                        size='large'
+                        *ngIf="!misPagos[trim1.num+(a*12)].pagado && misPagos[trim1.num+(a*12)].ultAct && misPagos[trim1.num+(a*12)].ano === ano && misPagos[trim1.num+(a*12)].mes === (trim1.num+1)"
+                        (click)="pagar(trim1.num+(a*12))" >
+              </ion-icon>
+              <br>
+              <small *ngIf="misPagos[trim1.num+(a*12)].ultAct && misPagos[trim1.num+(a*12)].ano === ano && misPagos[trim1.num+(a*12)].mes === (trim1.num+1)">Actualiz.<br>
+                <ion-text color="primary">
+                  {{misPagos[trim1.num+(a*12)].ultAct | fechaCorta : '' : 'pagos'}}
+                </ion-text>
+              </small>
+            </div>
+          </ion-col>
+        </ion-row>
+        
+        <ion-row>
+          <ion-col *ngFor="let trim2 of trimestre2; let i=index" size="3">
+            <div *ngIf="misPagos[trim2.num]">
+              <ion-text class="tam-18">{{ trim2.mes }}</ion-text>
+              <ion-icon *ngIf="misPagos[trim2.num+(a*12)].comentario && misPagos[trim2.num+(a*12)].comentario.length > 0 && misPagos[trim2.num+(a*12)].ano === ano && misPagos[trim2.num+(a*12)].mes === (trim2.num+1)"
+                        name="chatbox"
+                        color="warning" 
+                        mode="ios"
+                        (click)="mostrarMensaje(misPagos[trim2.num+(a*12)].comentario)">
+              </ion-icon>
+              <br>
+              <ion-icon name="checkmark-done-sharp"
+                        color="primary"
+                        size='large'
+                        *ngIf="misPagos[trim2.num+(a*12)].pagado && misPagos[trim2.num+(a*12)].ano === ano && misPagos[trim2.num+(a*12)].mes === (trim2.num+1)"
+                        (click)="pagar(trim2.num+(a*12))" >
+              </ion-icon>
+              <ion-icon name="close-sharp"
+                        color="danger"
+                        size='large'
+                        *ngIf="!misPagos[trim2.num+(a*12)].pagado && misPagos[trim2.num+(a*12)].ultAct && misPagos[trim2.num+(a*12)].ano === ano && misPagos[trim2.num+(a*12)].mes === (trim2.num+1)"
+                        (click)="pagar(trim2.num+(a*12))" >
+              </ion-icon>
+              <br>
+              <small *ngIf="misPagos[trim2.num+(a*12)].ultAct && misPagos[trim2.num+(a*12)].ano === ano && misPagos[trim2.num+(a*12)].mes === (trim2.num+1)">Actualizado <br>
+                <ion-text color="primary">
+                  {{misPagos[trim2.num+(a*12)].ultAct | fechaCorta : '' : 'pagos'}}
+                </ion-text>
+              </small>
+            </div>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col *ngFor="let trim3 of trimestre3; let i=index" size="3">
+            <div *ngIf="misPagos[trim3.num]">
+              <ion-text class="tam-18">{{ trim3.mes }}</ion-text>
+              <ion-icon *ngIf="misPagos[trim3.num+(a*12)].comentario && misPagos[trim3.num+(a*12)].comentario.length > 0 && misPagos[trim3.num+(a*12)].ano === ano && misPagos[trim3.num+(a*12)].mes === (trim3.num+1)"
+                        name="chatbox"
+                        color="warning" 
+                        mode="ios"
+                        (click)="mostrarMensaje(misPagos[trim3.num+(a*12)].comentario)">
+              </ion-icon>
+              <br>
+              <ion-icon name="checkmark-done-sharp"
+                        color="primary"
+                        size='large'
+                        *ngIf="misPagos[trim3.num+(a*12)].pagado && misPagos[trim3.num+(a*12)].ano === ano && misPagos[trim3.num+(a*12)].mes === (trim3.num+1)"
+                        (click)="pagar(trim3.num+(a*12))" >
+              </ion-icon>
+              <ion-icon name="close-sharp"
+                        color="danger"
+                        size='large'
+                        *ngIf="!misPagos[trim3.num+(a*12)].pagado && misPagos[trim3.num+(a*12)].ultAct && misPagos[trim3.num+(a*12)].ano === ano && misPagos[trim3.num+(a*12)].mes === (trim3.num+1)"
+                        (click)="pagar(trim3.num+(a*12))" >
+              </ion-icon>
+              <br>
+              <small *ngIf="misPagos[trim3.num+(a*12)].ultAct && misPagos[trim3.num+(a*12)].ano === ano && misPagos[trim3.num+(a*12)].mes === (trim3.num+1)">Actualizado <br>
+                <ion-text color="primary">
+                  {{misPagos[trim3.num+(a*12)].ultAct | fechaCorta : '' : 'pagos'}}
+                </ion-text>
+              </small>
+    </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div class="ion-padding ion-text-center"
+          *ngIf="misPagos.length === 0 && !fbSrvc.cargando"
+          >
+          <img src="assets/images/no-data-10.png" width="50%" class="no-data-img"/>
+      </div>
+    </ion-card>
+  </div>
+  <ion-card>
+    <ion-card-content class="text-san-francisco">
+      <p><strong><ion-text color="primary">Datos para el pago de Cuota Social </ion-text></strong>
+        <ion-badge color="warning" mode="ios">
+          <ion-icon color="light" name="share-social-outline" (click)="compartirDatos()"></ion-icon>
+        </ion-badge>
+      </p>
+      <strong> 
+        Banco: BCI <br>
+        Nombre: Junta de Vecinos Los Mostos <br>
+        RUT: 65.906.970-9 <br>
+        Cuenta Corriente: 29725496 <br>
+        Email: <a href="mailto:recaudacion.losmostos@gmail.com?subject=Contacto desde App Los Mostos"> recaudacion.losmostos@gmail.com</a> <br>
+        <ion-text color="warning">
+          Importante: Las transferencias se avisan a través del botón Avisos.
+        </ion-text> 
+      </strong>
+    </ion-card-content>
+  </ion-card>
+  <ion-fab [vertical]="ubicacionBoton" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="misAvisos()" color="success">
+        Avisos
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

@@ -1,0 +1,175 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+
+/* Core CSS required for Ionic components to work properly */
+
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+.main-container {
+    margin-top: 40px;
+    margin-bottom: 150px;
+}
+
+.tam-8 {
+    font-size: 8px !important;
+}
+
+.tam-10 {
+    font-size: 10px !important;
+}
+
+.tam-12 {
+    font-size: 12px !important;
+}
+
+.tam-14 {
+    font-size: 14px !important;
+}
+
+.tam-16 {
+    font-size: 16px !important;
+}
+
+.tam-18 {
+    font-size: 18px !important;
+}
+
+.tam-20 {
+    font-size: 20px !important;
+}
+
+.tam-30 {
+    font-size: 30px !important;
+}
+
+.tam-40 {
+    font-size: 40px !important;
+}
+
+.tam-45 {
+    font-size: 45px !important;
+}
+
+.puntero {
+    cursor: pointer;
+}
+
+.no-data-img {
+    padding-top: 10%;
+    // display: flex;
+    // min-height: 50vh;
+    // align-items: center;
+    // justify-items: center;
+    // flex-direction: column;
+}
+
+.borde-input {
+    padding: 10px;
+    border: 1px dotted #4080FF;
+    border-radius: 10px;
+    // background:lightgray;
+    //   overflow: hidden;
+}
+
+.input-editable {
+    // background:rgb(49, 48, 48);
+    border-radius: 10px;
+    border: 1px dotted #4080FF;
+    //   overflow: hidden;
+}
+
+.chat-window {
+    padding: 10px;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid #4080FF;
+    border-radius: 20px;
+}
+
+.app-mensajes {
+    overflow-y: scroll;
+    height: 90%;
+    // background:rgb(211, 206, 206);
+    padding: 5px;
+}
+
+
+/* Animaciones */
+
+.animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+.fast {
+    -webkit-animation-duration: 0.3s;
+    animation-duration: 0.3s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fadeIn {
+    animation-name: fadeIn;
+}
+
+@import '~quill/dist/quill.core.css';
+@import '~quill/dist/quill.snow.css';
+[contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.action-sheet-group {
+    overflow: auto !important;
+}
+.selectable {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+.pie-label, text { fill: #4080FF; }
+svg.ngx-charts { 
+    overflow: hidden !important; 
+  }
+  
+.initial {
+    text-transform: initial !important;
+}
+.mt-40 {
+    margin-top: 40px;
+}

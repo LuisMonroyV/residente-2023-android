@@ -1,0 +1,114 @@
+<app-header titulo="Nueva Noticia"></app-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="guardarNoticia()"
+        novalidate="novalidate"
+        #formNoticia="ngForm"
+      > 
+    <ion-grid fixed>
+      <ion-row>
+        <ion-col>
+          <div class="tam-20 ion-text-start text-titular">
+            <ion-input  type="text" 
+                        name="titulo"
+                        placeholder="Títular"
+                        [(ngModel)]="nuevaNoticia.titulo"
+                        required
+                        clearInput
+                        autocomplete="on" 
+                        inputmode="text"
+                        autoFocus
+                        tabindex="0"
+                        >
+            </ion-input>
+          </div>
+          <div>
+            <ion-img *ngIf="nuevaNoticia.urlImagen === ''" [src]="sinImagen"></ion-img>
+            <ion-img *ngIf="nuevaNoticia.urlImagen !== ''" [src]="nuevaNoticia.urlImagen"></ion-img>
+            <ion-input type="text" 
+                       placeholder="URL de la imagen http://..." 
+                       [(ngModel)]="nuevaNoticia.urlImagen"
+                       name="url"
+                       >
+            </ion-input>
+            <div class="ion-text-center ion-padding">
+              <ion-button (click)="abrirGaleria()">
+                Galería
+                <ion-icon name="attach-sharp" 
+                          slot="end" 
+                          >
+                </ion-icon>
+              </ion-button>
+              <ion-button (click)="tomarFoto()">
+                Cámara
+                <ion-icon name="camera-sharp" 
+                          slot="end"
+                          >
+                </ion-icon>
+              </ion-button>
+            </div>
+              <div class="ion-text-end">
+              <ion-text color="primary" class="tam-12">por @{{ nuevaNoticia.creadaPor }}</ion-text>
+            </div>
+          </div>
+          <div id="editor-container">
+            <quill-editor [(ngModel)]="nuevaNoticia.texto"
+                          placeholder="Texto de la noticia."
+                          name="texto"
+                          style="color: deepskyblue;"
+                          >
+            </quill-editor>
+          </div>
+        </ion-col>
+      </ion-row>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <ion-row>
+        <ion-col>
+          <ion-item lines="none">
+            <ion-label>Enviar notificaciones? </ion-label>
+            <ion-toggle name="notificar"
+                        [(ngModel)]="nuevaNoticia.notificar"
+                        mode="ios"
+                        >
+            </ion-toggle>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>Duración (días) </ion-label>
+            <ion-input class="ion-text-right"
+                      name="duracion"
+                      [(ngModel)]="duracion"
+                      mode="ios"
+                      inputmode="numeric"
+                      min="1"
+                      max="999"
+                      step="1"
+                      style="width: 100%;"
+                      type="number"
+                      >
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row class="ion-text-center ion-padding">
+        <ion-col>
+            <ion-button type="submit"
+                        [disabled]="!formNoticia.valid || creandoNoticia || nuevaNoticia.urlImagen === ''"
+                        >
+                Crear Noticia
+            </ion-button>
+            <ion-button type="button"
+                        (click)="cerrar()"
+                        >
+                Cancelar
+            </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
+  

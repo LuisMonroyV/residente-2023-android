@@ -1,0 +1,140 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar>
+    <ion-title>Nuevo aviso de pago</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()"
+                  color="danger"
+                  >
+        Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="guardarAvisoDePago()"
+        novalidate="novalidate"
+        #formAviso="ngForm"
+        *ngIf="totalDeuda > 0">
+    <ion-card style="margin-bottom: 50px;">
+      <div class="ion-text-center" style="margin-top: 20px;">
+        <ion-label>
+          <ion-badge color="warning" mode="ios" style="font-size: large;">
+            Total Deuda: ${{totalDeuda | number : '1.0-0'}}
+          </ion-badge>
+        </ion-label>
+      </div> 
+      <ion-list *ngIf="nuevoAvisoDePago.mesesPagados.length > 0">
+        <ion-item class="ion-text-center">
+          <ion-label class="ion-text-center tam-14" 
+                     style="white-space: normal;">
+            Toca en el mes para subir la imagen de evidencia desde la galería o tomar una foto.<br> 
+            Las deudas deben ser pagadas en orden desde la más antigua a la más nueva.
+          </ion-label>
+        </ion-item>
+        <ion-item class="ion-no-padding"
+                  *ngFor="let mes of nuevoAvisoDePago.mesesPagados; let i = index"
+                  >
+          <ion-grid fixed>
+            <ion-row>
+              <ion-col size="8"                   
+                       style="padding-top: 15px;"
+                       >
+                <span style="vertical-align: text-bottom; padding-left: 15px;" class="tam-14">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
+              </ion-col>
+              <ion-col size="2" class="ion-text-center">
+                <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                              style="display: inline-block; vertical-align: middle;"
+                               >
+                   <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
+                    <img style="border-radius: 10px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
+                   </a>
+                </ion-thumbnail>
+              </ion-col>
+              <ion-col size="2" class="ion-text-center">
+                <ion-icon name="close-circle-outline"
+                          color="danger"
+                          size="large"
+                          *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                          (click)="deseleccionarMes(i)"
+                          style="vertical-align: text-bottom;"
+                          >
+                </ion-icon>
+              </ion-col>
+            </ion-row>
+            <ion-row *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0">
+              <ion-col size="6">
+                <div class="ion-text-center tam-12">
+                  <ion-button (click)="abrirGaleria(i)">
+                    Galería
+                    <ion-icon name="attach-sharp" 
+                              slot="end" 
+                              >
+                    </ion-icon>
+                  </ion-button>
+                </div>    
+              </ion-col>
+              <ion-col size="6">
+                <div class="ion-text-center tam-12">
+                  <ion-button (click)="tomarFoto(i)">
+                    Cámara
+                    <ion-icon name="camera-sharp" 
+                              slot="end"
+                              >
+                    </ion-icon>
+                  </ion-button>
+                </div>    
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <div class="ion-padding" style="margin-top: 10px;" color="light">
+          <ion-label color="primary" position="stacked">Nombre de quien transfiere: </ion-label>
+          <ion-text color="danger"> (campo obligatorio)</ion-text>
+          <ion-input placeholder="Quien realiza la transferencia"
+                     [(ngModel)]="nuevoAvisoDePago.transfiere"
+                     name="transfiere"
+                     type="text"
+                     required
+                     >
+          </ion-input>
+        </div>
+        <div class="ion-padding" color="light">
+          <ion-label color="primary" position="stacked">Observaciones: </ion-label>
+          <ion-textarea placeholder="Puedes escribir aquí alguna observación al encargado de revisar tu aviso de pago."
+                        [(ngModel)]="nuevoAvisoDePago.obsResidente"
+                        name="observaciones"
+                        >
+          </ion-textarea>  
+        </div>
+      </ion-list>  
+      <div class="ion-text-center" style="margin-top: 10px;">
+        <ion-label>
+          <ion-badge color="warning" mode="ios" style="font-size: large;">
+            Total Aviso: ${{totalAviso | number : '1.0-0'}}
+          </ion-badge>
+        </ion-label>
+      </div> 
+      <div class="ion-text-center" style="padding-left: 10%; padding-bottom: 20px;">
+        <ion-button type="submit"
+                  expand="block" 
+                  [disabled]="!formAviso.valid || totalAviso === 0"
+                  style="width: 90%;"
+                  >
+          Enviar Aviso de Pago
+        </ion-button>
+        <ion-ripple-effect type="bounded"></ion-ripple-effect>
+      </div>
+    </ion-card>
+  </form>
+  <div *ngIf="totalDeuda === 0"
+       class="ion-text-center"
+       style="padding-top: 10%;"
+       >
+    <img class="ion-padding" src="assets/images/no-data-10.png"/>
+    <ion-text color="primary">
+      <h2>Felicitaciones!!</h2>
+      <h2>estás al día en tus pagos.</h2>
+    </ion-text>
+  </div>
+</ion-content>

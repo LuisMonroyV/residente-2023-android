@@ -1,0 +1,68 @@
+<ion-card class="selectable" color="success" *ngIf="rondas && rondas.size && fbSrvc.expandidoRondas">
+    <ion-card-header>
+        <ion-card-subtitle class="tam-18" (click)="fbSrvc.expandidoRondas = !fbSrvc.expandidoRondas">
+            <ion-grid>
+                <ion-row>
+                    <ion-col size="2">
+                        <ion-icon color="primary" name="remove-circle-outline" size="large">
+                        </ion-icon>
+                    </ion-col>
+                    <ion-col size="7" class="ion-text-center">
+                        <strong class="initial tam-30 text-encabezados">Rondas </strong>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-badge color="primary" mode="ios">{{rondas.size}}</ion-badge>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-card-subtitle>
+        <div *ngFor="let ronda of rondas.docs; let i = index" color="success" class="tam-16">
+            <p>
+                {{i+1}}.- {{ ronda.data().fechaInicio |fechaCorta: 'dddd DD-MMM @HH:mm' : '' }}
+                <ion-text color="primary"><small><i>({{ronda.data().fechaInicio | fechaCorta : '' : 'pasado' }})</i></small></ion-text>
+            </p>
+            <p>
+                Guardia:
+                <ion-text color="primary">{{ ronda.data().guardia }}</ion-text>
+            </p>
+            <ion-text>Novedades:</ion-text>
+            <ion-item *ngFor="let novedad of ronda.data().novedades" 
+                      class="ion-no-padding" 
+                      color="success"
+                      style="align-items: baseline;">
+                <ion-text color="primary">
+                    @{{ novedad.fecha | fechaCorta : 'HH:mm': '' }}
+                </ion-text>
+                <ion-text>
+                    : {{ novedad.descripcion }}
+                </ion-text>
+            </ion-item>
+            <ion-item color="success" class="ion-no-padding" lines="none">
+            </ion-item>
+        </div>
+    </ion-card-header>
+</ion-card>
+
+<ion-card color="success" *ngIf="rondas && rondas.size > 0 && !fbSrvc.expandidoRondas">
+    <ion-card-header>
+        <ion-card-subtitle class="tam-18" (click)="fbSrvc.expandidoRondas = !fbSrvc.expandidoRondas">
+            <ion-grid>
+                <ion-row>
+                    <ion-col size="2">
+                        <ion-icon color="primary" name="add-circle-outline" size="large">
+                        </ion-icon>
+                    </ion-col>
+                    <ion-col size="7" class="ion-text-center">
+                        <strong class="initial tam-30 text-encabezados">Rondas </strong>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-badge color="primary" mode="ios">{{rondas.size}}</ion-badge>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-card-subtitle>
+    </ion-card-header>
+</ion-card>
+<ion-card *ngIf="rondas && rondas.size === 0" class="ion-text-center ion-padding" color="medium">
+    <ion-card-subtitle>No hay datos de rondas aún.</ion-card-subtitle>
+</ion-card>

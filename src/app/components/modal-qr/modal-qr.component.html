@@ -1,0 +1,44 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar>
+    <ion-title>Mi dirección en QR</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()"
+                  color="danger"
+                  >
+        Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="ion-text-center" class="ion-padding">
+      <small> Este código QR, le indica a la guardia que la visita se dirige a su domicilio, si además usted tiene avisada la visita, el registro será aún más expedito.(Ideal para compartir con sus invitados)</small>
+  </div>
+  <div id="widget" class="codigo-qr">
+    <img class="codigo-qr" [src]="qrMostrar" />
+    <ion-list>
+      <ion-radio-group value="24h">
+        <ion-item>
+          <ion-label>Validez del Código QR</ion-label>
+          <ion-text (click)="compartirQr()" color="primary">Compartir</ion-text>
+          <ion-icon slot="end" name="share-social-outline" color="primary" (click)="compartirQr()"></ion-icon>
+        </ion-item>
+        <ion-item>
+          <ion-label *ngIf="validez === '24h'" color="primary">Vence en 24 horas (desde ahora @{{horaHoy}})</ion-label>
+          <ion-label *ngIf="validez !== '24h'">Vence en 24 horas (desde ahora)</ion-label>
+          <ion-radio mode="ios" color="primary" slot="start" value="24h" (click)="cambiarValidez('24h')"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label *ngIf="validez === 'semana'" color="primary">Una semana (vence el {{semana}})</ion-label>
+          <ion-label *ngIf="validez !== 'semana'">Una semana (vence el {{semana}})</ion-label>
+          <ion-radio mode="ios" color="primary" slot="start" value="semana" (click)="cambiarValidez('semana')"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label *ngIf="validez === '0'" color="primary">Permanente (no vence)</ion-label>
+          <ion-label *ngIf="validez !== '0'">Permanente (no vence)</ion-label>
+          <ion-radio mode="ios" color="primary" slot="start" value="0" (click)="cambiarValidez('0')"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+  </div>
+</ion-content>

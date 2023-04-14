@@ -1,0 +1,36 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Comunidad Los Mostos</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div id="noticias">
+        <app-noticias></app-noticias>
+    </div>
+    <div *ngIf="fbSrvc.parametros.verEmergencias" id="emergencias">
+        <app-emergencias></app-emergencias>
+    </div>
+    <div *ngIf="fbSrvc.parametros.verAccesos" id="accesos">
+        <app-accesos></app-accesos>
+    </div>
+    <div *ngIf="fbSrvc.parametros.verRondas" id="rondas">
+        <app-rondas></app-rondas>
+    </div>
+    <div class="ion-text-center">
+        <img src="/assets/icon/favicon.png" width="50%">
+    </div>
+    <ion-fab vertical="top" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="alerta()" color="danger">
+            <ion-icon name="megaphone-sharp"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+    <ion-fab *ngIf="fbSrvc.persona.esAdmin" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="nuevaNoticia()">
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

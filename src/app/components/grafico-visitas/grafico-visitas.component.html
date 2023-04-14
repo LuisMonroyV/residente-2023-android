@@ -1,0 +1,17 @@
+<div #containerRef >
+    <ngx-charts-bar-vertical [view]="[containerRef.offsetWidth, 400]"
+                             [scheme]="colorScheme"
+                             [results]="single"
+                             [gradient]="gradient"
+                             [xAxis]="showXAxis"
+                             [yAxis]="showYAxis"
+                             [legend]="showLegend"
+                             [legendPosition]="legendPosition"
+                             [showXAxisLabel]="showXAxisLabel"
+                             [showYAxisLabel]="showYAxisLabel"
+                             [xAxisLabel]="xAxisLabel"
+                             [yAxisLabel]="yAxisLabel"
+                             (click)="changeScheme()"   
+                             >
+    </ngx-charts-bar-vertical>
+</div>

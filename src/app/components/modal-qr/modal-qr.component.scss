@@ -1,0 +1,21 @@
+.codigo-qr {
+    text-align: center;
+    ion-img {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        margin-left:  40px;
+        margin-right:  40px;
+        border-radius: 20px !important;
+    }
+    img {
+        // margin-top: 10px;
+        // margin-bottom: 10px;
+        margin-left:  20px;
+        margin-right:  20px;
+        border-radius: 10px !important;
+        width: 80vw;
+    }
+    ion-text {
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,64 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar>
+    <ion-title>Nueva visita</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()"
+                  color="danger"
+                  >
+        Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="guardarVisita()"
+        novalidate="novalidate"
+        #formVisita="ngForm"
+      > 
+    <ion-grid fixed>
+      <ion-row>
+        <ion-col>
+          <ion-item lines="none">
+            <ion-input type="text" 
+                      [(ngModel)]="nuevaVisita.nombre"
+                      name="nombre"
+                      required
+                      autofocus
+                      tabindex="0"
+                      placeholder="Nombre"
+                      #nombreInput
+                      >
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item  lines="none">
+            <ion-input type="text" 
+                      [(ngModel)]="nuevaVisita.apellido"
+                      name="apellido"
+                      required
+                      tabindex="1"
+                      placeholder="Apellido"
+                      >
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col>
+            <ion-button expand="block"
+                        type="submit"
+                        [disabled]="!formVisita.valid"
+                        >
+                Guardar Visita
+            </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
+  

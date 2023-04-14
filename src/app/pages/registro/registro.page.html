@@ -1,0 +1,154 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+        <ion-back-button defaultHref="/login" 
+                         text=""
+                         color="primary"
+                         >
+        </ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Nuevo Registro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <form (ngSubmit)="creaCuenta(formRegistro)"
+          novalidate="novalidate"
+          #formRegistro="ngForm"
+        > 
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="stacked">Calle</ion-label>
+            <ion-select [(ngModel)]="fbSrvc.persona.calle"
+                        required
+                        autofocus
+                        tabindex="0"
+                        name="calle"
+                        cancelText="Cancelar"
+                        >
+              <ion-select-option *ngFor="let item of fbSrvc.calles"
+                                 [value]="item.descCalle"
+                                 >
+                {{ item.descCalle }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Número #</ion-label>
+            <ion-input  type="text" 
+                        name="numero"
+                        [(ngModel)]="fbSrvc.persona.numero"
+                        required
+                        clearInput
+                        autocomplete="off" 
+                        inputmode="text"
+                        maxlength=6
+                        >
+            </ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Teléfono Fijo</ion-label>
+            <ion-label >+56 2</ion-label>
+            <ion-input  type="tel" 
+                        name="telefono"
+                        [(ngModel)]="fbSrvc.persona.telefono"
+                        clearInput
+                        autocomplete="off" 
+                        inputmode="number"
+                        maxlength=8
+                        >
+            </ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Nombre</ion-label>
+            <ion-input  type="text" 
+                        name="nombre"
+                        [(ngModel)]="fbSrvc.persona.nombres"
+                        required
+                        clearInput
+                        autocomplete="on" 
+                        inputmode="text"
+                        autocapitalize="on"
+                        >
+            </ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Apellido Paterno</ion-label>
+            <ion-input  type="text" 
+                        name="apellidoPaterno"
+                        [(ngModel)]="fbSrvc.persona.apellidoPaterno"
+                        required
+                        clearInput
+                        autocomplete="on" 
+                        inputmode="text"
+                        autocapitalize="on"
+                        >
+            </ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Apellido Materno</ion-label>
+            <ion-input  type="text" 
+                        name="apellidoMaterno"
+                        [(ngModel)]="fbSrvc.persona.apellidoMaterno"
+                        required
+                        clearInput
+                        autocomplete="on" 
+                        inputmode="text"
+                        autocapitalize="on"
+                        >
+            </ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label>Soy menor de 18 Años</ion-label>
+            <ion-toggle color="primary" 
+                        name="menor"
+                        [(ngModel)]="fbSrvc.persona.esMenordeEdad" 
+                        mode="ios"
+                        >
+            </ion-toggle>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Móvil</ion-label>
+            <ion-label >+56 9</ion-label>
+            <ion-input  type="tel" 
+                        name="movil"
+                        [(ngModel)]="fbSrvc.persona.movil"
+                        required
+                        clearInput
+                        inputmode="number"
+                        maxlength=8
+                        debounce="500"
+                        (ionChange)="validarMovil()"
+                        >
+            </ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-icon *ngIf="verPass === 'password'" name="eye-off" slot="end" color="warning" (click)="verPass = 'text'"></ion-icon>
+            <ion-icon *ngIf="verPass === 'text'" name="eye" slot="end" color="primary" (click)="verPass = 'password'"></ion-icon>
+            <ion-label position="stacked">Contraseña (mín. 6 caracteres)</ion-label>
+            <ion-input  [type]="verPass" 
+                        name="pass"
+                        [(ngModel)]="fbSrvc.login.contrasena"
+                        required
+                        inputmode="text"
+                        pattern="^(?=.*\d).{6,}|(?=.*[a-zA-Z]).{6,}$"
+                        >
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+            <ion-button expand="block"
+                        type="submit"
+                        [disabled]="!formRegistro.valid || creandoCuenta"
+                        >
+                Crear Cuenta
+            </ion-button>
+        </ion-col>
+      </ion-row>
+    </form>
+  </ion-grid>
+</ion-content>

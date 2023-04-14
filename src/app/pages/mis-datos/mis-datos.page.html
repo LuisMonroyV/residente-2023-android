@@ -1,0 +1,136 @@
+<app-header *ngIf="!fbSrvc.persona.esMenordeEdad" titulo="Mis Datos" qr="SI"></app-header>
+<app-header *ngIf="fbSrvc.persona.esMenordeEdad" titulo="Mis Datos" qr="NO"></app-header>
+
+<ion-content class="ion-padding">
+    <ion-card>
+      <ion-list>
+        <ion-item lines="none">
+          <ion-chip color="medium" mode="ios" outline="true">
+            <ion-avatar>
+              <img src="assets/images/no-avatar.png" alt="">
+              </ion-avatar>
+            <ion-label color="medium">{{fbSrvc.persona.nombres + ' ' + fbSrvc.persona.apellidoPaterno + ' ' + fbSrvc.persona.apellidoMaterno}}</ion-label>
+          </ion-chip>
+        </ion-item>
+      </ion-list>  
+    </ion-card>
+
+    <ion-card>
+      <ion-list>
+        <ion-item>
+          <ion-icon name="phone-portrait-sharp" slot="start" color="primary"></ion-icon>
+          <ion-label position="stacked">Teléfono Móvil</ion-label>
+          <ion-input type="tel"
+                    name="movil"
+                    [(ngModel)]="fbSrvc.persona.movil" 
+                    mode="ios"
+                    #movilInput
+                    maxlength=12
+                    (ionChange)="guardarCambios()"
+                    debounce="1000"
+                    >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="call-sharp" slot="start" color="primary"></ion-icon>
+          <ion-label position="stacked">Teléfono Fijo</ion-label>
+          <ion-input type="tel"
+                    name="fono"
+                    [(ngModel)]="fbSrvc.persona.telefono" 
+                    mode="ios"
+                    maxlength=12
+                    (ionChange)="guardarCambios()"
+                    debounce="1000"
+                    >
+          </ion-input>
+        </ion-item>
+      </ion-list>  
+    </ion-card>
+
+    <ion-segment (ionChange)="segmentChanged($event)" 
+                 color="secondary"
+                 value="autorizadas"
+                 mode="ios">
+      <ion-segment-button value="autorizadas">
+        <ion-icon color="whatsapp-green" name="thumbs-up-sharp"></ion-icon>
+        <ion-label>Visitas Autorizadas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="noAutorizadas">
+        <ion-icon color="danger" name="thumbs-down-sharp"></ion-icon>
+        <ion-label>Visitas No Autorizadas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <ion-card *ngIf="segmento === 'autorizadas'">
+      <ion-list>
+        <ion-item lines="none" *ngFor="let item of misVisitas.autorizados; let i = index">
+          <ion-text>{{i+1}}.- {{item}}</ion-text>
+          <ion-icon *ngIf="!fbSrvc.persona.esMenordeEdad"
+                    slot="end" 
+                    color="danger" 
+                    name="remove-circle-sharp"                  
+                    (click)="confirmacion(i, 'Autorizada')"
+                    >
+          </ion-icon>
+          <ion-icon *ngIf="fbSrvc.persona.esMenordeEdad"
+                    slot="end" 
+                    name="close-circle-sharp" 
+                    >
+          </ion-icon>
+        </ion-item>
+        <div *ngIf="misVisitas.autorizados.length === 0"
+             class="ion-text-center"
+             >
+          <img width="50%" class="ion-no-padding" src="assets/images/no-data-10.png"/>
+        </div>
+      </ion-list>  
+    </ion-card>
+    <ion-card *ngIf="segmento === 'noAutorizadas'">
+      <ion-list>
+        <ion-item lines="none" *ngFor="let item of misVisitas.rechazados; let j = index">
+          <ion-text>{{j+1}}.- {{item}}</ion-text>
+          <ion-icon *ngIf="!fbSrvc.persona.esMenordeEdad"
+                    slot="end" 
+                    color="danger" 
+                    name="remove-circle-sharp"                  
+                    (click)="confirmacion(j, 'NO Autorizada')"
+                    >
+          </ion-icon>
+          <ion-icon *ngIf="fbSrvc.persona.esMenordeEdad"
+                    slot="end" 
+                    name="close-circle-sharp" 
+                    >
+          </ion-icon>
+        </ion-item>
+        <div *ngIf="misVisitas.rechazados.length === 0"
+             class="ion-text-center"
+             >
+          <img width="50%" class="ion-no-padding" src="assets/images/no-data-10.png"/>
+        </div>
+      </ion-list>  
+    </ion-card>
+    
+  <ion-fab vertical="bottom" 
+          horizontal="end" 
+          slot="fixed" 
+          *ngIf="!fbSrvc.persona.esMenordeEdad"
+          >
+    <ion-fab-button (click)="modalVisita()"               
+                    color="whatsapp-green"
+                    *ngIf="segmento === 'autorizadas'"
+                    >
+      <ion-icon size="large" 
+                name="add-outline" 
+                >
+      </ion-icon>
+    </ion-fab-button>
+    <ion-fab-button (click)="modalVisita()"               
+                    color="danger"
+                    *ngIf="segmento === 'noAutorizadas'"
+                    >
+      <ion-icon size="large" 
+                name="add-outline" 
+                >
+      </ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

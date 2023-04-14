@@ -1,0 +1,76 @@
+<ion-card class="selectable" color="light" *ngIf="accesos && accesos.length > 0 && fbSrvc.expandidoAccesos">
+    <ion-card-header>
+        <ion-card-subtitle class="tam-18" (click)="fbSrvc.expandidoAccesos = !fbSrvc.expandidoAccesos">
+            <ion-grid>
+                <ion-row>
+                    <ion-col size="2">
+                        <ion-icon color="primary" name="remove-circle-outline" size="large">
+                        </ion-icon>
+                    </ion-col>
+                    <ion-col size="7" class="ion-text-center">
+                        <strong class="initial tam-30 text-encabezados">Mis Visitas </strong>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-badge color="primary" mode="ios">{{accesos.length}}</ion-badge>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-card-subtitle>
+        <div *ngFor="let acc of accesos; let i = index" color="light" class="tam-16">
+            <p>
+                {{i+1}}.- {{ acc.fecha |fechaCorta: 'dddd DD-MMM @HH:mm' : '' }} 
+                <ion-text color="primary"><small><i>({{acc.fecha | fechaCorta : '' : 'pasado' }})</i></small></ion-text>
+            </p>
+            <p>
+                Visitante:
+                <ion-text color="primary">{{ acc.nombreVisitante }}</ion-text>
+            </p>
+            <p>
+                Patente:
+                <ion-text color="primary">{{ acc.patente }}</ion-text>
+            </p>
+            <p>
+                Autorizado por:
+                <ion-text color="primary">{{ acc.guardia }}</ion-text>
+            </p>
+            <p>
+                Observaciones:
+                <ion-text color="primary">{{ acc.obs }}</ion-text>
+            </p>
+            <ion-item color="light" class="ion-no-padding">
+                Residente contactado?:
+                <ion-text color="danger" *ngIf="!acc.residenteResponde" class="ion-padding">
+                    <strong> NO </strong>
+                </ion-text>
+                <ion-text color="primary" *ngIf="acc.residenteResponde" class="ion-padding">
+                    SI
+                </ion-text>
+            </ion-item>
+            <br>
+        </div>
+    </ion-card-header>
+</ion-card>
+
+<ion-card color="light" *ngIf="accesos && accesos.length > 0 && !fbSrvc.expandidoAccesos">
+    <ion-card-header>
+        <ion-card-subtitle class="tam-18" (click)="fbSrvc.expandidoAccesos = !fbSrvc.expandidoAccesos">
+            <ion-grid>
+                <ion-row>
+                    <ion-col size="2">
+                        <ion-icon color="primary" name="add-circle-outline" size="large">
+                        </ion-icon>
+                    </ion-col>
+                    <ion-col size="7" class="ion-text-center">
+                        <strong class="initial tam-30 text-encabezados">Mis Visitas </strong>
+                    </ion-col>
+                    <ion-col size="3">
+                        <ion-badge color="primary" mode="ios">{{accesos.length}}</ion-badge>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-card-subtitle>
+    </ion-card-header>
+</ion-card>
+<ion-card *ngIf="accesos && accesos.length === 0" class="ion-text-center ion-padding" color="medium">
+    <ion-card-subtitle>No hay datos de accesos aún.</ion-card-subtitle>
+</ion-card>

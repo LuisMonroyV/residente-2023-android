@@ -1,0 +1,24 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+        <ion-back-button defaultHref="/folder/inicio" 
+                         color="primary"
+                         text=""
+                         >
+        </ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">{{ titulo }}
+    </ion-title>
+    <ion-buttons slot="end" >
+      <ion-icon name="qr-code-outline" 
+                slot="end" 
+                color="primary" 
+                style="padding-right: 10px;"
+                size="large"
+                (click)="modalQr()"
+                *ngIf="qr && qr === 'SI'"
+                >
+      </ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>

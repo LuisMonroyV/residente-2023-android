@@ -1,0 +1,60 @@
+<app-header titulo="Estadísticas"></app-header>
+<ion-content  class="ion-no-padding">
+  <ion-slides pager *ngFor="let estad of fbSrvc.estadisticas">
+    <ion-slide>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle color="primary">{{estad.mes | mes }} - {{ estad.ano }}</ion-card-subtitle>
+          <ion-card-title>Mis Estadísticas</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="ion-no-padding">
+          <app-grafico-mis-visitas [ano]="estad.ano" [mes]="estad.mes"></app-grafico-mis-visitas>
+        </ion-card-content>
+      </ion-card>
+    </ion-slide>
+    <ion-slide>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle color="primary">{{estad.mes | mes }} - {{ estad.ano }}</ion-card-subtitle>
+          <ion-card-title>Visitas por Calle</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="ion-no-padding">
+          <app-grafico-visitas [ano]="estad.ano" [mes]="estad.mes"></app-grafico-visitas>
+        </ion-card-content>
+      </ion-card>
+    </ion-slide>
+    <ion-slide>
+      <ion-card class="color1">
+        <ion-card-header>
+          <ion-card-subtitle color="primary">{{estad.mes | mes }} - {{ estad.ano }}</ion-card-subtitle>
+          <ion-card-title>Avisos por la App</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="ion-no-padding">
+          <app-grafico-avisos [ano]="estad.ano" [mes]="estad.mes"></app-grafico-avisos>
+        </ion-card-content>
+      </ion-card>
+    </ion-slide>
+    <ion-slide>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle color="primary">{{estad.mes | mes }} - {{ estad.ano }}</ion-card-subtitle>
+          <ion-card-title>Registros por Guardia</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="ion-no-padding">
+          <app-grafico-guardias [ano]="estad.ano" [mes]="estad.mes"></app-grafico-guardias>
+        </ion-card-content>
+      </ion-card>
+    </ion-slide>
+    <ion-slide>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle color="primary">{{estad.mes | mes }} - {{ estad.ano }}</ion-card-subtitle>
+          <ion-card-title>Resumen Mensual</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="ion-no-padding">
+          <app-grafico-totales [ano]="estad.ano" [mes]="estad.mes"></app-grafico-totales>
+        </ion-card-content>
+      </ion-card>
+    </ion-slide>
+  </ion-slides>
+</ion-content>

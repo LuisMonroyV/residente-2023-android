@@ -1,0 +1,52 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar >
+    <ion-title class="ion-text-center">Comunidad Los Mostos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+<ion-grid fixed>
+  <form (ngSubmit)="validaMail(formLogin)"
+        novalidate="novalidate"
+        #formLogin="ngForm"
+      > 
+    <ion-row class="ion-padding-top">
+      <ion-col class="ion-padding-top">
+        <ion-text >Crea una cuenta o inicia sesión con tu email.</ion-text>
+        <ion-item>
+          <ion-icon name="mail" item-start color="primary"> </ion-icon>
+          <ion-input  type="email" 
+                        name="email"
+                        [(ngModel)]="fbSrvc.login.email"
+                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" 
+                        required
+                        clearInput
+                        autocomplete="on" 
+                        inputmode="email"
+                        class="ion-text-center"
+                        #loginInput
+                        >
+          </ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-text>
+          <small  > Al ingresar aceptas las <a class="puntero" [routerLink]="['/politicas']"> Políticas de Privacidad</a></small>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+          <ion-button expand="block"
+                      type="submit"
+                      [disabled]="!formLogin.valid"
+                      >
+              Ingresar
+          </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-grid>
+</ion-content>

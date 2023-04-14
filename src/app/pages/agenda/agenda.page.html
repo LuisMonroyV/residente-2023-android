@@ -1,0 +1,207 @@
+<app-header titulo="Agenda"></app-header>
+
+<ion-content>
+  <div id="container">
+    <ion-list #lista>    
+      <!-- Guardia -->
+      <ion-item-sliding>
+        <ion-item class="ion-text-center">
+          <ion-label>
+            <ion-text color="primary">
+              <ion-badge color="primary" mode="ios">Guardia</ion-badge> 
+              <small>({{fbSrvc.parametrosFB.guardia}})</small>
+            </ion-text>
+            <p class="ion-text-wrap">Llama a la guardia en caso de emergencia.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('guardia')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('guardia')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      <!-- Plan Cuadrante -->
+      <ion-item-sliding>
+        <ion-item class="ion-text-center">
+          <ion-label>
+            <ion-text color="primary">
+              <ion-badge color="primary" mode="ios">Plan Cuadrante</ion-badge> 
+              <small>({{fbSrvc.parametrosFB.cuadrante}})</small>
+            </ion-text>
+            <p class="ion-text-wrap">Llama al número del plan cuadrante de Carabineros.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('cuadrante')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('cuadrante')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      <!-- Seguridad Comunal -->
+      <!-- <ion-item-sliding>
+        <ion-item class="ion-text-center ion-text-wrap">
+          <ion-label>
+            <ion-text color="primary">
+              <h2 class="ion-text-wrap">Seguridad Comunal <small>({{fbSrvc.parametrosFB.seguridadComunal}})</small></h2>
+            </ion-text>
+            <p class="ion-text-wrap">Llama al número 1487 de Seguridad Comunal.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('seguridad')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('seguridad')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding> -->
+      <!-- Emergencia Comunal -->
+      <!-- <ion-item-sliding>
+        <ion-item class="ion-text-center ion-text-wrap">
+          <ion-label>
+            <ion-text color="primary">
+              <h2 class="ion-text-wrap">Emergencia Comunal <small>({{fbSrvc.parametrosFB.emergenciaComunal}})</small></h2>
+            </ion-text>
+            <p class="ion-text-wrap">Llama al número de Dirección Operaciones y Emergencia comunal.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('emergencia')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('emergencia')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding> -->
+      <!-- Fono Familia -->
+      <ion-item-sliding>
+        <ion-item class="ion-text-center">
+          <ion-label>
+            <ion-badge color="primary" mode="ios">Fono Familia</ion-badge> 
+            <p class="ion-text-wrap">Llama al número 149 de Fono Familia de Carabineros.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('familia')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('familia')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      <!-- Carabineros -->
+      <ion-item-sliding>
+        <ion-item class="ion-text-center">
+          <ion-label>
+            <ion-badge color="primary" mode="ios">Carabineros</ion-badge> 
+            <p class="ion-text-wrap">Llama al número 133 de Carabineros.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('carabineros')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('carabineros')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      <!-- Bomberos -->
+      <ion-item-sliding>
+        <ion-item class="ion-text-center">
+          <ion-label>
+            <ion-badge color="primary" mode="ios">Bomberos</ion-badge> 
+            <p class="ion-text-wrap">Llama al número 132 de Bomberos.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('bomberos')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('bomberos')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      <!-- Ambulancia -->
+      <ion-item-sliding>
+        <ion-item class="ion-text-center">
+          <ion-label>
+            <ion-badge color="primary" mode="ios">Ambulancia</ion-badge> 
+            <p class="ion-text-wrap">Llama al número 131 de Ambulancia.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>    
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('ambulancia')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('ambulancia')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      <!-- P.D.I. -->
+      <ion-item-sliding>
+        <ion-item class="ion-text-center">
+          <ion-label>
+            <ion-badge color="primary" mode="ios">P.D.I.</ion-badge> 
+            <p class="ion-text-wrap">Llama al número 134 de la PDI.</p>
+          </ion-label>
+          <ion-icon name="arrow-back-sharp" color="primary" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item-options side="end"
+                          (ionSwipe)="llamar('pdi')"
+                          >
+          <ion-item-option>
+            <ion-icon name="call-sharp" 
+                      slot="icon-only"
+                      (click)="llamar('pdi')"
+                      >
+            </ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>         
+    </ion-list>
+  </div>
+</ion-content>

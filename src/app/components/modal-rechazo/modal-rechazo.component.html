@@ -1,0 +1,50 @@
+<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+  <ion-toolbar>
+    <ion-title>{{ titulo }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()"
+                  color="danger"
+                  >
+        Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="guardarMotivo()"
+        novalidate="novalidate"
+        #formMotivo="ngForm"
+      > 
+      <ion-grid fixed>
+        <ion-row class="altura">
+          <ion-col size="12">
+            <ion-item lines="none" >
+              <ion-textarea [(ngModel)]="motivo"
+                            name="motivo"
+                            [required]="tipo !== 'aprobar'"
+                            autofocus
+                            tabindex="0"
+                            clearInput
+                            #motivoInput
+                            rows="5"
+                            placeholder="Ingresa aquí una observación si corresponde."
+                            >
+              </ion-textarea>  
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-row>
+        <ion-col size="12">
+          <ion-button expand="block"
+                      type="submit"
+                      [disabled]="!formMotivo.valid"
+                      >
+              Guardar Cambios
+          </ion-button>
+        </ion-col>
+      </ion-row>
+  </form>
+</ion-content>
+  

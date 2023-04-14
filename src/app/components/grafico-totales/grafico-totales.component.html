@@ -1,0 +1,10 @@
+<div #containerRef>    
+    <ngx-charts-number-card [view]="[containerRef.offsetWidth, 400]"
+                            [scheme]="colorScheme"
+                            [results]="single"
+                            [cardColor]="cardColor"
+                            [valueFormatting]="format"
+                            (click)="changeScheme()"   
+                            >
+    </ngx-charts-number-card>
+</div>
