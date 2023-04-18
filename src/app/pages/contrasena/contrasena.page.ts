@@ -66,20 +66,14 @@ export class ContrasenaPage implements OnInit {
               this.router.navigate(['/activar-mail']);
             }
           } else {
+            this.fbSrvc.stopLoading();
             console.log('no se encontró persona con authId: ', aut.uid);
-            // Borrar usuario
-            this.fbSrvc.deleteUsuario(this.fbSrvc.persona.idPersona)
-            .then( () => {
-              console.log('Usuario Eliminado de BD, redirigiendo a Login.');
-              setTimeout(() => {
-                this.fbSrvc.logOutFirebase();
-                this.limpiarParametros();
-                this.router.navigate(['/login']);
-              }, 1000);
-            })
-            .catch( err => {
-              console.log('error al eliminar cuenta del usuario: ', err);
-            });
+            this.fbSrvc.mostrarMensaje(`No encontramos un usuario con el correo: ${this.fbSrvc.persona.email}`);
+            setTimeout(() => {
+              this.fbSrvc.logOutFirebase();
+              this.limpiarParametros();
+              this.router.navigate(['/login']);
+            }, 1000);
           }
         });
       });

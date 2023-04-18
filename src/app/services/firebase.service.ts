@@ -65,8 +65,6 @@ export class FirebaseService {
   calles: Calle[] = [];
   cargando = false;
   casosEspeciales: CasoEspecial[];
-  collectionNoticia: AngularFirestoreCollection<Noticia>;
-  collectionPersona: AngularFirestoreCollection<Persona>;
   enviado = false;
   esAndroid = false;
   esIos = false;
@@ -179,8 +177,6 @@ export class FirebaseService {
     .catch( err => {
         console.log('No se pudo habilitar persistencia de datos para FireBase: ', err.code);
     });
-    // this.collectionPersona = db.collection<Persona>('persona');
-    // this.collectionNoticia = db.collection<Noticia>('noticias');
     this.getParametrosFB();
   }
 
@@ -744,7 +740,7 @@ export class FirebaseService {
     });
   }
   async postPersona( per: Persona ) {
-    await this.collectionPersona.add(per)
+    await this.db.collection('persona').add(per)
     .then( docRef => {
       console.log('Persona ID: ', docRef.id);
       this.persona.idPersona = docRef.id;
@@ -778,10 +774,10 @@ export class FirebaseService {
   }
   putPersona( per: Persona) {
     console.log('putPersona()', per);
-    return this.collectionPersona.doc(per.idPersona).update(per);
+    return this.db.collection('persona').doc(per.idPersona).update(per);
   }
   putPersonaEmailOk( per: Persona) {
-    return this.collectionPersona.doc(per.idPersona).update({ emailOk: true });
+    return this.db.collection('persona').doc(per.idPersona).update({ emailOk: true });
   }
   putIdQr( id: string) {
     return this.db.collection('qr').doc(id).update({ idQr: id });

@@ -3,6 +3,7 @@ import { FirebaseService } from '../../services/firebase.service';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { PushService } from '../../services/push.service';
+import { Calle } from 'src/app/interfaces/fb-interface';
 
 @Component({
   selector: 'app-registro',
@@ -15,6 +16,14 @@ export class RegistroPage implements OnInit {
   prefijoMovil = '+569';
   prefijoFijo = '+562';
   interv: any;
+  mockCalles: Calle[] = [{ descCalle: 'Av. del Parque', numeracion: []},
+                { descCalle: 'Cabernet', numeracion: []},
+                { descCalle: 'Canal de la Luz', numeracion: []},
+                { descCalle: 'Chardonay', numeracion: []},
+                { descCalle: 'Merlot', numeracion: []},
+                { descCalle: 'Riesling', numeracion: []},
+                { descCalle: 'Sauvignon', numeracion: []},
+               ];
   constructor( private router: Router,
                public fbSrvc: FirebaseService,
                private pushSrvc: PushService ) { }
@@ -103,6 +112,7 @@ export class RegistroPage implements OnInit {
     })
     .catch( err => {
       console.log('Error en login con admin. ', err);
+      this.fbSrvc.calles = this.mockCalles;
     });
     this.limpiarCampos();
   }
