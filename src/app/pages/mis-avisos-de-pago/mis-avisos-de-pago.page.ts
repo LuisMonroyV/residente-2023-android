@@ -38,7 +38,6 @@ export class MisAvisosDePagoPage implements OnInit {
         this.pagarPorAviso(aviso);
         this.fbSrvc.putAvisoDePago(aviso);
         this.pushSrvc.actualizarAvisoDePagos(aviso);
-        this.avisarResidentes(aviso);
         this.fbSrvc.putAvisoDePago(aviso);
         this.avisarResidentes(aviso);
         this.pushSrvc.actualizarAvisoDePagos(aviso);
@@ -86,7 +85,9 @@ export class MisAvisosDePagoPage implements OnInit {
         // eslint-disable-next-line prefer-const
         let residentes: string[] = [];
         personas.docs.forEach( per => {
-          residentes.push(per.data().idMovil);
+          if (per.data().idMovil && per.data().idMovil.length > 0) {
+            residentes.push(per.data().idMovil);
+          }
         });
         this.pushSrvc.notificarCambioEnAvisoDePago(residentes);
       }

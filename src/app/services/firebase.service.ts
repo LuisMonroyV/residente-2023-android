@@ -271,14 +271,14 @@ export class FirebaseService {
         await result.ref.delete();
       });
     });
-    // console.log('borrando usuario de Auth: ');
-    // (await this.auth.currentUser).delete()
-    // .then( () => {
-    //   console.log('auth - usuario eliminado correctamente');
-    // })
-    // .catch( err => {
-    //   console.log('auth - Error al eliminar usuario: ', err);
-    // });
+    console.log('borrando usuario de Auth: ');
+    (await this.auth.currentUser).delete()
+    .then( () => {
+      console.log('auth - usuario eliminado correctamente');
+    })
+    .catch( err => {
+      console.log('auth - Error al eliminar usuario: ', err);
+    });
   }
   getAdministradores() {
     return this.db.collection<Persona>('persona', ref => ref.where('esAdmin', '==', true)).get();
