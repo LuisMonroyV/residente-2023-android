@@ -13,13 +13,13 @@ import * as moment from 'moment';
   styleUrls: ['./modal-aviso-de-pago.component.scss'],
 })
 export class ModalAvisoDePagoComponent implements OnInit {
-  totalDeuda = 0;
-  totalAviso = 0;
+  fechaTransf = moment().toISOString();
   nuevoAvisoDePago: AvisoDePago = {
     estadoAviso: '0-Pendiente',
     fechaAprobacion: null,
     fechaAviso: null,
     fechaRechazo: null,
+    fechaTransferencia: null,
     idAvisoPago: '',
     idDireccion: this.fbSrvc.parametros.codigoDir,
     mesesPagados: [],
@@ -29,6 +29,8 @@ export class ModalAvisoDePagoComponent implements OnInit {
     revisor: '',
     transfiere: ''
   };
+  totalDeuda = 0;
+  totalAviso = 0;
 
   constructor(
               private cam: Camera,
@@ -94,6 +96,7 @@ export class ModalAvisoDePagoComponent implements OnInit {
     if (this.validarPagos()) {
       console.log('%cguardarAvisoDePago()', 'color: #007acc;');
       this.nuevoAvisoDePago.fechaAviso = moment().toDate();
+      this.nuevoAvisoDePago.fechaTransferencia = moment(this.fechaTransf).toDate();
       this.nuevoAvisoDePago.montoPago = this.totalAviso;
       console.log('%cthis.nuevoAvisoDePago', 'color: #007acc;', this.nuevoAvisoDePago);
       this.modalCtrl.dismiss({ guardar: 'SI', aviso: this.nuevoAvisoDePago });
@@ -102,8 +105,13 @@ export class ModalAvisoDePagoComponent implements OnInit {
     }
   }
   ngOnInit() {
+    this.totalDeuda = 0;
+    this.totalAviso = 0;
+    this.nuevoAvisoDePago.mesesPagados = [];
+
     this.fbSrvc.misMesesImpagos.forEach(element => {
       this.totalDeuda += element.monto;
+      element.documento = '';
     });
     // orden cronológico
     this.fbSrvc.misMesesImpagos = this.fbSrvc.misMesesImpagos.sort((a,b) => {

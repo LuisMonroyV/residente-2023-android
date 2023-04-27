@@ -39,7 +39,7 @@ export class ContrasenaPage implements OnInit {
       this.passInput.setFocus();
       this.getAut.onAuthStateChanged( aut => {
         console.log(`getAut.onAuthStateChanged ${aut.email}...`);
-        // this.fbSrvc.getParametrosFB();
+        this.fbSrvc.getParametrosFB();
         this.fbSrvc.loading(`Ingresando...`);
         this.fbSrvc.getPersonaxId(aut.uid)
         .subscribe( per => {

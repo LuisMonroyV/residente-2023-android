@@ -90,7 +90,7 @@
         </ion-item>
         <div class="ion-padding" style="margin-top: 10px;" color="light">
           <ion-label color="primary" position="stacked">Nombre de quien transfiere: </ion-label>
-          <ion-text color="danger"> (campo obligatorio)</ion-text>
+          <ion-text *ngIf="!nuevoAvisoDePago.transfiere" color="danger"> (dato obligatorio)</ion-text>
           <ion-input placeholder="Quien realiza la transferencia"
                      [(ngModel)]="nuevoAvisoDePago.transfiere"
                      name="transfiere"
@@ -98,6 +98,23 @@
                      required
                      >
           </ion-input>
+        </div>
+        <div class="ion-padding" color="light">
+          <ion-label color="primary" position="stacked">Fecha de la transferencia: </ion-label>
+          <ion-badge *ngIf="fechaTransf" color="success" mode="ios"> {{fechaTransf | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-badge>
+          <ion-datetime 
+                        displayFormat="DD MMM YYYY" 
+                        first-day-of-week="1"
+                        mode="ios"
+                        monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
+                        name="fechaTransferencia"
+                        [(ngModel)]="fechaTransf"
+                        pickerFormat="DD MMM YYYY"
+                        presentation="date"
+                        required
+                        size="cover"
+                        >
+          </ion-datetime>
         </div>
         <div class="ion-padding" color="light">
           <ion-label color="primary" position="stacked">Observaciones: </ion-label>
@@ -108,18 +125,17 @@
           </ion-textarea>  
         </div>
       </ion-list>  
-      <div class="ion-text-center" style="margin-top: 10px;">
+      <div class="ion-text-center" style="margin-top: 10px; margin-bottom: 20px;">
         <ion-label>
           <ion-badge color="warning" mode="ios" style="font-size: large;">
             Total Aviso: ${{totalAviso | number : '1.0-0'}}
           </ion-badge>
         </ion-label>
       </div> 
-      <div class="ion-text-center" style="padding-left: 10%; padding-bottom: 20px;">
+      <div class="ion-text-center" style="padding-left: 10%; padding-right: 10%; padding-bottom: 50px;">
         <ion-button type="submit"
                   expand="block" 
                   [disabled]="!formAviso.valid || totalAviso === 0"
-                  style="width: 90%;"
                   >
           Enviar Aviso de Pago
         </ion-button>

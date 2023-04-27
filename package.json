@@ -1,6 +1,6 @@
 {
   "name": "residente2023-android",
-  "version": "1.4.5",
+  "version": "1.4.7",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -33,6 +33,7 @@
     "@awesome-cordova-plugins/social-sharing": "^6.2.0",
     "@awesome-cordova-plugins/status-bar": "^6.2.0",
     "@ionic/angular": "^6.0.9",
+    "@ionic/cli": "^7.0.1",
     "@ionic/cordova-builders": "^6.0.0",
     "@ionic/storage-angular": "^3.0.6",
     "@swimlane/ngx-charts": "^20.1.0",

@@ -104,6 +104,7 @@
               </ion-card-header>
               <ion-card-content *ngIf="avisoP.estadoAviso === '0-Pendiente'" >
                 <p><ion-text color="primary"> Transfiere: </ion-text>{{ avisoP.transfiere }}</p>
+                <p><ion-text color="primary"> Fecha Transferencia: </ion-text>{{ avisoP.fechaTransferencia | fechaCorta : 'DD-MM-YYYY' : '' }}</p>
                 <p><ion-text color="primary"> Obs. del residente: </ion-text>{{ avisoP.obsResidente ?  avisoP.obsResidente : 'Sin observaciones.'}}</p>
               </ion-card-content>
             </ion-card>
