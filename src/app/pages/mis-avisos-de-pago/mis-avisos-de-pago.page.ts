@@ -26,27 +26,27 @@ export class MisAvisosDePagoPage implements OnInit {
               private pushSrvc: PushService,
              ) { }
   aprobar( aviso: AvisoDePago) {
-    console.log('aprobar()');
-    this.modalMotivo('aprobar')
-    .then( () => {
-      if (this.guardar) {
-        aviso.estadoAviso = '1-Aprobado';
-        aviso.fechaAprobacion = moment().toDate();
-        aviso.revisor = `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`;
-        aviso.obsRevisor = this.motivo;
-        aviso.revisor = `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`;
-        this.pagarPorAviso(aviso);
-        this.fbSrvc.putAvisoDePago(aviso);
-        this.pushSrvc.actualizarAvisoDePagos(aviso);
-        this.fbSrvc.putAvisoDePago(aviso);
-        this.avisarResidentes(aviso);
-        this.pushSrvc.actualizarAvisoDePagos(aviso);
-        this.listaP.closeSlidingItems();
-      } else {
-        this.fbSrvc.mostrarMensaje('Aprobación cancelada.');
-        this.listaP.closeSlidingItems();
-      }
-    });
+    if (this.fbSrvc.persona.esTesorero) {
+      this.modalMotivo('aprobar')
+      .then( () => {
+        if (this.guardar) {
+          aviso.estadoAviso = '1-Aprobado';
+          aviso.fechaAprobacion = moment().toDate();
+          aviso.revisor = `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`;
+          aviso.obsRevisor = this.motivo;
+          this.pagarPorAviso(aviso);
+          this.fbSrvc.putAvisoDePago(aviso);
+          this.avisarResidentes(aviso);
+          this.listaP.closeSlidingItems();
+        } else {
+          this.fbSrvc.mostrarMensaje('Aprobación cancelada.');
+          this.listaP.closeSlidingItems();
+        }
+      });
+    } else {
+      this.fbSrvc.mostrarMensaje('No puedes aprobar avisos de pago.');
+      this.listaP.closeSlidingItems();
+    }
   }
   avisarAdmins() {
     this.fbSrvc.getAdministradores()
@@ -99,7 +99,7 @@ export class MisAvisosDePagoPage implements OnInit {
       this.fbSrvc.mostrarMensaje('Aviso de Pago enviado correctamente.');
       this.fbSrvc.misMesesImpagos = [];
       this.avisarAdmins();
-      this.pushSrvc.respaldarAvisoDePagos(aviso);
+      // this.pushSrvc.respaldarAvisoDePagos(aviso);
     })
     .catch( err => {
       this.fbSrvc.mostrarMensaje('No se pudo guardar el aviso de pago. Error: ', err);
@@ -193,6 +193,8 @@ export class MisAvisosDePagoPage implements OnInit {
           this.fbSrvc.mostrarMensaje('No se pudo actualizar el pago.');
         });
       });
+    } else {
+      this.fbSrvc.mostrarMensaje('No puedes aprobar avisos de pago.');
     }
   }
   rebajarPendientes(avisos: AvisoDePago[]) {
@@ -211,26 +213,29 @@ export class MisAvisosDePagoPage implements OnInit {
     });
   }
   rechazar( aviso: AvisoDePago) {
-    console.log('rechazar()');
-    this.modalMotivo('rechazar')
-    .then( () => {
-      if (this.motivo !== '') {
-        console.log('Motivo de rechazo:', this.motivo);
-        aviso.estadoAviso = '-1-Rechazado';
-        aviso.fechaRechazo = moment().toDate();
-        aviso.obsRevisor = this.motivo;
-        aviso.revisor = `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`;
-        this.fbSrvc.putAvisoDePago(aviso);
-        this.avisarResidentes(aviso);
-        this.pushSrvc.actualizarAvisoDePagos(aviso);
-      } else {
-        this.fbSrvc.mostrarMensaje('Debe indicar el motivo de rechazo.');
-        this.listaP.closeSlidingItems();
-      }
-    })
-    .catch( err => {
-      console.log('Error al rechazar aviso de pago: ', err);
-    });
+    if (this.fbSrvc.persona.esTesorero) {
+      this.modalMotivo('rechazar')
+      .then( () => {
+        if (this.motivo !== '') {
+          console.log('Motivo de rechazo:', this.motivo);
+          aviso.estadoAviso = '-1-Rechazado';
+          aviso.fechaRechazo = moment().toDate();
+          aviso.obsRevisor = this.motivo;
+          aviso.revisor = `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`;
+          this.fbSrvc.putAvisoDePago(aviso);
+          this.avisarResidentes(aviso);
+        } else {
+          this.fbSrvc.mostrarMensaje('Debe indicar el motivo de rechazo.');
+          this.listaP.closeSlidingItems();
+        }
+      })
+      .catch( err => {
+        console.log('Error al rechazar aviso de pago: ', err);
+      });
+    } else {
+      this.fbSrvc.mostrarMensaje('No puedes rechazar avisos de pago.');
+      this.listaP.closeSlidingItems();
+    }
   }
   segmentChanged($event) {
     console.log('seccion: ', $event.detail.value);

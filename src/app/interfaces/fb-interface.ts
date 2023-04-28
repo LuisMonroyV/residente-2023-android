@@ -23,23 +23,23 @@ export interface AvisoDePago {
     revisor: string;
     transfiere: string;
 }
-export interface AvisoDePagoLM {
-    id: number | null;
-    estadoAviso: string;
-    fechaAprobacion: string;
-    fechaAviso: string;
-    fechaRechazo: string;
-    idAvisoPago: string;
-    idDireccion: string;
-    mesesPagados: string;
-    montoPago: string;
-    obsResidente: string;
-    obsRevisor: string;
-    revisor: string;
-}
-export interface ArrAvisoDePagoLM {
-    records: AvisoDePagoLM[];
-}
+// export interface AvisoDePagoLM {
+//     id: number | null;
+//     estadoAviso: string;
+//     fechaAprobacion: string;
+//     fechaAviso: string;
+//     fechaRechazo: string;
+//     idAvisoPago: string;
+//     idDireccion: string;
+//     mesesPagados: string;
+//     montoPago: string;
+//     obsResidente: string;
+//     obsRevisor: string;
+//     revisor: string;
+// }
+// export interface ArrAvisoDePagoLM {
+//     records: AvisoDePagoLM[];
+// }
 export interface Calle {
     descCalle: string;
     numeracion: [];
