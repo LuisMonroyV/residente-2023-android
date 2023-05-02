@@ -100,6 +100,23 @@
           </ion-input>
         </div>
         <div class="ion-padding" color="light">
+          <ion-label color="primary" position="stacked">Fecha de la transferencia: </ion-label>
+          <ion-badge *ngIf="fechaTransf" color="success" mode="ios"> {{fechaTransf | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-badge>
+          <ion-datetime 
+                        displayFormat="DD MMM YYYY" 
+                        first-day-of-week="1"
+                        mode="ios"
+                        monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
+                        name="fechaTransferencia"
+                        [(ngModel)]="fechaTransf"
+                        pickerFormat="DD MMM YYYY"
+                        presentation="date"
+                        required
+                        size="cover"
+                        >
+          </ion-datetime>
+        </div>
+        <div class="ion-padding" color="light">
           <ion-label color="primary" position="stacked">Observaciones: </ion-label>
           <ion-textarea placeholder="Puedes escribir aquí alguna observación al encargado de revisar tu aviso de pago."
                         [(ngModel)]="nuevoAvisoDePago.obsResidente"

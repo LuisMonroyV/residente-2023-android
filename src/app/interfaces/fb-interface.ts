@@ -14,6 +14,7 @@ export interface AvisoDePago {
     fechaAprobacion: Date;
     fechaAviso: Date;
     fechaRechazo: Date;
+    fechaTransferencia: Date;
     idAvisoPago: string;
     idDireccion: string;
     mesesPagados: MesImpago[];

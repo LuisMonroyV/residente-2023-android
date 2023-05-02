@@ -39,7 +39,7 @@ export class ContrasenaPage implements OnInit {
       this.passInput.setFocus();
       this.getAut.onAuthStateChanged( aut => {
         console.log(`getAut.onAuthStateChanged ${aut.email}...`);
-        // this.fbSrvc.getParametrosFB();
+        this.fbSrvc.getParametrosFB();
         this.fbSrvc.loading(`Ingresando...`);
         this.fbSrvc.getPersonaxId(aut.uid)
         .subscribe( per => {
@@ -47,8 +47,8 @@ export class ContrasenaPage implements OnInit {
           if (per && !per.empty) {
             this.iconoCandado = 'lock-open-sharp';
             this.fbSrvc.persona = per.docs[0].data();
-            console.log('authId: ', aut.uid);
-            console.log('persona: ', per);
+            // console.log('authId: ', aut.uid);
+            // console.log('persona: ', per);
             this.fbSrvc.parametros.identificado = true;
             this.fbSrvc.parametros.verificado = aut.emailVerified;
             this.fbSrvc.parametros.validado = this.fbSrvc.persona.adminOk;

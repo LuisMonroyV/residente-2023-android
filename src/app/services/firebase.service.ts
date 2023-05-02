@@ -447,68 +447,49 @@ export class FirebaseService {
                                                        .valueChanges();
   }
   getParametrosFB() {
-    console.log(`getParametrosFB(${moment().format('HH:mm:ss')})`);
-    this.db.collection('parametros').doc('maximos')
+    console.log('%cfirebase.service.ts getParametrosFB', 'color: #007acc;', moment().format('HH:mm:ss'));
+    this.db.collection('parametros')
     .get()
-    .subscribe( max => {
-      this.parametrosFB.appVersionAndroidStr = max.get('appVersionAndroidStr');
-      this.parametrosFB.appVersionIosStr = max.get('appVersionIosStr');
-      this.parametrosFB.maxAnoPagos = max.get('maxAnoPagos'); // 2021
-      this.parametrosFB.maxDiasAvisos = max.get('maxDiasAvisos');
-      this.parametrosFB.maxDiasAvisosDePago = max.get('maxDiasAvisosDePago');
-      this.parametrosFB.maxDiasNoticias = max.get('maxDiasNoticias');
-      this.parametrosFB.maxEstadisticas = max.get('maxEstadisticas');
-      this.parametrosFB.maxNumAccesos = max.get('maxNumAccesos');
-      this.parametrosFB.maxNumEmergencias = max.get('maxNumEmergencias');
-      this.parametrosFB.maxNumNoticias = max.get('maxNumNoticias');
-      this.parametrosFB.maxNumRondas = max.get('maxNumRondas');
-      console.log('parametrosFB Máximos: ', this.parametrosFB);
-      this.appRef.tick();
-    });
-    this.db.collection('parametros').doc('numeros')
-    .get()
-    .subscribe( num => {
-      this.parametrosFB.cuadrante = num.get('cuadrante');
-      this.parametrosFB.guardia = num.get('guardia');
-      this.parametrosFB.seguridadComunal = num.get('seguridadComunal');
-      this.parametrosFB.emergenciaComunal = num.get('emergenciaComunal');
-      console.log('parametrosFB Números: ', this.parametrosFB);
-      this.appRef.tick();
-    });
-    this.db.collection('parametros').doc('urls')
-    .get()
-    .subscribe( url => {
-      this.parametrosFB.urlAppAndroid = url.get('urlAppAndroid');
-      this.parametrosFB.urlAppIos = url.get('urlAppIos');
-      console.log('parametrosFB Urls: ', this.parametrosFB);
-      this.appRef.tick();
-    });
-    this.db.collection('parametros').doc('activaciones')
-    .get()
-    .subscribe( act => {
-      this.parametrosFB.llamadaReal = act.get('llamadaReal');
-      this.parametrosFB.moduloAgenda = act.get('moduloAgenda');
+    .subscribe( params => {
+      // ACTIVACIONES
+      this.parametrosFB.llamadaReal = params.docs[0].get('llamadaReal');
+      this.parametrosFB.moduloAgenda = params.docs[0].get('moduloAgenda');
       this.appPages[1].visible = this.parametrosFB.moduloAgenda;
-      this.parametrosFB.moduloAvisoVisitas = act.get('moduloAvisoVisitas');
+      this.parametrosFB.moduloAvisoVisitas = params.docs[0].get('moduloAvisoVisitas');
       this.appPages[2].visible = this.parametrosFB.moduloAvisoVisitas;
-      this.parametrosFB.pruebasTienda = act.get('pruebasTienda');
-      // this.appPages[3].visible = (!this.parametrosFB.pruebasTienda || !this.persona.esAdmin);
-      this.parametrosFB.moduloEstadisticas = act.get('moduloEstadisticas');
+      this.parametrosFB.pruebasTienda = params.docs[0].get('pruebasTienda');
+      this.appPages[3].visible = (!this.parametrosFB.pruebasTienda || !this.persona.esAdmin);
+      this.parametrosFB.moduloEstadisticas = params.docs[0].get('moduloEstadisticas');
       this.appPages[4].visible = this.parametrosFB.moduloEstadisticas;
-      this.parametrosFB.moduloMisDatos = act.get('moduloMisDatos');
+      this.parametrosFB.moduloMisDatos = params.docs[0].get('moduloMisDatos');
       this.appPages[5].visible = this.parametrosFB.moduloMisDatos;
-      this.parametrosFB.moduloPagos = act.get('moduloPagos');
+      this.parametrosFB.moduloPagos = params.docs[0].get('moduloPagos');
       this.appPages[6].visible = this.parametrosFB.moduloPagos;
-      console.log('parametrosFB Activaciones: ', this.parametrosFB);
-      this.appRef.tick();
-    });
-    this.db.collection('parametros').doc('fechas')
-    .get()
-    .subscribe( fec => {
-      this.parametrosFB.fechaCambioCuota = fec.get('fechaCambioCuota').toDate();
-      this.parametrosFB.montoCuotaActual = fec.get('valorCuotaActual');
-      this.parametrosFB.montoCuotaAnterior = fec.get('valorCuotaAnterior');
-      console.log('parametrosFB Fechas: ', this.parametrosFB);
+      // FECHAS
+      this.parametrosFB.fechaCambioCuota = params.docs[1].get('fechaCambioCuota').toDate();
+      this.parametrosFB.montoCuotaActual = params.docs[1].get('valorCuotaActual');
+      this.parametrosFB.montoCuotaAnterior = params.docs[1].get('valorCuotaAnterior');
+      // MAXIMOS
+      this.parametrosFB.appVersionAndroidStr = params.docs[2].get('appVersionAndroidStr');
+      this.parametrosFB.appVersionIosStr = params.docs[2].get('appVersionIosStr');
+      this.parametrosFB.maxAnoPagos = params.docs[2].get('maxAnoPagos'); // 2021
+      this.parametrosFB.maxDiasAvisos = params.docs[2].get('maxDiasAvisos');
+      this.parametrosFB.maxDiasAvisosDePago = params.docs[2].get('maxDiasAvisosDePago');
+      this.parametrosFB.maxDiasNoticias = params.docs[2].get('maxDiasNoticias');
+      this.parametrosFB.maxEstadisticas = params.docs[2].get('maxEstadisticas');
+      this.parametrosFB.maxNumAccesos = params.docs[2].get('maxNumAccesos');
+      this.parametrosFB.maxNumEmergencias = params.docs[2].get('maxNumEmergencias');
+      this.parametrosFB.maxNumNoticias = params.docs[2].get('maxNumNoticias');
+      this.parametrosFB.maxNumRondas = params.docs[2].get('maxNumRondas');
+      // NUMEROS
+      this.parametrosFB.cuadrante = params.docs[3].get('cuadrante');
+      this.parametrosFB.guardia = params.docs[3].get('guardia');
+      this.parametrosFB.seguridadComunal = params.docs[3].get('seguridadComunal');
+      this.parametrosFB.emergenciaComunal = params.docs[3].get('emergenciaComunal');
+      // URLS
+      this.parametrosFB.urlAppAndroid = params.docs[4].get('urlAppAndroid');
+      this.parametrosFB.urlAppIos = params.docs[4].get('urlAppIos');
+      console.log('%cfirebase.service.ts getParametrosFB', 'color: #007acc;', this.parametrosFB);
       this.appRef.tick();
     });
   }
@@ -641,7 +622,7 @@ export class FirebaseService {
     console.log('Loading dismissed!');
   }
   loginFirebase(email: string, pass?: string) {  // Posteo en FireBase
-    console.log(`loginFirebase(email: ${email}, pass?: ${pass})`);
+    // console.log(`loginFirebase(email: ${email}, pass?: ${pass})`);
     return this.auth.signInWithEmailAndPassword(email, pass);
   }
   logOutFirebase() {
