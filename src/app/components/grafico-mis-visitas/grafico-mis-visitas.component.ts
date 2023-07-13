@@ -33,8 +33,8 @@ export class GraficoMisVisitasComponent implements OnInit {
   single: any[] = [];
   xAxisLabel = '';
   showYAxisLabel = true;
-  yAxisLabel = 'Visitas';
-  view: any[] = [300, 350];
+  yAxisLabel = '# Visitas';
+  // view: any[] = [300, 350];
 
   // eslint-disable-next-line max-len
   colores = ['nightLights','vivid', 'natural', 'cool', 'fire', 'solar', 'air', 'aqua', 'flame', 'ocean', 'forest', 'horizon', 'neons', 'picnic', 'night'];
@@ -76,14 +76,19 @@ export class GraficoMisVisitasComponent implements OnInit {
                   name: 'Mis Avisos',
                   value: this.fbSrvc.estadisticas[pos].calles[posCalle].direcciones[posNumeracion].visitasAvisadas,
                 };
-            const obj3 = {
-                  name: 'Minutos de Guardia',
+                const obj3 = {
+                  name: '% de Avisos',
+                  value: Math.round((obj2.value / (obj1.value || 1)) * 100).toFixed(0),
+                };
+            const obj4 = {
+                  name: 'Mins. de Guardia',
                   // eslint-disable-next-line max-len
-                  value: Math.round(this.fbSrvc.estadisticas[pos].calles[posCalle].direcciones[posNumeracion].minutosInvertidos / 60).toFixed(2),
+                  value: Math.round(this.fbSrvc.estadisticas[pos].calles[posCalle].direcciones[posNumeracion].minutosInvertidos / 60).toFixed(0),
                 };
             this.single.push(obj1);
             this.single.push(obj2);
             this.single.push(obj3);
+            this.single.push(obj4);
           }
         }
       }

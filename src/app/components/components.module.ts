@@ -16,6 +16,7 @@ import { ModalAvisoComponent } from './modal-aviso/modal-aviso.component';
 import { ModalAvisoDePagoComponent } from './modal-aviso-de-pago/modal-aviso-de-pago.component';
 import { ModalQrComponent } from './modal-qr/modal-qr.component';
 import { ModalRechazoComponent } from './modal-rechazo/modal-rechazo.component';
+import { ModalVersionAppComponent } from './modal-version-app/modal-version-app.component';
 import { ModalVisitasComponent } from './modal-visitas/modal-visitas.component';
 import { NgModule } from '@angular/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
@@ -42,6 +43,7 @@ import { VersionAppPipe } from '../pipes/version-app.pipe';
     ModalAvisoDePagoComponent,
     ModalQrComponent,
     ModalRechazoComponent,
+    ModalVersionAppComponent,
     ModalVisitasComponent,
     NoticiasComponent,
     RondasComponent,
@@ -52,6 +54,7 @@ import { VersionAppPipe } from '../pipes/version-app.pipe';
     ModalAvisoDePagoComponent,
     ModalQrComponent,
     ModalRechazoComponent,
+    ModalVersionAppComponent,
     ModalVisitasComponent,
   ],
   imports: [
@@ -77,6 +80,7 @@ import { VersionAppPipe } from '../pipes/version-app.pipe';
     ModalAvisoDePagoComponent,
     ModalQrComponent,
     ModalRechazoComponent,
+    ModalVersionAppComponent,
     ModalVisitasComponent,
     NoticiasComponent,
     RondasComponent,

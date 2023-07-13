@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { IonList, ModalController } from '@ionic/angular';
 import { ModalAvisoDePagoComponent } from '../../components/modal-aviso-de-pago/modal-aviso-de-pago.component';
+import { ModalVersionAppComponent } from 'src/app/components/modal-version-app/modal-version-app.component';
 import { ModalRechazoComponent } from '../../components/modal-rechazo/modal-rechazo.component';
 import { PushService } from '../../services/push.service';
 import * as moment from 'moment';
@@ -153,23 +154,30 @@ export class MisAvisosDePagoPage implements OnInit {
     }
   }
   async nuevoAvisoPago() {
-    const modalAvisoPago = await this.modalCtrl.create({
-      component: ModalAvisoDePagoComponent,
-    });
-    await modalAvisoPago.present();
-    const {data} = await modalAvisoPago.onDidDismiss();
-    if (data) {
-      if (data.guardar === 'SI') {
-        // ahora saco los pagos no seleccionados del nuevo avisoz
-        for (let index = 0; index < data.aviso.mesesPagados.length; index++) {
-          const element = data.aviso.mesesPagados[index];
-          if (element.documento.length === 0) {
-            data.aviso.mesesPagados.splice(index, 1);
-            index = 0;
+    if (!this.fbSrvc.actualizarAppObligatorio) {
+      const modalAvisoPago = await this.modalCtrl.create({
+        component: ModalAvisoDePagoComponent,
+      });
+      await modalAvisoPago.present();
+      const {data} = await modalAvisoPago.onDidDismiss();
+      if (data) {
+        if (data.guardar === 'SI') {
+          // ahora saco los pagos no seleccionados del nuevo avisoz
+          for (let index = 0; index < data.aviso.mesesPagados.length; index++) {
+            const element = data.aviso.mesesPagados[index];
+            if (element.documento.length === 0) {
+              data.aviso.mesesPagados.splice(index, 1);
+              index = 0;
+            }
           }
+          this.guardarAvisoPago(data.aviso);
         }
-        this.guardarAvisoPago(data.aviso);
       }
+    } else {
+      const modalVersionApp = await this.modalCtrl.create({
+        component: ModalVersionAppComponent,
+      });
+      await modalVersionApp.present();
     }
   }
   pagarPorAviso(aviso: AvisoDePago) {
@@ -216,7 +224,7 @@ export class MisAvisosDePagoPage implements OnInit {
     if (this.fbSrvc.persona.esTesorero) {
       this.modalMotivo('rechazar')
       .then( () => {
-        if (this.motivo !== '') {
+        if (this.guardar) {
           console.log('Motivo de rechazo:', this.motivo);
           aviso.estadoAviso = '-1-Rechazado';
           aviso.fechaRechazo = moment().toDate();

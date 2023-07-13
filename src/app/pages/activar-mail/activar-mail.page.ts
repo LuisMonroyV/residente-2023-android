@@ -21,6 +21,13 @@ export class ActivarMailPage implements OnInit {
   constructor(public fbSrvc: FirebaseService,
               private router: Router) {
   }
+  private activarUsuario() {
+    clearInterval(this.inter);
+    this.fbSrvc.parametros.verificado = true;
+    this.fbSrvc.parametros.validado = true;
+    this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
+    this.router.navigate(['/folder/inicio']);
+}
   checkEstadoUsuario() {
     if (moment().toDate() >= this.horaRevision || this.chequeoInicial) {
       this.fbSrvc.loginFirebase(this.fbSrvc.login.email, this.fbSrvc.login.contrasena)
@@ -61,6 +68,8 @@ export class ActivarMailPage implements OnInit {
                   this.fbSrvc.mostrarMensaje(`Usuario ${this.fbSrvc.persona.estado.substr(2, this.fbSrvc.persona.estado.length)}.`);
                   clearInterval(this.inter);
                   console.log('Verificación finalizada.');
+                } else if (per[0].emailOk && per[0].adminOk) {
+                  this.activarUsuario();
                 } else {
                   this.fbSrvc.mostrarMensaje('Seguimos esperando OK del administrador.');
                 }
@@ -74,11 +83,7 @@ export class ActivarMailPage implements OnInit {
         clearInterval(this.inter);
       });
       if (this.fbSrvc.parametros.verificado && this.fbSrvc.parametros.validado) {
-        clearInterval(this.inter);
-        this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
-        // this.fbSrvc.guardarStorage('persona', this.fbSrvc.persona);
-        this.fbSrvc.putPersona(this.fbSrvc.persona);
-        this.router.navigate(['/folder/inicio']);
+        this.activarUsuario();
       }
     } else {
       this.siguienteRevision = moment().to(this.horaRevision);

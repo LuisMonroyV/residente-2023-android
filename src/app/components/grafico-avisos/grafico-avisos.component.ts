@@ -30,7 +30,7 @@ export class GraficoAvisosComponent implements OnInit {
   single: any[] = [];
   xAxisLabel = '';
   showYAxisLabel = true;
-  yAxisLabel = 'Avisos';
+  yAxisLabel = '# Avisos';
   view: any[] = [300, 350];
 
   // eslint-disable-next-line max-len

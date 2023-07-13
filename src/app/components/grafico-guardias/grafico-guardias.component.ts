@@ -29,7 +29,7 @@ export class GraficoGuardiasComponent implements OnInit {
   single: any[] = [];
   xAxisLabel = '';
   showYAxisLabel = true;
-  yAxisLabel = 'Registros';
+  yAxisLabel = '# Registros';
   view: any[] = [300, 350];
 
   // eslint-disable-next-line max-len

@@ -20,14 +20,11 @@ let contBack = 1;
 export class AppComponent implements OnInit {
   @ViewChild('split', { static: true }) split: IonSplitPane;
   retorno: any[];
-  public selectedIndex = 0;
-  public dark = false;
   auth = getAuth();
   constructor(
               private appVersion: AppVersion,
               private audio: NativeAudio,
               public fbSrvc: FirebaseService,
-              private menu: MenuController,
               private platform: Platform,
               private router: Router,
               private storage: Storage,
@@ -172,12 +169,6 @@ export class AppComponent implements OnInit {
       console.log('sonido door Error: ', err);
     });
   }
-  cerrarSesion() {
-    this.menu.close();
-    this.fbSrvc.logOutFirebase();
-    this.limpiarParametros();
-    this.router.navigate(['login']);
-  }
   async getParametros() {
     await this.storage.get('parametros')
     .then( params => {
@@ -193,8 +184,6 @@ export class AppComponent implements OnInit {
     });
   }
   initializeApp() {
-    if (this.platform.is('android')) {console.log('%capp.component.ts line:162 Soy Android', 'color: #007acc;');}
-    if (this.platform.is('desktop')) {console.log('%capp.component.ts line:162 Soy Desktop', 'color: #007acc;');}
       this.cargarSonidos();
       this.platform.backButton.subscribeWithPriority(9999, () => {
         document.addEventListener('backbutton', (event => {
@@ -224,28 +213,17 @@ export class AppComponent implements OnInit {
           this.appVersion.getVersionNumber()
           .then( data => {
             this.fbSrvc.verAppStr = data;
-            console.log('getAppVersion(plugin):', data);
-            console.log('fbSrvc.parametrosFB.appVersionAndroidStr:', this.fbSrvc.parametrosFB.appVersionAndroidStr);
-            this.fbSrvc.actualizarApp = this.fbSrvc.parametrosFB.appVersionAndroidStr !== this.fbSrvc.verAppStr;
-            this.fbSrvc.verAppStr = this.fbSrvc.parametrosFB.appVersionAndroidStr;
-            console.log('fbSrvc.actualizarApp: ', this.fbSrvc.actualizarApp);
-            if (this.fbSrvc.actualizarApp) {
-              this.fbSrvc.lanzarSonido('sms', 1);
-            }
+            this.fbSrvc.persona.versionApp = data;
+            this.fbSrvc.putPersona(this.fbSrvc.persona);
+            this.fbSrvc.validarVersionApp(data);
           })
           .catch( err => {
             this.fbSrvc.actualizarApp = false;
-            this.fbSrvc.verAppStr = this.fbSrvc.parametrosFB.appVersionAndroidStr;
+            this.fbSrvc.verAppStr = '---';
             console.error('error getVersionNumber: ', err);
           });
         }
-      }, 5000);
-  }
-  limpiarParametros() {
-    this.fbSrvc.parametros.codigoDir = '';
-    this.fbSrvc.parametros.identificado = false;
-    this.fbSrvc.parametros.primeraVez = false;
-    this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
+      }, 15000);
   }
   async ngOnInit() {
     await this.storage.create()
@@ -255,17 +233,13 @@ export class AppComponent implements OnInit {
     .catch( err => {
       console.error('%capp.component.ts storage.create error', 'color: white; background-color: #007acc;', err);
     });
-    const path = window.location.pathname.split('folder/')[1];
-    if (path !== undefined) {
-      this.selectedIndex = this.fbSrvc.appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
-    }
     this.getParametros()
     .then( () => {
       if ( !this.fbSrvc.parametros.primeraVez ) {
         onAuthStateChanged(this.auth, user => {
           if (user) {
             console.log('[onAuthStateChanged] Cambio en estado del usuario.', user.email);
-            if (!this.fbSrvc.escuchandoPersona) {
+            // if (!this.fbSrvc.escuchandoPersona) {
               const listener = this.fbSrvc.getPersonaxAuthUid(user.uid)
               .subscribe( per => {
                 console.log('[getPersonaxAuthUid] Cambio en persona.', per);
@@ -284,10 +258,13 @@ export class AppComponent implements OnInit {
                     this.fbSrvc.getCalles();
                     this.fbSrvc.appPages[3].visible = (!this.fbSrvc.parametrosFB.pruebasTienda || !this.fbSrvc.persona.esAdmin);
                   }
+                  if (!per[0].emailOk || !per[0].adminOk) {
+                    this.redirigir();
+                  }
                 }
                 listener.unsubscribe();
               });
-            }
+            // }
           }
         });
       }
@@ -295,11 +272,11 @@ export class AppComponent implements OnInit {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     document.body.classList.toggle('dark', prefersDark.matches);
     console.log('Preferencia dark mode: ', prefersDark.matches );
-    this.dark = prefersDark.matches;
+    this.fbSrvc.dark = prefersDark.matches;
     // Listen for changes to the prefers-color-scheme media query
     prefersDark.addEventListener('change', mediaQuery => {
-      this.dark = mediaQuery.matches;
-      this.toggleDarkTheme(mediaQuery.matches);
+      this.fbSrvc.dark = mediaQuery.matches;
+      this.fbSrvc.toggleDarkTheme(mediaQuery.matches);
     });
 
   }
@@ -325,10 +302,5 @@ export class AppComponent implements OnInit {
     } else {
       console.log('Ignorando redirección.');
     }
-  }
-  toggleDarkTheme(estado: boolean) {
-    console.log('cambiar darkMode a:', estado);
-    document.body.classList.toggle('dark', estado);
-    this.dark = estado;
   }
 }

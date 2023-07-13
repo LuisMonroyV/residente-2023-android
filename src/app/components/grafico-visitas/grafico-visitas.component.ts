@@ -17,9 +17,6 @@ export class GraficoVisitasComponent implements OnInit {
     right: 'right',
     below: 'below'
   };
-  // colorScheme = {
-  //   domain: ['#fc1303', '#fcfc03', '#0ffc03', '#03fcf4', '#0345fc', '#e705f7', '#f77d02']
-  // };
   legend = true;
   legendPosition = this.legendPos.below;
   explodeSlices = false;
@@ -36,7 +33,7 @@ export class GraficoVisitasComponent implements OnInit {
   single: any[] = [];
   xAxisLabel = '';
   showYAxisLabel = true;
-  yAxisLabel = 'Visitas';
+  yAxisLabel = '# Visitas';
   view: any[] = [300, 350];
 
   // eslint-disable-next-line max-len

@@ -1,4 +1,4 @@
-<ion-header class="ion-no-border" [translucent]="true" [ngClass]="{'mt-40': fbSrvc.esAndroid}">
+<ion-header class="ion-no-border mt-40" [translucent]="true">
   <ion-toolbar>
     <ion-title>Mi dirección en QR</ion-title>
     <ion-buttons slot="end">
@@ -12,7 +12,7 @@
 </ion-header>
 <ion-content>
   <div class="ion-text-center" class="ion-padding">
-      <small> Este código QR, le indica a la guardia que la visita se dirige a su domicilio, si además usted tiene avisada la visita, el registro será aún más expedito.(Ideal para compartir con sus invitados)</small>
+      <span class="tam-14"> Este código QR, le indica a la guardia que la visita se dirige a su domicilio, si además usted tiene avisada la visita, el registro será aún más expedito.(Ideal para compartir con sus invitados)</span>
   </div>
   <div id="widget" class="codigo-qr">
     <img class="codigo-qr" [src]="qrMostrar" />

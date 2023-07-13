@@ -24,23 +24,6 @@ export interface AvisoDePago {
     revisor: string;
     transfiere: string;
 }
-// export interface AvisoDePagoLM {
-//     id: number | null;
-//     estadoAviso: string;
-//     fechaAprobacion: string;
-//     fechaAviso: string;
-//     fechaRechazo: string;
-//     idAvisoPago: string;
-//     idDireccion: string;
-//     mesesPagados: string;
-//     montoPago: string;
-//     obsResidente: string;
-//     obsRevisor: string;
-//     revisor: string;
-// }
-// export interface ArrAvisoDePagoLM {
-//     records: AvisoDePagoLM[];
-// }
 export interface Calle {
     descCalle: string;
     numeracion: [];
@@ -92,6 +75,13 @@ export interface EstadisticasGuardia {
     registrosTotales: number;
     registrosAvisados: number;
 }
+export interface Gasto {
+    fecha: Date;
+    categoria: string;
+    monto: number;
+    destinatario: string;
+    obs: string;
+}
 export interface MesImpago {
     fecha: Date;
     mesAno: string;
@@ -138,6 +128,8 @@ export interface Parametros {
     maxNumEmergencias: number;
     maxNumNoticias: number;
     maxNumRondas: number;
+    minAppVersionAndroid: string;
+    minAppVersionIos: string;
     moduloAgenda: boolean;
     moduloAvisoVisitas: boolean;
     moduloEstadisticas: boolean;
@@ -182,6 +174,7 @@ export interface Persona {
     numero: string;
     telefono: string;
     obs: string;
+    versionApp: string;
 }
 export interface Qr {
     calle: string;

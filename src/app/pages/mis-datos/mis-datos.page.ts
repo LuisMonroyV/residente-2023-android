@@ -41,14 +41,17 @@ export class MisDatosPage implements OnInit {
     this.guardando = true;
     this.fbSrvc.putPersona(this.fbSrvc.persona);
     this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
-    this.fbSrvc.postVisitas(this.misVisitas)
-    .then( () => {
-      console.log('Visitas actualizadas.');
-      console.log(this.misVisitas);
-    })
-    .catch( err => {
-      console.error('Error al actualizar visitas');
-    });
+    if (this.misVisitas.idDireccion.length > 0 && 
+      ((this.misVisitas.autorizados.length + this.misVisitas.rechazados.length) > 0)) {
+      this.fbSrvc.postVisitas(this.misVisitas)
+        .then( () => {
+          console.log('Visitas actualizadas.');
+          console.log(this.misVisitas);
+        })
+        .catch( err => {
+          console.error('Error al actualizar visitas');
+        });
+      }
     this.guardando = false;
   }
   eliminarVisitaAutorizada( pos: number) {

@@ -1,0 +1,32 @@
+<ion-header no-border translucent="true" class="mt-40">
+  <ion-toolbar>
+    <ion-title>Actualizar App</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()"
+                  color="danger"
+                  >
+        Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-grid fixed class="ion-text-center">
+    <ion-row>
+      <ion-col size="12">
+        <ion-card-content>
+          <img src="assets/images/actualizarApp.png">
+          Debes actualizar tu app para poder usar esta funcionalidad...
+        </ion-card-content>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12">
+        <a [href]="fbSrvc.parametrosFB.urlAppAndroid">
+          <ion-chip color="primary">ACTUALIZAR</ion-chip>
+        </a>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+  

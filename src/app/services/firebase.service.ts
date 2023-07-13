@@ -17,14 +17,15 @@ import * as moment from 'moment';
 export class FirebaseService {
   auth = firebase.auth();
   actualizarApp = false;
+  actualizarAppObligatorio = false;
   alertaEnviada = false;
   appPages = [
-    {
-      title: 'Inicio',
-      url: '/folder/Inicio',
-      icon: 'home',
-      visible: true
-    },
+    // {
+    //   title: 'Inicio',
+    //   url: '/folder/Inicio',
+    //   icon: 'home',
+    //   visible: true
+    // },
     {
       title: 'Agenda',
       url: '/agenda',
@@ -65,6 +66,7 @@ export class FirebaseService {
   calles: Calle[] = [];
   cargando = false;
   casosEspeciales: CasoEspecial[];
+  dark = false;
   enviado = false;
   esAndroid = false;
   esIos = false;
@@ -119,6 +121,8 @@ export class FirebaseService {
     maxNumEmergencias: 5,
     maxNumNoticias: 10,
     maxNumRondas: 5,
+    minAppVersionAndroid: '',
+    minAppVersionIos: '',
     moduloAgenda: true,
     moduloAvisoVisitas: true,
     moduloEstadisticas: true,
@@ -153,6 +157,7 @@ export class FirebaseService {
       numero: '',
       obs: '',
       telefono: '',
+      versionApp: ''
   };
   redirigido = false;
   registroAvisado = false;
@@ -181,7 +186,6 @@ export class FirebaseService {
   }
 
   creaCodigo() {
-    console.log('creaCodigo()');
     let miCodDir = '';
     if (this.persona.calle) {
       miCodDir = `${this.persona.calle}-${this.persona.numero}`;
@@ -454,17 +458,17 @@ export class FirebaseService {
       // ACTIVACIONES
       this.parametrosFB.llamadaReal = params.docs[0].get('llamadaReal');
       this.parametrosFB.moduloAgenda = params.docs[0].get('moduloAgenda');
-      this.appPages[1].visible = this.parametrosFB.moduloAgenda;
+      this.appPages[0].visible = this.parametrosFB.moduloAgenda;
       this.parametrosFB.moduloAvisoVisitas = params.docs[0].get('moduloAvisoVisitas');
-      this.appPages[2].visible = this.parametrosFB.moduloAvisoVisitas;
+      this.appPages[1].visible = this.parametrosFB.moduloAvisoVisitas;
       this.parametrosFB.pruebasTienda = params.docs[0].get('pruebasTienda');
-      this.appPages[3].visible = (!this.parametrosFB.pruebasTienda || !this.persona.esAdmin);
+      this.appPages[2].visible = (!this.parametrosFB.pruebasTienda || !this.persona.esAdmin);
       this.parametrosFB.moduloEstadisticas = params.docs[0].get('moduloEstadisticas');
-      this.appPages[4].visible = this.parametrosFB.moduloEstadisticas;
+      this.appPages[3].visible = this.parametrosFB.moduloEstadisticas;
       this.parametrosFB.moduloMisDatos = params.docs[0].get('moduloMisDatos');
-      this.appPages[5].visible = this.parametrosFB.moduloMisDatos;
+      this.appPages[4].visible = this.parametrosFB.moduloMisDatos;
       this.parametrosFB.moduloPagos = params.docs[0].get('moduloPagos');
-      this.appPages[6].visible = this.parametrosFB.moduloPagos;
+      this.appPages[5].visible = this.parametrosFB.moduloPagos;
       // FECHAS
       this.parametrosFB.fechaCambioCuota = params.docs[1].get('fechaCambioCuota').toDate();
       this.parametrosFB.montoCuotaActual = params.docs[1].get('valorCuotaActual');
@@ -481,6 +485,8 @@ export class FirebaseService {
       this.parametrosFB.maxNumEmergencias = params.docs[2].get('maxNumEmergencias');
       this.parametrosFB.maxNumNoticias = params.docs[2].get('maxNumNoticias');
       this.parametrosFB.maxNumRondas = params.docs[2].get('maxNumRondas');
+      this.parametrosFB.minAppVersionAndroid = params.docs[2].get('minAppVersionAndroid');
+      this.parametrosFB.minAppVersionIos = params.docs[2].get('minAppVersionIos');
       // NUMEROS
       this.parametrosFB.cuadrante = params.docs[3].get('cuadrante');
       this.parametrosFB.guardia = params.docs[3].get('guardia');
@@ -489,7 +495,7 @@ export class FirebaseService {
       // URLS
       this.parametrosFB.urlAppAndroid = params.docs[4].get('urlAppAndroid');
       this.parametrosFB.urlAppIos = params.docs[4].get('urlAppIos');
-      console.log('%cfirebase.service.ts getParametrosFB', 'color: #007acc;', this.parametrosFB);
+      console.log('%cfirebase.service.ts getParametrosFB [OK]', 'color: #007acc;', moment().format('HH:mm:ss'));
       this.appRef.tick();
     });
   }
@@ -515,7 +521,7 @@ export class FirebaseService {
     if (ultimo) {
       return this.db.collection<Persona>('persona', ref => ref.where('estado', '>=', '2-vigente')
                                                               .where('estado', '<=', '3-suspendido')
-                                                              .orderBy('estado', 'desc')
+                                                              .orderBy('estado', 'asc')
                                                               .orderBy('nombres', 'asc')
                                                               .orderBy('apellidoPaterno', 'asc')
                                                               .startAfter(ultimo.estado, ultimo.nombres, ultimo.apellidoPaterno)
@@ -524,7 +530,7 @@ export class FirebaseService {
     } else {
       return this.db.collection<Persona>('persona', ref => ref.where('estado', '>=', '2-vigente')
                                                               .where('estado', '<=', '3-suspendido')
-                                                              .orderBy('estado', 'desc')
+                                                              .orderBy('estado', 'asc')
                                                               .orderBy('nombres', 'asc')
                                                               .orderBy('apellidoPaterno', 'asc'))
                                                               .valueChanges();
@@ -812,6 +818,26 @@ export class FirebaseService {
     } else {
       // console.log('%ctimestampToDate fechaTS', 'color: #007acc;', fechaTS);
       return moment(fechaTS).toDate();
+    }
+  }
+  toggleDarkTheme(estado: boolean) {
+    console.log('cambiar darkMode a:', estado);
+    document.body.classList.toggle('dark', estado);
+    this.dark = estado;
+  }
+  validarVersionApp( data: string) {
+    const verNumDisp = parseInt(data.split('.').join(''));
+    const verNumAct = parseInt(this.parametrosFB.appVersionAndroidStr.split('.').join(''));
+    const verNumMin = parseInt(this.parametrosFB.minAppVersionAndroid.split('.').join(''));
+    if (verNumDisp < 1000) { verNumDisp * 10 }
+    if (verNumAct < 1000) { verNumAct * 10 }
+    if (verNumMin < 1000) { verNumMin * 10 }
+    this.actualizarApp = verNumDisp < verNumAct;
+    this.actualizarAppObligatorio = verNumDisp < verNumMin;
+    console.log('fbSrvc.actualizarApp: ', this.actualizarApp);
+    console.log('fbSrvc.actualizarApp Obligatorio: ', this.actualizarAppObligatorio);
+    if (this.actualizarApp) {
+      this.lanzarSonido('sms', 1);
     }
   }
 }

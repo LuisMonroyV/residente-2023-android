@@ -12,11 +12,14 @@ import { Router } from '@angular/router';
 })
 export class MisPagosPage implements OnInit {
   // cargando = false;
+  anoActual = moment().year();
+  anoInicial = this.fbSrvc.parametrosFB.maxAnoPagos;
   anos = [];
   colorEstado = 'success';
   direcciones: Pago[] = [];
   estadoMisPagos = '';
   idDir = '';
+  idDireccion = '';
   idNum = '';
   mesesImpagos = 0;
   misPagos: Pago[] = [];
@@ -27,7 +30,7 @@ export class MisPagosPage implements OnInit {
   ubicacionBoton = 'center';
   vacio: Pago = { ano: 0,
                   comentario: null,
-                  idDireccion: this.idDir,
+                  idDireccion: this.idDireccion,
                   mes: 0,
                   pagado: false,
                   ultAct: null
@@ -61,17 +64,18 @@ export class MisPagosPage implements OnInit {
     // Completo los meses no informados
     this.anos.forEach(ano => {
       for (let mes = 1; mes <= 12; mes++) {
-        const existe = pag.filter( data => data.ano === ano && data.mes === mes);
+        const existe = pag.filter( data => data.ano === ano.ano && data.mes === mes);
         if (existe.length > 0) {
           this.misPagos.push(existe[0]);
         } else {
-          const objVacio: Pago = { ano,
-                                  comentario: null,
-                                  idDireccion: this.idDir + '-' + this.idNum,
-                                  mes,
-                                  pagado: false,
-                                  ultAct: null
-                                };
+          const valorAno = ano.ano;
+          const objVacio: Pago = { ano: valorAno,
+                                   comentario: null,
+                                   idDireccion: this.idDireccion,
+                                   mes,
+                                   pagado: false,
+                                   ultAct: null
+                                 };
           this.misPagos.push(objVacio);
         }
       }
@@ -86,13 +90,13 @@ export class MisPagosPage implements OnInit {
     this.totalDeuda = 0;
     let fechaCorte = moment().startOf('month').toDate();
     let casoEsp = [];
-    // si estamos a 6 o más del mes se cuenta este mes
-    // if (moment().date() >= 6) {
-    fechaCorte = moment().startOf('month').toDate(); // primero de este mes
-    // } else {
-    //   fechaCorte = moment().subtract(1, 'month').startOf('month').toDate(); // primero del mes anterior
-    // }
+    fechaCorte = moment().startOf('month').toDate(); // primero del mes
     console.log('Fecha de Corte: ', fechaCorte);
+    // Limpia valores de totales pagados
+    this.anos.forEach(ano => {
+      ano.pagado = 0;
+      ano.porPagar = 0;
+    })
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let index = 0; index < this.misPagos.length; index++) {
       const pago = this.misPagos[index];
@@ -107,20 +111,28 @@ export class MisPagosPage implements OnInit {
       } else {
         montoEspecial = null;
       }
+      const montoPago = casoEsp.length > 0 ? montoEspecial : (fechaPago > this.fbSrvc.parametrosFB.fechaCambioCuota) ? this.fbSrvc.parametrosFB.montoCuotaActual : this.fbSrvc.parametrosFB.montoCuotaAnterior;
       if (!pago.pagado && (moment(fechaPago).diff(moment(fechaCorte), 'days') <= 0) &&
          (casoEsp.length === 0 || (casoEsp && casoEsp[0] && casoEsp[0].cuotaEspecial && casoEsp[0].cuotaEspecial > 0))) {
-          console.log('%MES IMPAGO: ', 'color: #007acc;', fechaPago, pago.pagado, moment(fechaPago).diff(moment(fechaCorte), 'days'));
-        const mesImpago: MesImpago = {
-                                      fecha: fechaPago,
-                                      mesAno: moment(fechaPago).format('MM-YYYY'),
-                                      // eslint-disable-next-line max-len
-                                      monto: casoEsp.length > 0 ? montoEspecial : (fechaPago > this.fbSrvc.parametrosFB.fechaCambioCuota) ? this.fbSrvc.parametrosFB.montoCuotaActual : this.fbSrvc.parametrosFB.montoCuotaAnterior,
-                                      documento: '',
-                                      idTransaccion: '',
-                                     };
+          console.log('%MES IMPAGO: ', 'color: #007acc;', fechaPago, pago.pagado, moment(fechaPago).diff(moment(fechaCorte), 'days'));          
+          const mesImpago: MesImpago = {
+                                        fecha: fechaPago,
+                                        mesAno: moment(fechaPago).format('MM-YYYY'),
+                                        monto: montoPago,
+                                        documento: '',
+                                        idTransaccion: '',
+                                      };
         this.fbSrvc.misMesesImpagos.push(mesImpago);
         this.totalDeuda += mesImpago.monto;
         this.mesesImpagos++;
+        let valorAnoImpago = this.anos.filter(ubic => ubic.ano === pago.ano);
+        valorAnoImpago[0].porPagar += montoPago;
+    } else {
+        if (moment(fechaPago).diff(moment(fechaCorte), 'days') <= 0) {
+          let valorAno = this.anos.filter(ubic => ubic.ano === pago.ano);
+          // console.log('%cmis-pagos.page.ts line:123 valorAno', 'color: #007acc;', valorAno);
+          valorAno[0].pagado += montoPago;
+        }
       }
     }
     console.log('Meses Impagos: ', {meses: this.mesesImpagos, detalle: this.fbSrvc.misMesesImpagos, total: this.totalDeuda});
@@ -138,6 +150,7 @@ export class MisPagosPage implements OnInit {
   }
   getPagosDir() {
     console.log('getPagosDir :', this.idDir + '-' + this.idNum.toUpperCase());
+    this.idDireccion = this.idDir + '-' + this.idNum.toUpperCase();
     this.fbSrvc.loading('Actualizando pagos...');
     this.fbSrvc.getPagos(this.idDir + '-' + this.idNum.toUpperCase())
     .subscribe( pag => {
@@ -156,17 +169,12 @@ export class MisPagosPage implements OnInit {
     console.log('mis-pagos - ionViewWillEnter()');
     this.estadoPagos();
   }
-
   misAvisos() {
     this.router.navigate(['/mis-avisos-de-pago']);
-  }
-  mostrarMensaje(texto: string) {
-    this.fbSrvc.mostrarMensaje(texto, 3000);
   }
   ngOnInit() {
     this.fbSrvc.getCasosEspeciales();
     if (this.fbSrvc.persona.esAdmin) {
-      // this.ubicacionBoton = 'bottom';
       if (!this.fbSrvc.calles || this.fbSrvc.calles.length === 0 ) {
         this.fbSrvc.getCalles();
       }
@@ -176,16 +184,23 @@ export class MisPagosPage implements OnInit {
     this.idDir = this.fbSrvc.parametros.codigoDir.substring(0, this.fbSrvc.parametros.codigoDir.search('-'));
     // eslint-disable-next-line max-len
     this.idNum = this.fbSrvc.parametros.codigoDir.substring(this.fbSrvc.parametros.codigoDir.search('-') + 1, this.fbSrvc.parametros.codigoDir.length);
-    const anoActual = moment().year();
-    const anoInicial = this.fbSrvc.parametrosFB.maxAnoPagos;
-    if (anoInicial && anoInicial > 0) {
-      for (let index = anoActual; index >= anoInicial; index--) {
-        this.anos.push(index);
+    this.idDireccion = this.idDir + '-' + this.idNum.toUpperCase();
+    if (this.anoInicial && this.anoInicial > 0) {
+      for (let index = this.anoActual; index >= this.anoInicial; index--) {
+        const obj = { ano: index,
+                      pagado: 0,
+                      porPagar: 0
+                    };
+        this.anos.push(obj);
       }
     } else {
-      this.anos.push(moment().year());
+      const obj = { ano: moment().year(),
+                    pagado: 0,
+                    porPagar: 0
+                  };
+      this.anos.push(obj);
     }
-    console.log(this.anos);
+    console.log('Años a  mostrar: ', this.anos);
 
     if (!this.fbSrvc.persona.esTesorero) {
       this.fbSrvc.getMisPagosNoAdm();
@@ -216,7 +231,6 @@ export class MisPagosPage implements OnInit {
       } else {
         this.misPagos[pos].comentario = `Rechazado por ${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`;
       }
-      // console.log(`pos[${pos}] pagado estaba en: ${this.misPagos[pos].pagado}`);
       this.fbSrvc.putPago(this.misPagos[pos])
       .then( () => {
         console.log(`pago actualizado OK`);

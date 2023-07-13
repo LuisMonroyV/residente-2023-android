@@ -46,14 +46,15 @@ export class ModalAvisoDePagoComponent implements OnInit {
     const options: CameraOptions = {
       allowEdit: true,
       sourceType: this.cam.PictureSourceType.PHOTOLIBRARY,
-      destinationType: this.cam.DestinationType.DATA_URL,
+      // destinationType: this.cam.DestinationType.DATA_URL,
+      destinationType: this.cam.DestinationType.FILE_URI,
     };
     await this.cam.getPicture(options)
     .then( async (result) => {
       this.fbSrvc.stopLoading();
       this.fbSrvc.loading('Cargando imagen...');
       const image = `data:image/jpeg;base64,${result}`;
-      const ref = this.fbStorage.ref(`losMostos/avisosDePago/${name}`);
+      const ref = this.fbStorage.ref(`losMostos/avisosDePago/${this.nuevoAvisoDePago.idDireccion}/${name}`);
       await ref.putString(image, 'data_url')
       .then( task => {
         console.log('Imagen cargada ok: ', task);
@@ -141,7 +142,7 @@ export class ModalAvisoDePagoComponent implements OnInit {
     await this.cam.getPicture(options)
     .then( async (result) => {
       const image = `data:image/jpeg;base64,${result}`;
-      const ref = this.fbStorage.ref(`losMostos/avisosDePago/${name}`);
+      const ref = this.fbStorage.ref(`losMostos/avisosDePago/${this.nuevoAvisoDePago.idDireccion}/${name}`);
       this.fbSrvc.stopLoading();
       this.fbSrvc.loading('Cargando fotografía...');
       const pictures = await ref.putString(image, 'data_url')
