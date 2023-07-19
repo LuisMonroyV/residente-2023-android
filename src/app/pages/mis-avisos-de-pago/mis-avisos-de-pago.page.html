@@ -44,9 +44,9 @@
           <ion-card-header>
             <ion-badge *ngIf="aviso.estadoAviso === '1-Aprobado'" color="primary" style="float: right;">Aprobado</ion-badge>
             <ion-badge *ngIf="aviso.estadoAviso === '-1-Rechazado'" color="danger" style="float: right;">Rechazado</ion-badge>
-            <ion-card-subtitle>Avisado el día {{ aviso.fechaAviso | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-card-subtitle>
-            <ion-card-subtitle *ngIf="aviso.estadoAviso === '-1-Rechazado'">Rechazado el día {{ aviso.fechaRechazo | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-card-subtitle>
-            <ion-card-subtitle *ngIf="aviso.estadoAviso === '1-Aprobado'">Aprobado el día {{ aviso.fechaAprobacion | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-card-subtitle>
+            <ion-chip>Avisado el día {{ aviso.fechaAviso | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-chip>
+            <ion-chip *ngIf="aviso.estadoAviso === '-1-Rechazado'" color="danger">Rechazado el día {{ aviso.fechaRechazo | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-chip>
+            <ion-chip *ngIf="aviso.estadoAviso === '1-Aprobado'" color="primary">Aprobado el día {{ aviso.fechaAprobacion | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-chip>
             <ion-card-subtitle style="margin-top: 15px;">
               <span *ngFor="let mes of aviso.mesesPagados"> 
                 <strong> Cuota: {{ mes.fecha | fechaCorta : 'MMMM-YYYY' : '' }}</strong>

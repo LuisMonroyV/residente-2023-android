@@ -1,6 +1,13 @@
 <ion-header class="ion-no-border mt-40" [translucent]="true">
   <ion-toolbar>
-    <ion-title>Nuevo aviso de pago</ion-title>
+    <ion-title *ngIf="validacionAviso == 'OK' || validacionAviso == ''">
+      Nuevo aviso de pago 
+    </ion-title>
+    <div *ngIf="validacionAviso !== 'OK' && validacionAviso !== ''" class="ion-text-center">
+      <ion-chip color="danger" mode="ios">
+        <ion-label>{{validacionAviso}}</ion-label>
+      </ion-chip>
+    </div>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()"
                   color="danger"
@@ -89,21 +96,24 @@
           </ion-grid>
         </ion-item>
         <div class="ion-padding" style="margin-top: 10px;" color="light">
-          <ion-label color="primary" position="stacked">Nombre de quien transfiere: </ion-label>
+          <ion-label color="primary" position="stacked">Nombre y apellido de quien transfiere: </ion-label>
           <ion-text color="danger"> (campo obligatorio)</ion-text>
           <ion-input placeholder="Quien realiza la transferencia"
                      [(ngModel)]="nuevoAvisoDePago.transfiere"
                      name="transfiere"
                      type="text"
                      required
+                     (ionChange)="validarAviso()"
                      >
           </ion-input>
         </div>
         <div class="ion-padding" color="light">
           <ion-label color="primary" position="stacked">Fecha de la transferencia: </ion-label>
+          <ion-text *ngIf="!fechaTransf" color="danger"> (dato obligatorio)</ion-text>
           <ion-badge *ngIf="fechaTransf" color="success" mode="ios"> {{fechaTransf | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-badge>
           <ion-datetime 
                         displayFormat="DD MMM YYYY" 
+                        (ionChange)="validarAviso()"
                         first-day-of-week="1"
                         mode="ios"
                         monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
@@ -132,14 +142,21 @@
           </ion-badge>
         </ion-label>
       </div> 
-      <div class="ion-text-center" style="padding-left: 10%; padding-bottom: 20px;">
+      <div class="ion-text-center" style="padding-left: 10%; padding-right: 10%; padding-bottom: 10px;">
         <ion-button type="submit"
                   expand="block" 
-                  [disabled]="!formAviso.valid || totalAviso === 0"
+                  [disabled]="!formAviso.valid || totalAviso === 0 || (validacionAviso !== 'OK' && validacionAviso !== '')"
                   style="width: 90%;"
                   >
           Enviar Aviso de Pago
         </ion-button>
+        <ion-ripple-effect type="bounded"></ion-ripple-effect>
+      </div>
+      <!-- Validación del aviso -->
+      <div class="ion-text-center" style="padding-bottom: 50px;">
+        <ion-chip *ngIf="validacionAviso !== 'OK' && validacionAviso !== ''" color="danger" mode="ios">
+          <ion-label>{{validacionAviso}}</ion-label>
+        </ion-chip>
         <ion-ripple-effect type="bounded"></ion-ripple-effect>
       </div>
     </ion-card>

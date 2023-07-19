@@ -13,7 +13,7 @@ import * as moment from 'moment';
   styleUrls: ['./modal-aviso-de-pago.component.scss'],
 })
 export class ModalAvisoDePagoComponent implements OnInit {
-  fechaTransf = moment().toISOString();
+  fechaTransf = null;
   nuevoAvisoDePago: AvisoDePago = {
     estadoAviso: '0-Pendiente',
     fechaAprobacion: null,
@@ -31,6 +31,7 @@ export class ModalAvisoDePagoComponent implements OnInit {
   };
   totalDeuda = 0;
   totalAviso = 0;
+  validacionAviso = '';
 
   constructor(
               private cam: Camera,
@@ -46,8 +47,8 @@ export class ModalAvisoDePagoComponent implements OnInit {
     const options: CameraOptions = {
       allowEdit: true,
       sourceType: this.cam.PictureSourceType.PHOTOLIBRARY,
-      // destinationType: this.cam.DestinationType.DATA_URL,
-      destinationType: this.cam.DestinationType.FILE_URI,
+      destinationType: this.cam.DestinationType.DATA_URL,
+      // destinationType: this.cam.DestinationType.FILE_URI,
     };
     await this.cam.getPicture(options)
     .then( async (result) => {
@@ -63,6 +64,7 @@ export class ModalAvisoDePagoComponent implements OnInit {
           this.nuevoAvisoDePago.mesesPagados[pos].documento = url;
           this.totalAviso += this.nuevoAvisoDePago.mesesPagados[pos].monto;
           console.log('%cthis.nuevoAvisoDePago', 'color: #007acc;', this.nuevoAvisoDePago);
+          this.validarAviso();
         });
         this.fbSrvc.stopLoading();
       })
@@ -88,10 +90,14 @@ export class ModalAvisoDePagoComponent implements OnInit {
     const ref = this.fbStorage.refFromURL(this.nuevoAvisoDePago.mesesPagados[pos].documento);
     ref.delete()
     .subscribe( () => {
+      this.nuevoAvisoDePago.mesesPagados[pos].documento = '';
+      this.totalAviso -= this.nuevoAvisoDePago.mesesPagados[pos].monto;
+      if (this.totalAviso < 0) {
+        this.totalAviso = 0;
+      }
+      this.validarAviso();
       console.log('Imagen eliminada!');
     });
-    this.nuevoAvisoDePago.mesesPagados[pos].documento = '';
-    this.totalAviso -= this.nuevoAvisoDePago.mesesPagados[pos].monto;
   }
   guardarAvisoDePago() {
     if (this.validarPagos()) {
@@ -152,9 +158,9 @@ export class ModalAvisoDePagoComponent implements OnInit {
         .subscribe( url => {
           console.log({url});
           this.nuevoAvisoDePago.mesesPagados[pos].documento = url;
-          // this.nuevoAvisoDePago.mesesPagados[pos].monto = this.fbSrvc.misMesesImpagos[pos].monto;
           this.totalAviso += this.nuevoAvisoDePago.mesesPagados[pos].monto;
           console.log('%cthis.nuevoAvisoDePago', 'color: #007acc;', this.nuevoAvisoDePago);
+          this.validarAviso();
           this.fbSrvc.stopLoading();
         });
         this.fbSrvc.stopLoading();
@@ -170,6 +176,21 @@ export class ModalAvisoDePagoComponent implements OnInit {
       console.log('Error al tomar la foto. ', err);
       this.fbSrvc.stopLoading();
     });
+  }
+  validarAviso() {
+    if (this.nuevoAvisoDePago.mesesPagados[0].documento.length === 0) {
+      this.validacionAviso = 'Falta agregar imagen del primer período.';
+    } else if (this.nuevoAvisoDePago.mesesPagados.length > 1 && !this.validarPagos()) {
+      this.validacionAviso = 'Los períodos deben ser avisados de manera cronológica.';
+    } else if (this.nuevoAvisoDePago.transfiere.length === 0) {
+      this.validacionAviso = 'Falta el nombre de quien hizo la transferencia';
+    } else if (!this.fechaTransf) {
+      this.validacionAviso = 'Falta indicar fecha de la transferencia';
+    } else if (moment(this.fechaTransf).toDate() > moment().toDate()) {
+      this.validacionAviso = 'Fecha de la transferencia no puede ser a futuro';
+    } else {
+      this.validacionAviso = 'OK';
+    }
   }
   validarPagos(): boolean {
     let laguna = false;
