@@ -16,38 +16,28 @@
                 </ion-row>
             </ion-grid>
         </ion-card-subtitle>
-        <div *ngFor="let acc of accesos; let i = index" color="light" class="tam-16">
-            <p>
-                {{i+1}}.- {{ acc.fecha |fechaCorta: 'dddd DD-MMM @HH:mm' : '' }} 
-                <ion-text color="primary"><small><i>({{acc.fecha | fechaCorta : '' : 'pasado' }})</i></small></ion-text>
-            </p>
-            <p>
-                Visitante:
-                <ion-text color="primary">{{ acc.nombreVisitante }}</ion-text>
-            </p>
-            <p>
-                Patente:
-                <ion-text color="primary">{{ acc.patente }}</ion-text>
-            </p>
-            <p>
-                Autorizado por:
-                <ion-text color="primary">{{ acc.guardia }}</ion-text>
-            </p>
-            <p>
-                Observaciones:
-                <ion-text color="primary">{{ acc.obs }}</ion-text>
-            </p>
-            <ion-item color="light" class="ion-no-padding">
-                Residente contactado?:
-                <ion-text color="danger" *ngIf="!acc.residenteResponde" class="ion-padding">
-                    <strong> NO </strong>
-                </ion-text>
-                <ion-text color="primary" *ngIf="acc.residenteResponde" class="ion-padding">
-                    SI
-                </ion-text>
-            </ion-item>
-            <br>
-        </div>
+        <ion-card class="card-acceso"
+                    *ngFor="let acc of accesos; let i = index" 
+                    >
+            <ion-card-header>
+                <ion-card-subtitle class="tam-16">
+                    {{ acc.fecha |fechaCorta: 'dddd DD-MMM @HH:mm' : '' }}
+                    <ion-text color="primary" class="tam-12 ion-float-right"><i>{{acc.fecha | fechaCorta : '' : 'pasado' }}</i></ion-text>
+                </ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+                Visitante: <ion-text color="primary">{{ acc.nombreVisitante }}</ion-text> <br>
+                Patente: <ion-text color="primary">{{ acc.patente }}</ion-text> <br>
+                Autorizado por: <ion-text color="primary">{{ acc.guardia }}</ion-text> <br>
+                Observaciones: <ion-text color="primary">{{ acc.obs }}</ion-text> <br>
+                <ion-chip *ngIf="!acc.residenteResponde" mode="ios" color="primary" class="ion-float-right">
+                    <ion-label>Residente no contactado</ion-label>
+                </ion-chip>
+                <ion-chip *ngIf="acc.residenteResponde" mode="ios" color="danger" class="ion-float-right">
+                    <ion-label>Residente contactado ({{acc.duracion / 60 | number : '1.0-0'}} mins.)</ion-label>
+                </ion-chip>
+            </ion-card-content>
+        </ion-card>
     </ion-card-header>
 </ion-card>
 

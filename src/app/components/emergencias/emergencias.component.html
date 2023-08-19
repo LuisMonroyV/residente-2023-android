@@ -16,33 +16,26 @@
                 </ion-row>
             </ion-grid>
         </ion-card-subtitle>
-        <br>
-        <div *ngFor="let emergencia of emergencias; let i = index" color="success" class="tam-16">
-            <p>{{i+1}}.- En {{ emergencia.idDireccion }} 
-                <ion-text color="primary" class="tam-12">
-                    (<i>{{ emergencia.fechaInicio | fechaCorta : '' : 'pasado'}}</i>)
-                </ion-text>
-            </p>
-            <p class="tam-18"><strong>{{ emergencia.obs}}</strong></p>
-            <p>
+        <ion-card *ngFor="let emergencia of emergencias; let i = index" 
+                  class="card-emergencia">
+            <ion-card-header>
+                <ion-card-subtitle>{{ emergencia.idDireccion }} 
+                    <ion-text color="primary" class="tam-12">
+                        ( <i>{{ emergencia.fechaInicio | fechaCorta : '' : 'pasado'}}</i> )
+                    </ion-text>
+                    <ion-chip mode="ios" color="danger" class="ion-float-right">
+                        <ion-label>{{ emergencia.estado }}</ion-label>
+                    </ion-chip>
+                </ion-card-subtitle>
+                <ion-card-title><strong>{{ emergencia.obs}}</strong></ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
                 Supervisada por:
                 <ion-text color="primary">
                     {{ emergencia.guardia}}
                 </ion-text>
-            </p>
-            <p>
-                <ion-item color="success" class="ion-no-padding">
-                    Estado actual:
-                    <ion-text color="danger" *ngIf="emergencia.estado !== 'Cerrada'" class="ion-padding">
-                        <strong> {{ emergencia.estado }} </strong>
-                    </ion-text>
-                    <ion-text color="primary" *ngIf="emergencia.estado === 'Cerrada'" class="ion-padding">
-                        {{ emergencia.estado }}
-                    </ion-text>
-
-                </ion-item>
-            </p>
-        </div>
+            </ion-card-content>
+        </ion-card>        
     </ion-card-header>
 </ion-card>
 

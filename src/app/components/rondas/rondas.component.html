@@ -16,30 +16,28 @@
                 </ion-row>
             </ion-grid>
         </ion-card-subtitle>
-        <div *ngFor="let ronda of rondas.docs; let i = index" color="success" class="tam-16">
-            <p>
-                {{i+1}}.- {{ ronda.data().fechaInicio |fechaCorta: 'dddd DD-MMM @HH:mm' : '' }}
-                <ion-text color="primary"><small><i>({{ronda.data().fechaInicio | fechaCorta : '' : 'pasado' }})</i></small></ion-text>
-            </p>
-            <p>
-                Guardia:
-                <ion-text color="primary">{{ ronda.data().guardia }}</ion-text>
-            </p>
-            <ion-text>Novedades:</ion-text>
-            <ion-item *ngFor="let novedad of ronda.data().novedades" 
-                      class="ion-no-padding" 
-                      color="success"
-                      style="align-items: baseline;">
-                <ion-text color="primary">
-                    @{{ novedad.fecha | fechaCorta : 'HH:mm': '' }}
-                </ion-text>
-                <ion-text>
-                    : {{ novedad.descripcion }}
-                </ion-text>
-            </ion-item>
-            <ion-item color="success" class="ion-no-padding" lines="none">
-            </ion-item>
-        </div>
+        <ion-card class="card-ronda"
+                  *ngFor="let ronda of rondas.docs; let i = index"
+                  >
+            <ion-card-header>
+                <ion-card-subtitle class="tam-16">
+                    {{ ronda.data().fechaInicio |fechaCorta: 'dddd DD-MMM @HH:mm' : '' }}
+                    <ion-text color="primary" class="tam-12 ion-float-right"><i>{{ronda.data().fechaInicio | fechaCorta : '' : 'pasado' }}</i></ion-text>
+                </ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+                Guardia: <ion-text color="primary">{{ ronda.data().guardia }}</ion-text> <br>
+                Novedades:
+                <div *ngFor="let novedad of ronda.data().novedades">
+                    <ion-chip color="primary" mode="ios">
+                        <ion-label>@{{ novedad.fecha | fechaCorta : 'HH:mm': '' }}</ion-label>
+                    </ion-chip>
+                    <ion-text>
+                        : {{ novedad.descripcion }}
+                    </ion-text> <br>
+                </div>
+            </ion-card-content>
+        </ion-card>
     </ion-card-header>
 </ion-card>
 

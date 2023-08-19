@@ -185,7 +185,7 @@ export interface Qr {
     utilizado: boolean;
 }
 export interface RegistroVisita {
-    // fecha: firebase.default.firestore.Timestamp;
+    duracion: number;
     fecha: any;
     guardia: string;
     idDireccion: string;
