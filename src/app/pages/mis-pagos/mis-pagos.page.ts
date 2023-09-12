@@ -11,7 +11,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./mis-pagos.page.scss'],
 })
 export class MisPagosPage implements OnInit {
-  // cargando = false;
   anoActual = moment().year();
   anoInicial = this.fbSrvc.parametrosFB.maxAnoPagos;
   anos = [];
@@ -97,7 +96,6 @@ export class MisPagosPage implements OnInit {
       ano.pagado = 0;
       ano.porPagar = 0;
     })
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let index = 0; index < this.misPagos.length; index++) {
       const pago = this.misPagos[index];
       const fechaPago = moment().set('D', 1).set('month', pago.mes -1).set('year', pago.ano).toDate();
@@ -128,11 +126,8 @@ export class MisPagosPage implements OnInit {
         let valorAnoImpago = this.anos.filter(ubic => ubic.ano === pago.ano);
         valorAnoImpago[0].porPagar += montoPago;
     } else {
-        if (moment(fechaPago).diff(moment(fechaCorte), 'days') <= 0) {
           let valorAno = this.anos.filter(ubic => ubic.ano === pago.ano);
-          // console.log('%cmis-pagos.page.ts line:123 valorAno', 'color: #007acc;', valorAno);
           valorAno[0].pagado += montoPago;
-        }
       }
     }
     console.log('Meses Impagos: ', {meses: this.mesesImpagos, detalle: this.fbSrvc.misMesesImpagos, total: this.totalDeuda});

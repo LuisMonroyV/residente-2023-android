@@ -130,7 +130,7 @@ export class PushService {
       },
       contents: {
         // tslint:disable-next-line: max-line-length
-        en: `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno} has sent a payment advice`,
+        en: `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno} ha avisado un pago`,
         // tslint:disable-next-line: max-line-length
         es: `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno} ha avisado un pago`
       },

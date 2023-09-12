@@ -100,7 +100,6 @@ export class MisAvisosDePagoPage implements OnInit {
       this.fbSrvc.mostrarMensaje('Aviso de Pago enviado correctamente.');
       this.fbSrvc.misMesesImpagos = [];
       this.avisarAdmins();
-      // this.pushSrvc.respaldarAvisoDePagos(aviso);
     })
     .catch( err => {
       this.fbSrvc.mostrarMensaje('No se pudo guardar el aviso de pago. Error: ', err);

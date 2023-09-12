@@ -538,7 +538,9 @@ export class FirebaseService {
   }
   getPersonaxAuthUid( id: string)  {
     console.log(`getPersonaxAuthUid(${id})`);
-    this.escuchandoPersona = true;
+    if (id && id.length > 0) {
+      this.escuchandoPersona = true;
+    }
     return this.db.collection<Persona>('persona', ref => ref.where('authUid', '==', id))
                                                             .valueChanges();
   }
@@ -777,7 +779,6 @@ export class FirebaseService {
     return await this.auth.createUserWithEmailAndPassword( email, pass);
   }
   async resetPassword() {
-    // await this.fbAuth.auth.sendPasswordResetEmail( this.login.email )
     await this.auth.sendPasswordResetEmail( this.login.email )
     .then( () => {
       this.mostrarMensaje('Instrucciones enviadas al mail.');
@@ -789,7 +790,6 @@ export class FirebaseService {
   }
   async sendEmailVerification() {
     this.enviado = true;
-    // (await this.fbAuth.auth.currentUser).sendEmailVerification()
     (await this.auth.currentUser).sendEmailVerification()
     .then( () => {
       this.mostrarMensaje('Correo enviado.');
@@ -803,7 +803,6 @@ export class FirebaseService {
     console.log('stopLoading()');
     this.loadCtrl.getTop().then( elem => {
       if (elem) {
-        // console.log('Loading detenido: ', elem.id);
         this.loadCtrl.dismiss();
       }
     })

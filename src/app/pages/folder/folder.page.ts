@@ -32,16 +32,18 @@ export class FolderPage implements OnInit {
   ionViewWillEnter() {
     console.log('Home() - ionViewWillEnter(): ', this.fbSrvc.persona);
     // PASO 2: Validacion de administrador
-    this.fbSrvc.getPersonaxAuthUid(this.fbSrvc.persona.authUid)
-    .subscribe( per => {
-      if (per && per.length > 0) {
-        console.log('%cfolder.page.ts cambio en Persona: ', 'color: #007acc;', per);
-        this.fbSrvc.persona.estado = per[0].estado;
-        if (per[0].estado === '3-suspendido' || !per[0].emailOk || !per[0].adminOk) {
-          this.router.navigate(['login']);
+    if (!this.fbSrvc.escuchandoPersona) {
+      this.fbSrvc.getPersonaxAuthUid(this.fbSrvc.persona.authUid)
+      .subscribe( per => {
+        if (per && per.length > 0) {
+          console.log('%cfolder.page.ts cambio en Persona: ', 'color: #007acc;', per);
+          this.fbSrvc.persona.estado = per[0].estado;
+          if (per[0].estado === '3-suspendido' || !per[0].emailOk || !per[0].adminOk) {
+            this.router.navigate(['login']);
+          }
         }
-      }
-    });  
+      });  
+    }
   }
   limpiarParametros() {
     this.fbSrvc.parametros.codigoDir = '';
