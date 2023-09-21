@@ -762,8 +762,12 @@ export class FirebaseService {
     return this.db.collection('pagos').doc(`${pag.ano}${pag.mes}${pag.idDireccion}`).update({ pagado: pag.pagado, ultAct, comentario: pag.comentario });
   }
   putPersona( per: Persona) {
-    console.log('putPersona()', per);
-    return this.db.collection('persona').doc(per.idPersona).update(per);
+    if (this.parametros.identificado) {
+      console.log('putPersona()', per);
+      return this.db.collection('persona').doc(per.idPersona).update(per);
+    } else {
+      return null;
+    }
   }
   putPersonaEmailOk( per: Persona) {
     return this.db.collection('persona').doc(per.idPersona).update({ emailOk: true });

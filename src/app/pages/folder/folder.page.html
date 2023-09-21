@@ -1,20 +1,23 @@
-<ion-menu contentId="main-content" type="reveal">
+<ion-menu contentId="main-content" type="overlay">
     <ion-header class="ion-no-border mt-40" [translucent]="true">
         <ion-toolbar>
             <ion-buttons slot="start">
                 <ion-menu-button></ion-menu-button>
             </ion-buttons>
-        </ion-toolbar>
-    </ion-header>
-    <ion-content>
-        <ion-list id="inbox-list">
-            <ion-chip color="primary">{{ fbSrvc.persona.nombres }} {{ fbSrvc.persona.apellidoPaterno }}</ion-chip>
-            <ion-chip color="primary">{{ fbSrvc.persona.calle }}-{{ fbSrvc.persona.numero }}</ion-chip>
+            <ion-chip color="primary" class="tam-12">{{ fbSrvc.persona.nombres }} {{ fbSrvc.persona.apellidoPaterno }}</ion-chip>
+            <ion-chip color="primary" class="tam-12">{{ fbSrvc.persona.calle }}-{{ fbSrvc.persona.numero }}</ion-chip>
             <ion-icon name="shield-checkmark-sharp"
                         color="primary"
                         *ngIf="fbSrvc.persona.esAdmin"
                         >
             </ion-icon>
+            <!-- <div class="ion-text-center">
+                Comunidad Los Mostos
+            </div> -->
+        </ion-toolbar>
+    </ion-header>
+    <ion-content>
+        <ion-list id="inbox-list">
             <ion-menu-toggle autoHide="false" *ngFor="let p of fbSrvc.appPages; let i = index">
                 <ion-item *ngIf="p.visible"
                         (click)="selectedIndex = i" 
