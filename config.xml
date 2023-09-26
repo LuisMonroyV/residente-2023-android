@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="cl.monroyramirez.CSResidente" version="1.4.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="cl.monroyramirez.CSResidente" version="1.4.13" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Comunidad Segura - Residentes</name>
     <description>Comunidad Segura - Aplicación para residentes (ANDROID).</description>
     <author email="luis.monroyv@gmail.com" href="https://monroy-ramirez.cl/">Grupo Monroy-Ramirez</author>
@@ -46,6 +46,7 @@
     <plugin name="cordova-plugin-device" spec="2.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^4.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
+    <plugin name="cordova-plugin-camera" spec="https://github.com/jalios/cordova-plugin-camera.git" />
     <allow-navigation href="http://localhost:8100" sessionid="c37af3e9" />
     <allow-navigation href="http://localhost:8101" sessionid="f12a02f9" />
     <allow-navigation href="http://localhost:8102" sessionid="724aac4b" />

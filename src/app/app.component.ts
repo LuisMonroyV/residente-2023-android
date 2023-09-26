@@ -297,6 +297,7 @@ export class AppComponent implements OnInit {
         return;
       } else {
         console.log('Redirigiendo a inicio...');
+        this.router.navigate(['/folder/inicio']);
         return;
       }
     } else {
