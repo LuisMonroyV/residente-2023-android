@@ -21,10 +21,12 @@ export class AppComponent implements OnInit {
   @ViewChild('split', { static: true }) split: IonSplitPane;
   retorno: any[];
   auth = getAuth();
+  public selectedIndex = 0;
   constructor(
               private appVersion: AppVersion,
               private audio: NativeAudio,
               public fbSrvc: FirebaseService,
+              private menu: MenuController,
               private platform: Platform,
               private router: Router,
               private storage: Storage,
@@ -169,6 +171,12 @@ export class AppComponent implements OnInit {
       console.log('sonido door Error: ', err);
     });
   }
+  cerrarSesion() {
+    this.menu.close();
+    this.fbSrvc.logOutFirebase();
+    this.limpiarParametros();
+    this.router.navigate(['login']);
+  }
   async getParametros() {
     await this.storage.get('parametros')
     .then( params => {
@@ -224,6 +232,12 @@ export class AppComponent implements OnInit {
           });
         }
       }, 15000);
+  }
+  limpiarParametros() {
+    this.fbSrvc.parametros.codigoDir = '';
+    this.fbSrvc.parametros.identificado = false;
+    this.fbSrvc.parametros.primeraVez = false;
+    this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
   }
   async ngOnInit() {
     await this.storage.create()
@@ -303,5 +317,8 @@ export class AppComponent implements OnInit {
     } else {
       console.log('Ignorando redirección.');
     }
+  }
+  usuarios() {
+    this.router.navigate(['usuarios']);
   }
 }
