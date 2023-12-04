@@ -67,12 +67,12 @@ export class RegistroPage implements OnInit {
       this.fbSrvc.registroFirebase( this.fbSrvc.login.email, this.fbSrvc.login.contrasena)
         .then( async respFB => {
           if (respFB) {
+            this.fbSrvc.parametros.identificado = true;
             this.fbSrvc.creaCodigo();
             this.fbSrvc.loading('Creando cuenta...');
-            console.log('Registrado en Firebase!');
-            console.log('authUid:', respFB.user.uid);
+            // console.log('Registrado en Firebase!');
+            // console.log('authUid:', respFB.user.uid);
             this.fbSrvc.sendEmailVerification();
-            this.fbSrvc.parametros.identificado = true;
             this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
             this.fbSrvc.persona.authUid = respFB.user.uid;
             this.fbSrvc.persona.email = this.fbSrvc.login.email;
@@ -82,7 +82,7 @@ export class RegistroPage implements OnInit {
             this.avisarAdmins();
             this.fbSrvc.mostrarMensaje('Cuenta creada. Bienvenido!');
             this.fbSrvc.stopLoading();
-            console.log(this.fbSrvc.persona);
+            // console.log(this.fbSrvc.persona);
             this.router.navigate(['/activar-mail']);
           }
         }).catch( err => {

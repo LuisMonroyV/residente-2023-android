@@ -123,11 +123,13 @@ export class MisPagosPage implements OnInit {
         this.fbSrvc.misMesesImpagos.push(mesImpago);
         this.totalDeuda += mesImpago.monto;
         this.mesesImpagos++;
-        let valorAnoImpago = this.anos.filter(ubic => ubic.ano === pago.ano);
-        valorAnoImpago[0].porPagar += montoPago;
+        let posAnoImpago = this.anos.findIndex(ubic => ubic.ano === pago.ano);
+        this.anos[posAnoImpago].porPagar += montoPago;
     } else {
-          let valorAno = this.anos.filter(ubic => ubic.ano === pago.ano);
-          valorAno[0].pagado += montoPago;
+        if (moment(fechaPago).diff(moment(fechaCorte), 'days') <= 0) {
+          let posAnoPagado = this.anos.findIndex(ubic => ubic.ano === pago.ano);
+          this.anos[posAnoPagado].pagado += montoPago;
+        }
       }
     }
     console.log('Meses Impagos: ', {meses: this.mesesImpagos, detalle: this.fbSrvc.misMesesImpagos, total: this.totalDeuda});

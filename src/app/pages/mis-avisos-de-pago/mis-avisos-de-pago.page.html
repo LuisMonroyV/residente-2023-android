@@ -24,7 +24,7 @@
       <div *ngFor="let aviso of misAvisosDePago">
         <ion-card *ngIf="aviso.estadoAviso === '0-Pendiente'">
           <ion-card-header>
-            <ion-badge color="warning" style="float: right;">Pendiente</ion-badge>
+            <ion-badge color="warning" style="float: right;">Esperando revisión</ion-badge>
             <ion-card-subtitle>Avisado el día {{ aviso.fechaAviso | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-card-subtitle>
             <ion-card-subtitle style="margin-top: 15px;">
               <span *ngFor="let mes of aviso.mesesPagados"> 

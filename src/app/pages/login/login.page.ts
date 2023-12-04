@@ -39,13 +39,15 @@ export class LoginPage implements OnInit {
           this.route.navigate(['/contrasena']);
         } else {
           // EMAIL_NOT_FOUND
-          if (err.codee === 'auth/invalid-email') {
+          if (err.code === 'auth/invalid-email') {
             this.fbSrvc.stopLoading();
+            this.fbSrvc.registrando = true;
             this.route.navigate(['/registro']);
           } else {
             // USER NOT FOUND
             if (err.code === 'auth/user-not-found') {
               this.fbSrvc.stopLoading();
+              this.fbSrvc.registrando = true;
               this.route.navigate(['/registro']);
             }
           }

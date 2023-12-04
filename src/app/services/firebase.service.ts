@@ -160,6 +160,7 @@ export class FirebaseService {
       versionApp: ''
   };
   redirigido = false;
+  registrando = false;
   registroAvisado = false;
   randomNum = '';
   textoAlerta = '';
@@ -737,6 +738,10 @@ export class FirebaseService {
       .then( () => {
         console.log('ID de persona actualizada.');
       });
+    })
+    .catch( err => {
+      console.log('Error en postPersona(): ', err, per);
+      this.mostrarMensaje('Hubo un error al guardar el nuevo usuario: ', err);
     });
   }
   async postQr( qr: Qr ) {
@@ -762,8 +767,9 @@ export class FirebaseService {
     return this.db.collection('pagos').doc(`${pag.ano}${pag.mes}${pag.idDireccion}`).update({ pagado: pag.pagado, ultAct, comentario: pag.comentario });
   }
   putPersona( per: Persona) {
-    if (this.parametros.identificado) {
+    if (this.parametros.identificado || this.registrando) {
       console.log('putPersona()', per);
+      this.registrando = false;
       return this.db.collection('persona').doc(per.idPersona).update(per);
     } else {
       return null;
