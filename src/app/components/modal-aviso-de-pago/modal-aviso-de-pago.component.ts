@@ -1,7 +1,6 @@
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-// import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
-import { AvisoDePago } from '../../interfaces/fb-interface';
+import { AvisoDePago, MesImpago } from '../../interfaces/fb-interface';
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { ModalController } from '@ionic/angular';
@@ -13,6 +12,7 @@ import * as moment from 'moment';
   styleUrls: ['./modal-aviso-de-pago.component.scss'],
 })
 export class ModalAvisoDePagoComponent implements OnInit {
+  fechaCorte = moment().startOf('month').toDate(); // primero del mes
   fechaTransf = null;
   nuevoAvisoDePago: AvisoDePago = {
     estadoAviso: '0-Pendiente',
@@ -117,9 +117,29 @@ export class ModalAvisoDePagoComponent implements OnInit {
     this.nuevoAvisoDePago.mesesPagados = [];
 
     this.fbSrvc.misMesesImpagos.forEach(element => {
-      this.totalDeuda += element.monto;
+      if (element.fecha <= this.fechaCorte) {
+        this.totalDeuda += element.monto;
+      }
       element.documento = '';
     });
+    // Completa con el año siguiente si es Diciembre
+    if (moment().month() === 11) { // 0 a 11
+      for (let index = 1; index <= 12; index++) {
+        const mesAno = moment(`1-${index}-${moment().year()+1}`,'DD-MM-YYYY').format('MM-YYYY');
+        const estaPagado = this.fbSrvc.pagosDir.findIndex( dir => dir.ano ===  moment().year()+1 && dir.mes === index && dir.pagado === true);
+        const estaAgregado = this.fbSrvc.misMesesImpagos.findIndex( dir => dir.mesAno ===  mesAno);
+        if (estaPagado === -1 && estaAgregado === -1) {
+          const newMesImpago: MesImpago = {
+            fecha: moment(`1-${index}-${moment().year()+1}`,'DD-MM-YYYY').toDate(),
+            mesAno,
+            monto: this.fbSrvc.parametrosFB.montoCuotaActual,
+            documento: '',
+            idTransaccion: ''
+          };
+          this.fbSrvc.misMesesImpagos.push(newMesImpago);
+        }
+      }
+    }
     // orden cronológico
     this.fbSrvc.misMesesImpagos = this.fbSrvc.misMesesImpagos.sort((a,b) => {
       if ( a.fecha < b.fecha ){
@@ -131,7 +151,7 @@ export class ModalAvisoDePagoComponent implements OnInit {
       return 0;
     });
     this.nuevoAvisoDePago.mesesPagados = this.fbSrvc.misMesesImpagos;
-    // console.log('%cthis.nuevoAvisoDePago ', 'color: #007acc;', this.nuevoAvisoDePago);
+    //console.log('%cthis.nuevoAvisoDePago ', 'color: #007acc;', this.nuevoAvisoDePago);
   }
   async tomarFoto(pos: number) {
     console.log(`%ctomarFoto(${pos})`);

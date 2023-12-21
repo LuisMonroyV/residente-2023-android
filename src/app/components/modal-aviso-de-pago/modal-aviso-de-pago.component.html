@@ -22,7 +22,7 @@
   <form (ngSubmit)="guardarAvisoDePago()"
         novalidate="novalidate"
         #formAviso="ngForm"
-        *ngIf="totalDeuda > 0">
+        *ngIf="totalDeuda > 0 || nuevoAvisoDePago.mesesPagados.length > 0">
     <ion-card style="margin-bottom: 50px;">
       <div class="ion-text-center" style="margin-top: 20px;">
         <ion-label>
@@ -47,7 +47,7 @@
               <ion-col size="8"                   
                        style="padding-top: 15px;"
                        >
-                <span style="vertical-align: text-bottom; padding-left: 15px;" class="tam-14">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
+                <span class="periodo" [ngClass]="{'texto-atrasado': mes.fecha <= fechaCorte}">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
               </ion-col>
               <ion-col size="2" class="ion-text-center">
                 <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
@@ -104,6 +104,7 @@
                      type="text"
                      required
                      (ionChange)="validarAviso()"
+                     style="border-bottom: 1px solid;"
                      >
           </ion-input>
         </div>
@@ -161,7 +162,7 @@
       </div>
     </ion-card>
   </form>
-  <div *ngIf="totalDeuda === 0"
+  <div *ngIf="totalDeuda === 0 && nuevoAvisoDePago.mesesPagados.length === 0"
        class="ion-text-center"
        style="padding-top: 10%;"
        >

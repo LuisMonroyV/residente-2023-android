@@ -90,7 +90,8 @@ export class FirebaseService {
     contrasena: '',
     identificado: false
   };
-  misPagosNoAdm: Pago[] = [];
+  // misPagosNoAdm: Pago[] = [];
+  pagosDir: Pago[] = [];
   misMesesImpagos: MesImpago[] = [];
   pagosCreados = false;
   parametros: ParametrosApp = {
@@ -162,7 +163,6 @@ export class FirebaseService {
   redirigido = false;
   registrando = false;
   registroAvisado = false;
-  randomNum = '';
   textoAlerta = '';
   ultimoAcceso: Date;
   verAppStr = '';
@@ -394,23 +394,24 @@ export class FirebaseService {
                                                          .orderBy('fecha', 'asc'))
                                                          .valueChanges();
   }
-  getMisPagos() {
-    console.log(`getMisPagos() ${this.parametros.codigoDir}`);
-    return this.db.collection<Pago>('pagos', ref => ref.where('idDireccion', '==', this.parametros.codigoDir)
+  getPagosDir(idDireccion: string) {
+    console.log(`getPagosDir(${this.parametros.codigoDir})`);
+    return this.db.collection<Pago>('pagos', ref => ref.where('idDireccion', '==', idDireccion)
                                                        .orderBy('ano', 'desc')
                                                        .orderBy('mes', 'asc'))
                                                        .valueChanges();
   }
   async getMisPagosNoAdm() {
-    console.log(`getMisPagosNoAdm() ${this.parametros.codigoDir}`);
-    this.misPagosNoAdm = [];
-    return this.db.collection<Pago>('pagos', ref => ref.where('idDireccion', '==', this.parametros.codigoDir)
+    console.log(`getMisPagosNoAdm(${this.parametros.codigoDir})`);
+    this.pagosDir = [];
+    return await this.db.collection<Pago>('pagos', ref => ref.where('idDireccion', '==', this.parametros.codigoDir)
                                                        .orderBy('ano', 'desc')
                                                        .orderBy('mes', 'asc'))
                                                        .get()
-                                                       .subscribe( data => {
+                                                       .toPromise()
+                                                       .then( data => {
                                                         data.docs.forEach( pago => {
-                                                          this.misPagosNoAdm.push({ano: pago.data().ano,
+                                                          this.pagosDir.push({ano: pago.data().ano,
                                                                                    mes: pago.data().mes,
                                                                                    comentario: pago.data().comentario,
                                                                                    idDireccion: pago.data().idDireccion,
@@ -418,7 +419,7 @@ export class FirebaseService {
                                                                                    ultAct: pago.data().ultAct,
                                                                                    });
                                                         });
-                                                        console.log('fbsrvc.misPagosNoAdm: ', this.misPagosNoAdm);
+                                                        console.log('fbsrvc.misPagosNoAdm: ', this.pagosDir);
                                                        });
   }
   getMisVisitas() {
@@ -721,7 +722,7 @@ export class FirebaseService {
   }
   async postPago( pagos: Pago) {
     const idPago = `${pagos.ano}${pagos.mes}${pagos.idDireccion}`;
-    return this.db.collection('pagos').doc(`${idPago}`).update(pagos)
+    return await this.db.collection('pagos').doc(`${idPago}`).set(pagos) // Si no existe, lo crea
     .then( () => {
       console.log('Pago Agregado correctamente.');
     })
@@ -763,7 +764,7 @@ export class FirebaseService {
     return this.db.collection('noticias').doc(noti.idNoticia).update(noti);
   }
   putPago( pag: Pago) {
-    const ultAct = moment().toISOString();
+    const ultAct = moment().toISOString(true);
     return this.db.collection('pagos').doc(`${pag.ano}${pag.mes}${pag.idDireccion}`).update({ pagado: pag.pagado, ultAct, comentario: pag.comentario });
   }
   putPersona( per: Persona) {

@@ -80,6 +80,12 @@
                         *ngIf="!misPagos[trim1.num+(a*12)].pagado && misPagos[trim1.num+(a*12)].ultAct && misPagos[trim1.num+(a*12)].ano === ano.ano && misPagos[trim1.num+(a*12)].mes === (trim1.num+1)"
                         (click)="pagar(trim1.num+(a*12))" >
               </ion-icon>
+              <ion-icon name="help"
+                        color="warning"
+                        size='large'
+                        *ngIf="!misPagos[trim1.num+(a*12)].ultAct && misPagos[trim1.num+(a*12)].ano === ano.ano && misPagos[trim1.num+(a*12)].mes === (trim1.num+1)"
+                        (click)="pagar(trim1.num+(a*12))" >
+              </ion-icon>
               <br>
               <small *ngIf="misPagos[trim1.num+(a*12)].ultAct && misPagos[trim1.num+(a*12)].ano === ano.ano && misPagos[trim1.num+(a*12)].mes === (trim1.num+1)">Actualiz.<br>
                 <ion-text color="primary">
@@ -113,6 +119,12 @@
                         *ngIf="!misPagos[trim2.num+(a*12)].pagado && misPagos[trim2.num+(a*12)].ultAct && misPagos[trim2.num+(a*12)].ano === ano.ano && misPagos[trim2.num+(a*12)].mes === (trim2.num+1)"
                         (click)="pagar(trim2.num+(a*12))" >
               </ion-icon>
+              <ion-icon name="help"
+                        color="warning"
+                        size='large'
+                        *ngIf="!misPagos[trim2.num+(a*12)].ultAct && misPagos[trim2.num+(a*12)].ano === ano.ano && misPagos[trim2.num+(a*12)].mes === (trim2.num+1)"
+                        (click)="pagar(trim2.num+(a*12))" >
+              </ion-icon>
               <br>
               <small *ngIf="misPagos[trim2.num+(a*12)].ultAct && misPagos[trim2.num+(a*12)].ano === ano.ano && misPagos[trim2.num+(a*12)].mes === (trim2.num+1)">Actualizado <br>
                 <ion-text color="primary">
@@ -144,6 +156,12 @@
                         color="danger"
                         size='large'
                         *ngIf="!misPagos[trim3.num+(a*12)].pagado && misPagos[trim3.num+(a*12)].ultAct && misPagos[trim3.num+(a*12)].ano === ano.ano && misPagos[trim3.num+(a*12)].mes === (trim3.num+1)"
+                        (click)="pagar(trim3.num+(a*12))" >
+              </ion-icon>
+              <ion-icon name="help"
+                        color="warning"
+                        size='large'
+                        *ngIf="!misPagos[trim3.num+(a*12)].ultAct && misPagos[trim3.num+(a*12)].ano === ano.ano && misPagos[trim3.num+(a*12)].mes === (trim3.num+1)"
                         (click)="pagar(trim3.num+(a*12))" >
               </ion-icon>
               <br>

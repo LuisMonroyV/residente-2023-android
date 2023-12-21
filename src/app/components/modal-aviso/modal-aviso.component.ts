@@ -27,12 +27,9 @@ export class ModalAvisoComponent implements OnInit {
 
   constructor(public fbSrvc: FirebaseService,
               private modalCtrl: ModalController) {
-    this.fechaHoyIso = moment().startOf('day').toISOString();
-    this.fechaMaxIso = moment().endOf('day').add(7, 'days').toISOString();
+    this.fechaHoyIso = moment().startOf('day').toISOString(true);
+    this.fechaMaxIso = moment().endOf('day').add(7, 'days').toISOString(true);
     this.fechaString = moment().toISOString(true);
-    // console.log('this.fechaHoyIso:', moment(this.fechaHoyIso).format('DD-MM-YYYY HH:mm'));
-    // console.log('this.fechaMaxIso:', moment(this.fechaMaxIso).format('DD-MM-YYYY HH:mm'));
-    // console.log('this.fechaString:', moment(this.fechaString).format('DD-MM-YYYY HH:mm'));
   }
   actualizarPersona() {
     // console.log('%cmodal-aviso.component.ts actualizarPersona()', 'color: #007acc;');
