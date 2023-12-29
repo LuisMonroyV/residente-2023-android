@@ -118,6 +118,13 @@ export interface Parametros {
     emergenciaComunal: string;
     fechaCambioCuota: Date;
     guardia: string;
+    horaFinSemana: number;
+    horaFinSabado: number;
+    horaFinFeriado: number;
+    horaInicioSemana: number;
+    horaInicioSabado: number;
+    horaInicioFeriado: number;
+    feriados: Date[];
     llamadaReal: boolean;
     maxAnoPagos: number;
     maxEstadisticas: number;
@@ -128,6 +135,7 @@ export interface Parametros {
     maxNumEmergencias: number;
     maxNumNoticias: number;
     maxNumRondas: number;
+    maxReservasDiarias: number;
     minAppVersionAndroid: string;
     minAppVersionIos: string;
     moduloAgenda: boolean;
@@ -135,6 +143,7 @@ export interface Parametros {
     moduloEstadisticas: boolean;
     moduloMisDatos: boolean;
     moduloPagos: boolean;
+    moduloReservas: boolean;
     montoCuotaActual: number;
     montoCuotaAnterior: number;
     pruebasTienda: boolean;
@@ -207,11 +216,28 @@ export interface RegistroVisitaS {
     residenteResponde: boolean;
     turno: string;
 }
+export interface Reserva {
+    estado: string;
+    fechaFinReserva: Date;
+    fechaInicioReserva: Date;
+    fechaSolicitud: Date;
+    idDireccion: string;
+    idReserva: string;
+    obs: string;
+}
 export interface Ronda {
     fechaInicio: Date;
     fechaTermino: Date;
     guardia: string;
     novedades: Novedad[];
+}
+export interface Dia {
+    dia: Date;
+    horas: Hora[];
+}
+export interface Hora {
+    hora: Date;
+    reserva: Reserva;
 }
 export interface Visita {
     idDireccion: string;

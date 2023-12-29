@@ -1,0 +1,57 @@
+.borde {
+    border: 1px solid var(--ion-color-primary);
+    border-radius: 8px;
+}
+.borde-negro {
+    border: 1px solid black;
+    border-radius: 4px;
+}
+.borde-chip {
+    border: 1px solid;
+}
+.disponible {
+    border: 1px solid var(--ion-color-whatsapp-green);
+    border-radius: 6px;
+    color: var(--ion-color-whatsapp-green);
+}
+.solicitada {
+    border: 1px solid var(--ion-color-warning);
+    border-radius: 6px;
+    color: var(--ion-color-warning);
+}
+.reservada {
+    border: 1px solid var(--ion-color-danger);
+    border-radius: 6px;
+    color: var(--ion-color-danger);
+}
+.centrado {
+    // display: inherit;
+    justify-content: center;
+}
+.centrado-flex {
+    display: flex;
+    justify-content: center;
+}
+.borde-horario {
+    border: 1px solid var(--ion-color-primary);
+    border-radius: 8px;
+    padding-top: 10px;
+    margin-top: 15px;
+}
+.solicitar {
+    width: 150px;
+}
+.anular {
+    width: 150px;
+    border-radius: 4px;
+    border: 1px solid var(--ion-color-primary);
+}
+.letra-blanca {
+    color: white;
+}
+.letra-negra {  
+    color: black;
+}
+.card-reservas {
+    display: block;
+}

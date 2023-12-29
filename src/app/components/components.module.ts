@@ -24,6 +24,8 @@ import { NoticiasComponent } from './noticias/noticias.component';
 import { RondasComponent } from './rondas/rondas.component';
 import { RouterModule } from '@angular/router';
 import { VersionAppPipe } from '../pipes/version-app.pipe';
+import { ReservasComponent } from './reservas/reservas.component';
+import { ModalReservaComponent } from './modal-reserva/modal-reserva.component';
 
 
 @NgModule({
@@ -43,9 +45,11 @@ import { VersionAppPipe } from '../pipes/version-app.pipe';
     ModalAvisoDePagoComponent,
     ModalQrComponent,
     ModalRechazoComponent,
+    ModalReservaComponent,
     ModalVersionAppComponent,
     ModalVisitasComponent,
     NoticiasComponent,
+    ReservasComponent,
     RondasComponent,
     VersionAppPipe,
   ],
@@ -54,6 +58,7 @@ import { VersionAppPipe } from '../pipes/version-app.pipe';
     ModalAvisoDePagoComponent,
     ModalQrComponent,
     ModalRechazoComponent,
+    ModalReservaComponent,
     ModalVersionAppComponent,
     ModalVisitasComponent,
   ],
@@ -80,9 +85,11 @@ import { VersionAppPipe } from '../pipes/version-app.pipe';
     ModalAvisoDePagoComponent,
     ModalQrComponent,
     ModalRechazoComponent,
+    ModalReservaComponent,
     ModalVersionAppComponent,
     ModalVisitasComponent,
     NoticiasComponent,
+    ReservasComponent,
     RondasComponent,
     VersionAppPipe,
   ]

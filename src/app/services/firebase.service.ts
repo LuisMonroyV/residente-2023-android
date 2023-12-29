@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
 import firebase from 'firebase/compat/app';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ApplicationRef, Injectable } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
-import { CasoEspecial, MesImpago, Noticia, Pago, Qr, Visita, Aviso, AvisoDePago } from '../interfaces/fb-interface';
+import { CasoEspecial, MesImpago, Noticia, Pago, Qr, Visita, Aviso, AvisoDePago, Reserva } from '../interfaces/fb-interface';
 import { ParametrosApp, Persona, Calle, Parametros, RegistroVisita, Emergencia, Estadistica, Ronda } from '../interfaces/fb-interface';
 import { Storage } from '@ionic/storage';
 import { ToastController } from '@ionic/angular';
@@ -20,12 +20,6 @@ export class FirebaseService {
   actualizarAppObligatorio = false;
   alertaEnviada = false;
   appPages = [
-    // {
-    //   title: 'Inicio',
-    //   url: '/folder/Inicio',
-    //   icon: 'home',
-    //   visible: true
-    // },
     {
       title: 'Agenda',
       url: '/agenda',
@@ -60,6 +54,12 @@ export class FirebaseService {
       title: 'Mis Pagos',
       url: '/mis-pagos',
       icon: 'cash',
+      visible: false // luego se actualiza con el parametro de FB
+    },
+    {
+      title: 'Multicancha',
+      url: '/reservas-cancha',
+      icon: 'calendar-number',
       visible: false // luego se actualiza con el parametro de FB
     },
   ];
@@ -110,7 +110,14 @@ export class FirebaseService {
     cuadrante: '',
     emergenciaComunal: '',
     fechaCambioCuota: null,
+    feriados: [],
     guardia: '',
+    horaFinSemana: null,
+    horaFinSabado: null,
+    horaFinFeriado: null,
+    horaInicioSemana: null,
+    horaInicioSabado: null,
+    horaInicioFeriado: null,
     llamadaReal: false,
     maxAnoPagos: 0,
     maxDiasNoticias: 365,
@@ -121,6 +128,7 @@ export class FirebaseService {
     maxNumEmergencias: 5,
     maxNumNoticias: 10,
     maxNumRondas: 5,
+    maxReservasDiarias: 2,
     minAppVersionAndroid: '',
     minAppVersionIos: '',
     moduloAgenda: true,
@@ -128,6 +136,7 @@ export class FirebaseService {
     moduloEstadisticas: true,
     moduloMisDatos: true,
     moduloPagos: true,
+    moduloReservas: true,
     montoCuotaActual: 0,
     montoCuotaAnterior: 0,
     pruebasTienda: false,
@@ -162,7 +171,7 @@ export class FirebaseService {
   redirigido = false;
   registrando = false;
   registroAvisado = false;
-  randomNum = '';
+  reservasCancha: Reserva[] = [];
   textoAlerta = '';
   ultimoAcceso: Date;
   verAppStr = '';
@@ -267,6 +276,16 @@ export class FirebaseService {
         console.log(`Eliminados ${qrsVencidos.size} registros`);
       });
   }
+  async deleteReserva(id: string) {
+    return this.db.collection('reservas', ref => ref.where('idReserva', '==', id))
+    .get()
+    .subscribe( res => {
+      res.forEach( async result => {
+        await result.ref.delete();
+      });
+      console.log(`Eliminada la reserva.`);
+    });
+  }
   async deleteUsuario(id: string) {
     console.log('borrando usuario de bd id: ', id);
     this.db.collection('persona', ref => ref.where('idPersona', '==', id))
@@ -284,6 +303,9 @@ export class FirebaseService {
     .catch( err => {
       console.log('auth - Error al eliminar usuario: ', err);
     });
+  }
+  esFeriado(fecha: Date): boolean {
+    return this.parametrosFB.feriados.findIndex(fer => this.soloFecha(this.timestampToDate(fer)) === this.soloFecha(fecha)) > -1;
   }
   getAdministradores() {
     return this.db.collection<Persona>('persona', ref => ref.where('esAdmin', '==', true)).get();
@@ -421,6 +443,15 @@ export class FirebaseService {
                                                         console.log('fbsrvc.misPagosNoAdm: ', this.misPagosNoAdm);
                                                        });
   }
+  getMisReservas() {
+    const inicioSemana = moment().startOf('day').toDate();
+    const finalSemana = moment().endOf('day').add(6,'days').toDate();
+    console.log(`getMisReservas(${moment(inicioSemana).format('DD-MMM')} al ${moment(finalSemana).format('DD-MMM')})`);
+    return this.db.collection<Reserva>('reservas', ref => ref.where('fechaInicioReserva', '>=', inicioSemana)
+                                                             .where('idDireccion', '==', this.parametros.codigoDir)
+                                                             .orderBy('fechaInicioReserva', 'asc'))
+                                                             .valueChanges();
+  }
   getMisVisitas() {
     return this.db.collection<Visita>('visitas', ref => ref.where('idDireccion', '==', this.parametros.codigoDir))
                                                            .valueChanges();
@@ -470,6 +501,8 @@ export class FirebaseService {
       this.appPages[4].visible = this.parametrosFB.moduloMisDatos;
       this.parametrosFB.moduloPagos = params.docs[0].get('moduloPagos');
       this.appPages[5].visible = this.parametrosFB.moduloPagos;
+      this.parametrosFB.moduloReservas = params.docs[0].get('moduloReservas');
+      this.appPages[6].visible = this.parametrosFB.moduloReservas;
       // FECHAS
       this.parametrosFB.fechaCambioCuota = params.docs[1].get('fechaCambioCuota').toDate();
       this.parametrosFB.montoCuotaActual = params.docs[1].get('valorCuotaActual');
@@ -493,10 +526,18 @@ export class FirebaseService {
       this.parametrosFB.guardia = params.docs[3].get('guardia');
       this.parametrosFB.seguridadComunal = params.docs[3].get('seguridadComunal');
       this.parametrosFB.emergenciaComunal = params.docs[3].get('emergenciaComunal');
+      // RERSERVAS
+      this.parametrosFB.horaFinSemana = params.docs[4].get('horaFinSemana');
+      this.parametrosFB.horaFinSabado = params.docs[4].get('horaFinSabado');
+      this.parametrosFB.horaFinFeriado = params.docs[4].get('horaFinFeriado');
+      this.parametrosFB.horaInicioSemana = params.docs[4].get('horaInicioSemana');
+      this.parametrosFB.horaInicioSabado = params.docs[4].get('horaInicioSabado');
+      this.parametrosFB.horaInicioFeriado = params.docs[4].get('horaInicioFeriado');
+      this.parametrosFB.feriados = params.docs[4].get('feriados');        
       // URLS
-      this.parametrosFB.urlAppAndroid = params.docs[4].get('urlAppAndroid');
-      this.parametrosFB.urlAppIos = params.docs[4].get('urlAppIos');
-      console.log('%cfirebase.service.ts getParametrosFB [OK]', 'color: #007acc;', moment().format('HH:mm:ss'));
+      this.parametrosFB.urlAppAndroid = params.docs[5].get('urlAppAndroid');
+      this.parametrosFB.urlAppIos = params.docs[5].get('urlAppIos');
+      console.log('%cfirebase.service.ts getParametrosFB [OK]', 'color: #007acc;', moment().format('HH:mm:ss'),this.parametrosFB);
       this.appRef.tick();
     });
   }
@@ -559,6 +600,15 @@ export class FirebaseService {
     return this.db.collection<Persona>('persona', ref => ref.where('authUid', '==', id))
                                                             .get();
   }
+  getReservas() {
+    const inicioSemana = moment().startOf('day').toDate();
+    const finalSemana = moment().startOf('day').add(6,'days').toDate();
+    console.log(`getReservas(${moment(inicioSemana).format('DD-MMM')} al ${moment(finalSemana).format('DD-MMM')})`);
+    return this.db.collection<Reserva>('reservas', ref => ref.where('fechaInicioReserva', '>=', inicioSemana))
+                                                                  //  .where('fechaSolicitud', '<=', finalSemana))
+                                                                   .valueChanges();
+  }
+
   getRondas() {
     console.log(`getRondas(${this.parametrosFB.maxNumRondas})`);
     return this.db.collection<Ronda>('rondas', ref => ref.limit(this.parametrosFB.maxNumRondas)
@@ -588,6 +638,10 @@ export class FirebaseService {
   }
   guardarStorage( clave: string, struct: any ) {
     this.storage.set( clave, struct );
+  }
+  hayReserva(fecha: Date): Reserva {
+    return this.reservasCancha.find(res => this.soloFecha(res.fechaInicioReserva) === this.soloFecha(fecha) &&
+                                           this.soloHora(res.fechaInicioReserva) === this.soloHora(fecha));
   }
   lanzarSonido( id: string, times?: number ) {
     setTimeout(() => {
@@ -747,6 +801,17 @@ export class FirebaseService {
   async postQr( qr: Qr ) {
     return await this.db.collection('qr').add(qr);
   }
+  async postReserva( res: Reserva) {
+    await this.db.collection('reservas').add(res)
+    .then( docRef => {
+      console.log('Reserva ID: ', docRef.id);
+      res.idReserva = docRef.id;
+      this.putReserva( res )
+      .then( () => {
+        console.log('ID de reserva actualizada.');
+      });
+    });
+  }
   postVisitas( visita: Visita) {
     return this.db.collection('visitas').doc(`${visita.idDireccion}`).set(visita);
   }
@@ -784,6 +849,9 @@ export class FirebaseService {
   putInvalidarQr( id: string) {
     return this.db.collection('qr').doc(id).update({ utilizado: true });
   }
+  putReserva( res: Reserva) {
+    return this.db.collection('reservas').doc(res.idReserva).update(res);
+  }
   async registroFirebase( email: string, pass: string ) {
     console.log('registroFirebase()');
     return await this.auth.createUserWithEmailAndPassword( email, pass);
@@ -809,6 +877,12 @@ export class FirebaseService {
       this.mostrarMensaje('No pudimos enviar el correo, reintenta en unos momentos.');
     });
   }
+  soloFecha(fecha: Date) {
+    return(moment(fecha).format('DD-MM-YYYY'));
+  }
+  soloHora(fecha: Date) {
+    return(moment(fecha).format('HH:mm'));
+  }
   stopLoading() {
     console.log('stopLoading()');
     this.loadCtrl.getTop().then( elem => {
@@ -825,7 +899,7 @@ export class FirebaseService {
       // console.log('%ctimestampToDate fechaTS', 'color: #007acc;', fechaTS);
       return moment(fechaTS.seconds * 1000).toDate();
     } else {
-      // console.log('%ctimestampToDate fechaTS', 'color: #007acc;', fechaTS);
+      console.log('%ctimestampToDate fechaTS sin seconds', 'color: #007acc;', fechaTS);
       return moment(fechaTS).toDate();
     }
   }

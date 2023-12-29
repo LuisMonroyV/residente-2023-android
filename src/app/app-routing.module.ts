@@ -71,6 +71,10 @@ const routes: Routes = [
     path: 'mis-avisos-de-pago',
     loadChildren: () => import('./pages/mis-avisos-de-pago/mis-avisos-de-pago.module').then( m => m.MisAvisosDePagoPageModule)
   },
+  {
+    path: 'reservas-cancha',
+    loadChildren: () => import('./pages/reservas-cancha/reservas-cancha.module').then( m => m.ReservasCanchaPageModule)
+  },
 ];
 
 @NgModule({

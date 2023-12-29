@@ -1,0 +1,72 @@
+<ion-header class="ion-no-border mt-40" [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Solicitud de reserva</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()"
+                  color="danger"
+                  >
+        Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="guardarReserva()"
+        novalidate="novalidate"
+        #formReserva="ngForm">
+    <ion-card>
+      <ion-list>
+        <ion-item>
+          <ion-label>Primero selecciona la fecha.</ion-label>
+        </ion-item>
+        <ion-item> 
+          <ion-row>
+            <ion-col *ngFor="let dia of fechasDisponibles; let i = index">
+              <ion-chip color="primary" mode="ios" outline="true" (click)="recalculaMinMax(i)"
+                        [ngClass]="{'seleccionado': fbSrvc.soloFecha(this.nuevaReserva.fechaInicioReserva) == fbSrvc.soloFecha(dia)}">
+                <ion-label>{{dia | date : 'EEE dd-MMM' | titlecase }}</ion-label>
+              </ion-chip>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+        <ion-item *ngIf="fechaSeleccionada">
+          <ion-label>Ahora selecciona hasta dos horarios.</ion-label>
+        </ion-item>
+        <ion-item *ngIf="fechaSeleccionada"> 
+          <ion-row>
+            <ion-col *ngFor="let hora of horariosDisponibles; let i = index">
+              <ion-chip color="primary" mode="ios" outline="true" (click)="seleccionaHora(i)"
+                        [ngClass]="{'seleccionado': fbSrvc.soloHora(nuevaReserva.fechaInicioReserva) == fbSrvc.soloHora(hora)}">
+                <ion-label>{{hora | date : 'HH:mm'}} a {{sumarMinutos(hora) | date : 'HH:mm'}}</ion-label>
+              </ion-chip>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+        <ion-item *ngIf="horaSeleccionada">
+          <ion-label>Finalmente agrega una descripción.</ion-label>
+        </ion-item>
+        <ion-item *ngIf="horaSeleccionada"> 
+          <ion-row>
+            <ion-col>
+              <ion-label color="primary" position="stacked">Descripción: </ion-label>
+              <ion-textarea placeholder="Escribe aquí la descripción de la actividad."
+                            [(ngModel)]="nuevaReserva.obs"
+                            name="observaciones"
+                            required
+                            >
+              </ion-textarea>  
+            </ion-col>
+          </ion-row>
+        </ion-item>
+      </ion-list>  
+      <ion-button type="submit"
+                expand="block" 
+                [disabled]="!formReserva.valid || !horaSeleccionada || !fechaSeleccionada"
+                >
+      Guardar Cambios
+      </ion-button>
+      <ion-ripple-effect type="bounded"></ion-ripple-effect>
+    </ion-card>
+  </form>
+</ion-content>
