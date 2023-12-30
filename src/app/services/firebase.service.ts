@@ -494,10 +494,11 @@ export class FirebaseService {
       this.parametrosFB.guardia = params.docs[3].get('guardia');
       this.parametrosFB.seguridadComunal = params.docs[3].get('seguridadComunal');
       this.parametrosFB.emergenciaComunal = params.docs[3].get('emergenciaComunal');
+      // RESERVAS
       // URLS
-      this.parametrosFB.urlAppAndroid = params.docs[4].get('urlAppAndroid');
-      this.parametrosFB.urlAppIos = params.docs[4].get('urlAppIos');
-      console.log('%cfirebase.service.ts getParametrosFB [OK]', 'color: #007acc;', moment().format('HH:mm:ss'));
+      this.parametrosFB.urlAppAndroid = params.docs[5].get('urlAppAndroid');
+      this.parametrosFB.urlAppIos = params.docs[5].get('urlAppIos');
+      console.log('%cfirebase.service.ts getParametrosFB [OK]', 'color: #007acc;', moment().format('HH:mm:ss'), this.parametrosFB);
       this.appRef.tick();
     });
   }

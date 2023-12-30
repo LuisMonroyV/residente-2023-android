@@ -55,7 +55,7 @@
       </ion-card-header>
       <ion-grid fixed 
                 class="ion-text-center"
-                *ngIf="ano.ano === anoActual || ano.porPagar > 0"
+                *ngIf="ano.ano >= anoActual || ano.porPagar > 0"
                 > 
         <ion-row>
           <ion-col *ngFor="let trim1 of trimestre1; let i=index" size="3">

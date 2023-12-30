@@ -183,20 +183,28 @@ export class MisPagosPage implements OnInit {
     // eslint-disable-next-line max-len
     this.idNum = this.fbSrvc.parametros.codigoDir.substring(this.fbSrvc.parametros.codigoDir.search('-') + 1, this.fbSrvc.parametros.codigoDir.length);
     this.idDireccion = this.idDir + '-' + this.idNum.toUpperCase();
+    // En Diciembre ya se visualiza el año siguiente
+    if (moment().month() === 11) { // 0 a 11
+      const obj1 = { ano: moment().year()+1,
+        pagado: 0,
+        porPagar: this.fbSrvc.parametrosFB.montoCuotaActual * 12
+      };
+      this.anos.push(obj1);
+    }
     if (this.anoInicial && this.anoInicial > 0) {
       for (let index = this.anoActual; index >= this.anoInicial; index--) {
-        const obj = { ano: index,
+        const obj2 = { ano: index,
                       pagado: 0,
                       porPagar: 0
                     };
-        this.anos.push(obj);
+        this.anos.push(obj2);
       }
     } else {
-      const obj = { ano: moment().year(),
+      const obj3 = { ano: moment().year(),
                     pagado: 0,
                     porPagar: 0
                   };
-      this.anos.push(obj);
+      this.anos.push(obj3);
     }
     console.log('Años a  mostrar: ', this.anos);
 
