@@ -122,22 +122,24 @@ export class ModalAvisoDePagoComponent implements OnInit {
       }
       element.documento = '';
     });
-    // Completa con el año siguiente si es Diciembre
+    // Completa con el año siguiente si es Diciembre, sino con el año actual
+    let año = moment().year();
     if (moment().month() === 11) { // 0 a 11
-      for (let index = 1; index <= 12; index++) {
-        const mesAno = moment(`1-${index}-${moment().year()+1}`,'DD-MM-YYYY').format('MM-YYYY');
-        const estaPagado = this.fbSrvc.pagosDir.findIndex( dir => dir.ano ===  moment().year()+1 && dir.mes === index && dir.pagado === true);
-        const estaAgregado = this.fbSrvc.misMesesImpagos.findIndex( dir => dir.mesAno ===  mesAno);
-        if (estaPagado === -1 && estaAgregado === -1) {
-          const newMesImpago: MesImpago = {
-            fecha: moment(`1-${index}-${moment().year()+1}`,'DD-MM-YYYY').toDate(),
-            mesAno,
-            monto: this.fbSrvc.parametrosFB.montoCuotaActual,
-            documento: '',
-            idTransaccion: ''
-          };
-          this.fbSrvc.misMesesImpagos.push(newMesImpago);
-        }
+      año++;
+    }
+    for (let index = 1; index <= 12; index++) {
+      const mesAno = moment(`1-${index}-${año}`,'DD-MM-YYYY').format('MM-YYYY');
+      const estaPagado = this.fbSrvc.pagosDir.findIndex( dir => dir.ano ===  año && dir.mes === index && dir.pagado === true);
+      const estaAgregado = this.fbSrvc.misMesesImpagos.findIndex( dir => dir.mesAno ===  mesAno);
+      if (estaPagado === -1 && estaAgregado === -1) {
+        const newMesImpago: MesImpago = {
+          fecha: moment(`1-${index}-${año}`,'DD-MM-YYYY').toDate(),
+          mesAno,
+          monto: this.fbSrvc.parametrosFB.montoCuotaActual,
+          documento: '',
+          idTransaccion: ''
+        };
+        this.fbSrvc.misMesesImpagos.push(newMesImpago);
       }
     }
     // orden cronológico
