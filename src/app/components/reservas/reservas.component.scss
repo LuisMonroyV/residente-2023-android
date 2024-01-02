@@ -12,7 +12,7 @@
 .disponible {
     border: 1px solid var(--ion-color-whatsapp-green);
     border-radius: 6px;
-    color: var(--ion-color-whatsapp-green);
+    // color: var(--ion-color-whatsapp-green);
 }
 .solicitada {
     border: 1px solid var(--ion-color-warning);
@@ -22,7 +22,7 @@
 .reservada {
     border: 1px solid var(--ion-color-danger);
     border-radius: 6px;
-    color: var(--ion-color-danger);
+    // color: var(--ion-color-danger);
 }
 .centrado {
     // display: inherit;
@@ -54,4 +54,7 @@
 }
 .card-reservas {
     display: block;
+}
+.pt-40 {
+    padding-top: 40px;
 }

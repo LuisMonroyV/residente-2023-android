@@ -283,6 +283,7 @@ export class FirebaseService {
       res.forEach( async result => {
         await result.ref.delete();
       });
+      this.appRef.tick();
       console.log(`Eliminada la reserva.`);
     });
   }

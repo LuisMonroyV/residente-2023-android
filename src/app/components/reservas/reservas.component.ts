@@ -40,19 +40,18 @@ solicitudesHoy = 0;
     for (let indexDiaSem = 0; indexDiaSem <= 6; indexDiaSem++) {
       const diaSemana = moment().startOf('day').add(indexDiaSem, 'day').toDate();
       numDia = moment(diaSemana).day(); // Domingo 0 .. Sábado 6
-      if (this.fbSrvc.esFeriado(diaSemana)) {
+      if (this.fbSrvc.esFeriado(diaSemana) || numDia === 0) {
         minHorario = this.fbSrvc.parametrosFB.horaInicioFeriado;
         maxHorario = this.fbSrvc.parametrosFB.horaFinFeriado;
-      } else if( numDia === 6) {
+      } else if( numDia === 6) { // Sábado
         minHorario = this.fbSrvc.parametrosFB.horaInicioSabado;
         maxHorario = this.fbSrvc.parametrosFB.horaFinSabado;
       } else {
         minHorario = this.fbSrvc.parametrosFB.horaInicioSemana;
         maxHorario = this.fbSrvc.parametrosFB.horaFinSemana;
       }
-      // console.log('%cnumdia, min, max', 'color: #007acc;', numDia, minHorario, maxHorario);
       this.dia = [];
-      for (let indexHora = minHorario; indexHora < maxHorario; indexHora++) { // max de 14 horas los días sábados
+      for (let indexHora = minHorario; indexHora < maxHorario; indexHora++) {
         const horaVacia: Hora = {
           hora: moment().startOf('day').add(indexDiaSem, 'day').add(indexHora, 'hour').toDate(),
           reserva: reservaVacia
@@ -72,14 +71,14 @@ solicitudesHoy = 0;
         horas: this.dia
       });
     }
-    // console.log('%creservas.component.ts this.semana', 'color: #007acc;', this.semana);
+    console.log('%creservas.component.ts line:74 this.semana', 'color: #007acc;', this.semana);
   }
 
   ngOnInit() {
     this.fbSrvc.getReservas()
     .subscribe(reserva => {
+      this.fbSrvc.reservasCancha = [];
       if (reserva && reserva.length > 0) {
-        this.fbSrvc.reservasCancha = [];
         reserva.forEach(res => {
           const newReserva: Reserva = {
             fechaSolicitud: this.fbSrvc.timestampToDate(res.fechaSolicitud),
@@ -92,14 +91,10 @@ solicitudesHoy = 0;
           };
           this.fbSrvc.reservasCancha.push(newReserva);
         });
-        // console.log('%creservas.component.ts reservasCancha', 'color: #007acc;', this.fbSrvc.reservasCancha);
-        this.inicializaSemana();    
       } else {
         console.log('%creservas.component.ts No hay reservas', 'color: #007acc;');
       }
     });
-
-
     this.fbSrvc.getMisReservas()
     .subscribe( misRes => {
       if (misRes && misRes.length > 0) {
@@ -126,6 +121,7 @@ solicitudesHoy = 0;
         console.log(`%creservas.component.ts No hay reservas para ${this.fbSrvc.parametros.codigoDir}`, 'color: #007acc;');
       }
     });
+    this.inicializaSemana();    
   }
   async solicitar() {
     if (this.solicitudesHoy < this.fbSrvc.parametrosFB.maxReservasDiarias) {
@@ -164,6 +160,8 @@ solicitudesHoy = 0;
             handler: () => {
               this.fbSrvc.deleteReserva(this.misReservasSemana[pos].idReserva)
               .then( () => {
+                this.misReservasSemana.splice(pos, 1);
+                this.inicializaSemana();    
                 this.fbSrvc.mostrarMensaje('Reserva eliminada.', 3);
               })
               .catch(err => {

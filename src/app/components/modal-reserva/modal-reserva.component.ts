@@ -46,35 +46,23 @@ export class ModalReservaComponent implements OnInit {
 
   recalculaHoras(desde: number, hasta: number) {
     this.horariosDisponibles = [];
-    for (let index = desde; index <= hasta; index++) {
+    for (let index = desde; index < hasta; index++) {
       const element = moment(this.nuevaReserva.fechaInicioReserva).startOf('day').add(index, 'hour').toDate();
       this.horariosDisponibles.push(element);
     }
     // Deja no disponible las horas reservadas
-    for (let index = 0; index < this.horariosDisponibles.length; index++) {
-      if (this.fbSrvc.hayReserva(this.horariosDisponibles[index])) {
-        this.horariosDisponibles.splice(index, 1);
-        index = 0;
-      }      
-    }
+    this.horariosDisponibles = this.horariosDisponibles.filter(horasRes => !this.fbSrvc.hayReserva(horasRes));
     // Deja no disponible las horas anteriores a la hora actual
     this.horariosDisponibles = this.horariosDisponibles.filter(horasok => horasok > moment().toDate());
-    // for (let index = 0; index < this.horariosDisponibles.length; index++) {
-    //   if (moment().toDate() > this.horariosDisponibles[index]) {
-    //     this.horariosDisponibles.splice(index, 1);
-    //   }      
-    // }
   }
 
   recalculaMinMax(idx: number) {
     this.fechaSeleccionada = true;
     this.nuevaReserva.fechaInicioReserva = this.fechasDisponibles[idx];
     let diaSem = moment(this.fechasDisponibles[idx]).day(); // Domingo 0 .. Sábado 6
-    if (this.fbSrvc.esFeriado(moment(this.fechasDisponibles[idx]).toDate())) {
+    if (this.fbSrvc.esFeriado(moment(this.fechasDisponibles[idx]).toDate()) || diaSem === 0) {
       diaSem = 0;  // Le asigno dia feriado o domingo
-      console.log('%modal-reserva.component.ts Domingo o Feriado');
     }
-    console.log('%cdiaSem', 'color: #007acc;', diaSem);
     switch (diaSem) {
       case 6: // Sábado
         this.recalculaHoras(this.fbSrvc.parametrosFB.horaInicioSabado, this.fbSrvc.parametrosFB.horaFinSabado);
