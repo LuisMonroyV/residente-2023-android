@@ -171,6 +171,7 @@ export interface Persona {
     email: string;
     emailOk: boolean;
     esAdmin: boolean;
+    esAdminCancha: boolean;
     esMenordeEdad: boolean;
     estado: string;
     esTesorero: boolean;

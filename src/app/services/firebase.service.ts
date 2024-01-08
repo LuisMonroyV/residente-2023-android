@@ -154,6 +154,7 @@ export class FirebaseService {
       email: '',
       emailOk: false,
       esAdmin: false,
+      esAdminCancha: false,
       esMenordeEdad: false,
       estado: '',
       esTesorero: false,
@@ -310,6 +311,9 @@ export class FirebaseService {
   }
   getAdministradores() {
     return this.db.collection<Persona>('persona', ref => ref.where('esAdmin', '==', true)).get();
+  }
+  getAdminsCancha() {
+    return this.db.collection<Persona>('persona', ref => ref.where('esAdminCancha', '==', true)).get();
   }
   getAvisosDePago() {
     console.log('getAvisosDePago()');

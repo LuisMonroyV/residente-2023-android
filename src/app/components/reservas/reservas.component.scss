@@ -32,6 +32,10 @@
     display: flex;
     justify-content: center;
 }
+.borde-azul {
+    border: 1px solid var(--ion-color-primary);
+    border-radius: 6px;
+}
 .borde-horario {
     border: 1px solid var(--ion-color-primary);
     border-radius: 8px;
@@ -57,4 +61,7 @@
 }
 .pt-40 {
     padding-top: 40px;
+}
+.feriado {
+    color: var(--ion-color-danger);
 }

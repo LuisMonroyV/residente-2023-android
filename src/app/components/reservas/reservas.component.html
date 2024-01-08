@@ -1,61 +1,93 @@
-<div class="ion-padding ion-text-center borde" >
-  <ion-chip color="whatsapp-green" mode="ios" outline="false" class="borde-chip">
-    <ion-label>Disponible</ion-label>
-  </ion-chip>
-  <ion-chip color="warning" mode="ios" outline="false" class="borde-chip">
-    <ion-label>Solicitada</ion-label>
-  </ion-chip>
-  <ion-chip color="danger" mode="ios" outline="false" class="borde-chip">
-    <ion-label>Reservada</ion-label>
-  </ion-chip>
+<ion-segment *ngIf="fbSrvc.persona.esAdminCancha"
+            (ionChange)="segmentChanged($event)" 
+            mode="ios"
+            color="secondary"
+            value="calendario">
+  <ion-segment-button value="calendario">
+    <ion-label>Calendario</ion-label>
+  </ion-segment-button>
+    <ion-segment-button value="solicitudes">
+    <ion-label>Solictudes
+      <ion-badge *ngIf="solictudesCanchaPendientes.length > 0" 
+                color="success" 
+                mode="ios">
+        {{solictudesCanchaPendientes.length}}
+      </ion-badge>
+    </ion-label>
+  </ion-segment-button>
+</ion-segment>
+
+<!-- Sección Calendario -->
+<div *ngIf="seccion === 'calendario'">
+  <div class="ion-padding ion-text-center borde" >
+    <ion-chip color="whatsapp-green" mode="ios" outline="false" class="borde-chip">
+      <ion-label>Disponible</ion-label>
+    </ion-chip>
+    <ion-chip color="warning" mode="ios" outline="false" class="borde-chip">
+      <ion-label>Solicitada</ion-label>
+    </ion-chip>
+    <ion-chip color="danger" mode="ios" outline="false" class="borde-chip">
+      <ion-label>Reservada</ion-label>
+    </ion-chip>
+  </div>
+  <ion-grid fixed class="borde-horario" *ngIf="semana && semana.length > 0">
+    <ion-row >
+      <ion-col *ngFor="let diaSem of semana; let d = index"  class="centrado ion-no-padding">
+        <ion-row class="borde-azul ion-no-padding  ion-text-center" >
+          <ion-col class="ion-no-padding ion-text-center">
+            <span class="tam-14">{{(diaSem.dia | date: 'EEE') | titlecase }}</span> <br>
+            <strong class="tam-16" [ngClass]="{'feriado': fbSrvc.esFeriado(diaSem.dia)}">{{(diaSem.dia | date: 'dd') | titlecase }}</strong>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngFor="let hora of diaSem.horas; let h = index" class="centrado"
+                [ngClass]="{'solicitada': hora.reserva.estado === 'Solicitada', 
+                            'reservada': hora.reserva.estado === 'Reservada', 
+                            'disponible': hora.reserva.estado === 'Disponible'}"
+                >
+          <span class="tam-14">{{hora.hora| date: 'HH:mm'}}</span>
+        </ion-row>
+      </ion-col>    
+    </ion-row>
+  </ion-grid>
+  <ion-grid fixed class="borde-horario" *ngIf="misReservasSemana && misReservasSemana.length > 0">
+    <ion-row class="centrado-flex">
+      <ion-col class="centrado-flex">
+        <h4>Mis reservas</h4>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngFor="let reserva of misReservasSemana; let i = index" class="card-reservas">
+      <ion-card [ngClass]="{'solicitada': reserva.estado === 'Solicitada', 
+                            'reservada': reserva.estado === 'Reservada', 
+                            'disponible': reserva.estado === 'Disponible'}">
+        <ion-card-content  class="ion-no-padding">
+          <ion-grid fixed>
+            <ion-row>
+              <ion-col size="10" class="tam-18">
+                <ion-label>Solicitada el: {{reserva.fechaSolicitud | date : 'dd-MMM'}}</ion-label> <br>
+                <ion-label>Para el: {{reserva.fechaInicioReserva | date : 'dd-MMM'}} de {{reserva.fechaInicioReserva | date : 'HH-mm'}} a {{reserva.fechaFinReserva | date : 'HH-mm'}}</ion-label> <br>
+                <ion-label>Estado: {{reserva.estado}}</ion-label><br>
+                <ion-label>Observaciones: {{reserva.obs}}</ion-label>
+              </ion-col>
+              <ion-col size="2" class="centrado pt-40">
+                <ion-icon color="danger" 
+                          name="remove-circle-sharp"                  
+                          (click)="anular(i)"
+                          size="large"
+                          >
+                </ion-icon>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
 </div>
-<ion-grid fixed class="borde-horario" *ngIf="semana && semana.length > 0">
-  <ion-row >
-    <ion-col *ngFor="let diaSem of semana; let d = index"  class="centrado ion-no-padding">
-      <span class="tam-14">{{(diaSem.dia | date: 'EEE-dd') | titlecase }}</span>
-      <ion-row *ngFor="let hora of diaSem.horas; let h = index" class="centrado"
-              [ngClass]="{'solicitada': hora.reserva.estado === 'Solicitada', 
-                          'reservada': hora.reserva.estado === 'Reservada', 
-                          'disponible': hora.reserva.estado === 'Disponible'}"
-              >
-        <span class="tam-14">{{hora.hora| date: 'HH:mm'}}</span>
-      </ion-row>
-    </ion-col>    
-  </ion-row>
-</ion-grid>
-<ion-grid fixed class="borde-horario" *ngIf="misReservasSemana && misReservasSemana.length > 0">
-  <ion-row class="centrado-flex">
-    <ion-col class="centrado-flex">
-      <h4>Mis reservas</h4>
-    </ion-col>
-  </ion-row>
-  <ion-row *ngFor="let reserva of misReservasSemana; let i = index" class="card-reservas">
-    <ion-card [ngClass]="{'solicitada': reserva.estado === 'Solicitada', 
-                          'reservada': reserva.estado === 'Reservada', 
-                          'disponible': reserva.estado === 'Disponible'}">
-      <ion-card-content  class="ion-no-padding">
-        <ion-grid fixed>
-          <ion-row>
-            <ion-col size="10" class="tam-18">
-              <ion-label>Solicitada el: {{reserva.fechaSolicitud | date : 'dd-MMM'}}</ion-label> <br>
-              <ion-label>Para el: {{reserva.fechaInicioReserva | date : 'dd-MMM'}} de {{reserva.fechaInicioReserva | date : 'HH-mm'}} a {{reserva.fechaFinReserva | date : 'HH-mm'}}</ion-label> <br>
-              <ion-label>Estado: {{reserva.estado}}</ion-label><br>
-              <ion-label>Observaciones: {{reserva.obs}}</ion-label>
-            </ion-col>
-            <ion-col size="2" class="centrado pt-40">
-              <ion-icon color="danger" 
-                        name="remove-circle-sharp"                  
-                        (click)="anular(i)"
-                        size="large"
-                        >
-              </ion-icon>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
-  </ion-row>
-</ion-grid>
+<!-- Sección Solicitudes -->
+<div *ngIf="seccion === 'solicitudes'">
+
+</div>
+
 <ion-fab vertical="bottom" horizontal="end" slot="fixed">
   <ion-fab-button (click)="solicitar()">
       <ion-icon name="add"></ion-icon>

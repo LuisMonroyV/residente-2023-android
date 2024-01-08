@@ -147,6 +147,30 @@ export class PushService {
       console.log('Respuesta oneSignal: ', data2);
     });
   }
+  async notificarNuevaReserva(idUsers: string[]) {
+    const body = {
+      app_id: oSAppIdCliente,
+      include_player_ids: idUsers,
+      data: {
+        nombre: 'Se ha solicitado una reserva de cancha.',
+        calle: this.fbSrvc.persona.calle,
+        numero: this.fbSrvc.persona.numero,
+      },
+      contents: {
+        en: `Un residente de ${this.fbSrvc.persona.calle}-${this.fbSrvc.persona.numero} ha solicitado una reserva`,
+        es: `Un residente de ${this.fbSrvc.persona.calle}-${this.fbSrvc.persona.numero} ha solicitado una reserva`
+      },
+      headings: {
+        en: 'Se ha solicitado una reserva de cancha.',
+        es: 'Se ha solicitado una reserva de cancha.'
+      }
+    };
+    console.log({body});
+    return this.http.post(oSApiUrl, body, { headers } )
+    .subscribe( data2 => {
+      console.log('Respuesta oneSignal: ', data2);
+    });
+  }
   async notificarNuevoUsuario(idAdmin: string) {
     const body = {
       app_id: oSAppIdCliente,
