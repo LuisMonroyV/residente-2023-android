@@ -764,9 +764,9 @@ export class FirebaseService {
   putNoticia( noti: Noticia) {
     return this.db.collection('noticias').doc(noti.idNoticia).update(noti);
   }
-  putPago( pag: Pago) {
-    const ultAct = moment().toISOString(true);
-    return this.db.collection('pagos').doc(`${pag.ano}${pag.mes}${pag.idDireccion}`).update({ pagado: pag.pagado, ultAct, comentario: pag.comentario });
+  putPago( pag: Pago) { 
+    pag.ultAct = moment().toISOString(true);
+    return this.db.collection('pagos').doc(`${pag.ano}${pag.mes}${pag.idDireccion}`).set(pag);
   }
   putPersona( per: Persona) {
     if (this.parametros.identificado || this.registrando) {
