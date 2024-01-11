@@ -31,8 +31,12 @@ export class ModalAvisoDePagoComponent implements OnInit {
   };
   totalDeuda = 0;
   totalAviso = 0;
+  paso = 1;
   validacionAviso = '';
-
+  validacionAvisoP1 = 'Seleccionar la imagen del período a informar.';
+  validacionAvisoP2 = 'Seleccionar la imagen del período a informar.';
+  validacionAvisoP3 = 'Seleccionar la imagen del período a informar.';
+  verElFuturo = false;
   constructor(
               private cam: Camera,
               public fbSrvc: FirebaseService,
@@ -79,6 +83,9 @@ export class ModalAvisoDePagoComponent implements OnInit {
       this.fbSrvc.mostrarMensaje('No se pudo abrir la galería.');
       this.fbSrvc.stopLoading();
     });
+  }
+  anterior() {
+    this.paso--;
   }
   cerrarModal() {
     console.log('%ccerrarModal()', 'color: #007acc;');
@@ -155,6 +162,11 @@ export class ModalAvisoDePagoComponent implements OnInit {
     this.nuevoAvisoDePago.mesesPagados = this.fbSrvc.misMesesImpagos;
     //console.log('%cthis.nuevoAvisoDePago ', 'color: #007acc;', this.nuevoAvisoDePago);
   }
+  siguiente() {
+    this.paso++;
+    this.validarAviso();
+  }
+
   async tomarFoto(pos: number) {
     console.log(`%ctomarFoto(${pos})`);
     const name = `${this.nuevoAvisoDePago.idDireccion}-` + new Date().getTime();
@@ -200,18 +212,31 @@ export class ModalAvisoDePagoComponent implements OnInit {
     });
   }
   validarAviso() {
-    if (this.nuevoAvisoDePago.mesesPagados[0].documento.length === 0) {
-      this.validacionAviso = 'Falta agregar imagen del primer período.';
-    } else if (this.nuevoAvisoDePago.mesesPagados.length > 1 && !this.validarPagos()) {
-      this.validacionAviso = 'Los períodos deben ser avisados de manera cronológica.';
-    } else if (this.nuevoAvisoDePago.transfiere.length === 0) {
-      this.validacionAviso = 'Falta el nombre de quien hizo la transferencia';
-    } else if (!this.fechaTransf) {
-      this.validacionAviso = 'Falta indicar fecha de la transferencia';
-    } else if (moment(this.fechaTransf).toDate() > moment().toDate()) {
-      this.validacionAviso = 'Fecha de la transferencia no puede ser a futuro';
-    } else {
-      this.validacionAviso = 'OK';
+    if (this.paso === 1) {
+      this.validacionAvisoP1 = '';
+      if (this.nuevoAvisoDePago.mesesPagados[0].documento.length === 0) {
+        this.validacionAvisoP1 = 'Falta agregar imagen del primer período.';
+      } else if (this.nuevoAvisoDePago.mesesPagados.length > 1 && !this.validarPagos()) {
+        this.validacionAvisoP1 = 'Los períodos deben ser avisados de manera cronológica.';
+      } else {
+        this.validacionAvisoP1 = 'OK';
+      }
+    } else if (this.paso === 2) {
+      this.validacionAvisoP2 = '';
+      if (this.nuevoAvisoDePago.transfiere.length === 0) {
+        this.validacionAvisoP2 = 'Falta el nombre de quien hizo la transferencia';
+      } else {
+        this.validacionAvisoP2 = 'OK';
+      }
+    } else if (this.paso === 3) {
+      this.validacionAvisoP3 = '';
+      if (!this.fechaTransf) {
+        this.validacionAvisoP3 = 'Falta indicar fecha de la transferencia';
+      } else if (moment(this.fechaTransf).toDate() > moment().toDate()) {
+        this.validacionAvisoP3 = 'Fecha de la transferencia no puede ser a futuro';
+      } else {
+        this.validacionAvisoP3 = 'OK';
+      }
     }
   }
   validarPagos(): boolean {

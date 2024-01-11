@@ -1,13 +1,6 @@
 <ion-header class="ion-no-border mt-40" [translucent]="true">
   <ion-toolbar>
-    <ion-title *ngIf="validacionAviso == 'OK' || validacionAviso == ''">
-      Nuevo aviso de pago 
-    </ion-title>
-    <div *ngIf="validacionAviso !== 'OK' && validacionAviso !== ''" class="ion-text-center">
-      <ion-chip color="danger" mode="ios">
-        <ion-label>{{validacionAviso}}</ion-label>
-      </ion-chip>
-    </div>
+    <ion-title>Nuevo aviso de pago</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()"
                   color="danger"
@@ -19,114 +12,291 @@
 </ion-header>
 
 <ion-content>
-  <form (ngSubmit)="guardarAvisoDePago()"
-        novalidate="novalidate"
-        #formAviso="ngForm"
-        *ngIf="totalDeuda > 0 || nuevoAvisoDePago.mesesPagados.length > 0">
-    <ion-card style="margin-bottom: 50px;">
-      <div class="ion-text-center" style="margin-top: 20px;">
+  <div *ngIf="totalDeuda > 0 || nuevoAvisoDePago.mesesPagados.length > 0">
+    <!-- PASO 1 -->
+    <div *ngIf="paso === 1" class="ion-padding">
+      <!-- Total Deuda -->
+      <div class="ion-text-left" style="margin-top: 20px;">
+        <ion-chip color="warning" mode="ios" outline="false">
+          <ion-label>Total Pendiente: ${{totalDeuda | number : '1.0-0'}}</ion-label>
+        </ion-chip>
+        <!-- <ion-label>
+          <ion-badge color="warning" mode="ios" class="boton-deuda">
+            Total Pendiente: ${{totalDeuda | number : '1.0-0'}}
+          </ion-badge>
+        </ion-label> -->
+      </div> 
+      <!-- Lista de períodos -->
+      <ion-list *ngIf="nuevoAvisoDePago.mesesPagados.length > 0">
+        <!-- itemes obligatorios -->
+        <div class="ion-no-padding"
+                  *ngFor="let mes of nuevoAvisoDePago.mesesPagados; let i = index"
+                  >
+          <ion-grid fixed *ngIf="mes.fecha <= fechaCorte">
+            <div>
+              <!-- PERIODOS -->
+              <ion-row>
+                <ion-col size="8"                   
+                         style="padding-top: 15px;"
+                         >
+                  <span class="periodo" [ngClass]="{'texto-atrasado': mes.fecha <= fechaCorte}">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
+                </ion-col>
+                <ion-col size="2" class="ion-text-center">
+                  <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                                style="display: inline-block; vertical-align: middle;"
+                                 >
+                     <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
+                      <img style="border-radius: 10px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
+                     </a>
+                  </ion-thumbnail>
+                  <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                            name="attach-sharp" 
+                            (click)="abrirGaleria(i)"
+                            size="large"
+                            color="primary"
+                            >
+                  </ion-icon>
+                </ion-col>
+                <ion-col size="2" class="ion-text-center">
+                  <ion-icon name="trash-outline"
+                            color="danger"
+                            size="large"
+                            *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                            (click)="deseleccionarMes(i)"
+                            style="vertical-align: text-bottom;"
+                            >
+                  </ion-icon>
+                  <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                            name="camera-sharp" 
+                            (click)="tomarFoto(i)"
+                            size="large"
+                            color="primary"
+                            >
+                  </ion-icon>
+              </ion-col>
+              </ion-row>
+            </div>
+          </ion-grid>
+        </div>
+        <div *ngIf="!verElFuturo">
+          <div *ngIf="totalDeuda === 0"
+                class="ion-text-center"
+                >
+            <img class="ion-padding" src="assets/images/no-data-10.png"/><br>
+            <ion-text color="primary">
+              <strong>Felicitaciones!!</strong><br>
+              <strong>estás al día en tus pagos.</strong>
+            </ion-text>
+          </div>   
+          <div class="ion-text-center">
+            <ion-badge class="proximos-periodos" color="success" mode="ios"(click)="verElFuturo = !verElFuturo;">Ver próximos períodos</ion-badge> 
+          </div>
+        </div>
+        <div *ngIf="verElFuturo">
+          <div>
+            <ion-badge class="proximos-periodos" color="success" mode="ios" (click)="verElFuturo = !verElFuturo;">Ver sólo períodos atrasados</ion-badge>
+          </div>
+        </div>
+        <br>
+        <!-- itemes opcionales -->
+        <div *ngIf="verElFuturo">
+          <div class="ion-no-padding"
+                    *ngFor="let mesf of nuevoAvisoDePago.mesesPagados; let i = index"
+                    >
+            <ion-grid fixed>
+              <div *ngIf="mesf.fecha > fechaCorte && verElFuturo">
+                <!-- PERIODOS -->
+                <ion-row>
+                  <ion-col size="8"                   
+                           style="padding-top: 15px;"
+                           >
+                    <span class="periodo" [ngClass]="{'texto-atrasado': mesf.fecha <= fechaCorte}">{{mesf.fecha | date: 'MMMM - yyyy' }} - ${{ mesf.monto | number : '1.0-0'}} </span>
+                  </ion-col>
+                  <ion-col size="2" class="ion-text-center">
+                    <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                                  style="display: inline-block; vertical-align: middle;"
+                                   >
+                       <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
+                        <img style="border-radius: 10px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
+                       </a>
+                    </ion-thumbnail>
+                    <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                              name="attach-sharp" 
+                              (click)="abrirGaleria(i)"
+                              size="large"
+                              color="primary"
+                              >
+                    </ion-icon>
+                  </ion-col>
+                  <ion-col size="2" class="ion-text-center">
+                    <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                              name="trash-outline"
+                              color="danger"
+                              size="large"
+                              (click)="deseleccionarMes(i)"
+                              style="vertical-align: text-bottom;"
+                              >
+                    </ion-icon>
+                    <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                              name="camera-sharp" 
+                              (click)="tomarFoto(i)"
+                              size="large"
+                              color="primary"
+                              >
+                    </ion-icon>
+                  </ion-col>
+                </ion-row>
+              </div>
+            </ion-grid>
+          </div>
+        </div>
+      </ion-list>  
+      <!-- Total Aviso -->
+      <div *ngIf="totalAviso > 0" class="boton-total-aviso">
         <ion-label>
-          <ion-badge color="warning" mode="ios" style="font-size: large;">
-            Total Deuda: ${{totalDeuda | number : '1.0-0'}}
+          <ion-badge color="warning" mode="ios" class="boton-deuda">
+            Total Aviso: ${{totalAviso | number : '1.0-0'}}
           </ion-badge>
         </ion-label>
       </div> 
-      <ion-list *ngIf="nuevoAvisoDePago.mesesPagados.length > 0">
-        <ion-item class="ion-text-center">
-          <ion-label class="ion-text-center tam-14" 
-                     style="white-space: normal;">
-            Toca en el mes para subir la imagen de evidencia desde la galería o tomar una foto.<br> 
-            Las deudas deben ser pagadas en orden desde la más antigua a la más nueva.
-          </ion-label>
-        </ion-item>
-        <ion-item class="ion-no-padding"
-                  *ngFor="let mes of nuevoAvisoDePago.mesesPagados; let i = index"
-                  >
-          <ion-grid fixed>
-            <ion-row>
-              <ion-col size="8"                   
-                       style="padding-top: 15px;"
-                       >
-                <span class="periodo" [ngClass]="{'texto-atrasado': mes.fecha <= fechaCorte}">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
-              </ion-col>
-              <ion-col size="2" class="ion-text-center">
-                <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
-                              style="display: inline-block; vertical-align: middle;"
-                               >
-                   <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
-                    <img style="border-radius: 10px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
-                   </a>
-                </ion-thumbnail>
-              </ion-col>
-              <ion-col size="2" class="ion-text-center">
-                <ion-icon name="close-circle-outline"
-                          color="danger"
-                          size="large"
-                          *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
-                          (click)="deseleccionarMes(i)"
-                          style="vertical-align: text-bottom;"
-                          >
-                </ion-icon>
-              </ion-col>
-            </ion-row>
-            <ion-row *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0">
-              <ion-col size="6">
-                <div class="ion-text-center tam-12">
-                  <ion-button (click)="abrirGaleria(i)">
-                    Galería
-                    <ion-icon name="attach-sharp" 
-                              slot="end" 
-                              >
-                    </ion-icon>
-                  </ion-button>
-                </div>    
-              </ion-col>
-              <ion-col size="6">
-                <div class="ion-text-center tam-12">
-                  <ion-button (click)="tomarFoto(i)">
-                    Cámara
-                    <ion-icon name="camera-sharp" 
-                              slot="end"
-                              >
-                    </ion-icon>
-                  </ion-button>
-                </div>    
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
+      <!-- Botón Siguiente -->
+      <ion-row *ngIf="verElFuturo || totalDeuda > 0">
+        <ion-col>
+          <div class="ion-text-center tam-12">
+            <ion-button (click)="siguiente()" class="p-x-40"
+                        [disabled]="validacionAvisoP1 != 'OK'">
+              Siguiente
+            </ion-button>
+          </div>    
+        </ion-col>
+      </ion-row>
+      <!-- VALIDACION PASO 1-->
+      <div *ngIf="verElFuturo || totalDeuda > 0">
+        <ion-card *ngIf="(validacionAvisoP1 != 'OK') && paso === 1"
+                  class="ion-text-center mb-50" color="light">
+          <ion-card-header>
+            <ion-card-subtitle>Para continuar debes...</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content class="validacion">
+            {{validacionAvisoP1}}
+          </ion-card-content>
+        </ion-card>
+        <ion-card *ngIf="validacionAvisoP1 === 'OK' && paso === 1"
+                  class="ion-text-center" color="light">
+          <ion-card-header>
+            <ion-card-subtitle class="validacion-ok">Ya puedes continuar tocando el botón Siguiente</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </div>
+    </div>
+    <!-- PASO 2 -->
+    <div *ngIf="paso === 2">
+        <!-- Nombre de quién transfiere -->
         <div class="ion-padding" style="margin-top: 10px;" color="light">
           <ion-label color="primary" position="stacked">Nombre y apellido de quien transfiere: </ion-label>
-          <ion-text color="danger"> (campo obligatorio)</ion-text>
           <ion-input placeholder="Quien realiza la transferencia"
                      [(ngModel)]="nuevoAvisoDePago.transfiere"
                      name="transfiere"
                      type="text"
                      required
+                     debounce="1000"
                      (ionChange)="validarAviso()"
                      style="border-bottom: 1px solid;"
                      >
           </ion-input>
         </div>
-        <div class="ion-padding" color="light">
-          <ion-label color="primary" position="stacked">Fecha de la transferencia: </ion-label>
-          <ion-text *ngIf="!fechaTransf" color="danger"> (dato obligatorio)</ion-text>
-          <ion-badge *ngIf="fechaTransf" color="success" mode="ios"> {{fechaTransf | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-badge>
-          <ion-datetime 
-                        displayFormat="DD MMM YYYY" 
-                        (ionChange)="validarAviso()"
-                        first-day-of-week="1"
-                        mode="ios"
-                        monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
-                        name="fechaTransferencia"
-                        [(ngModel)]="fechaTransf"
-                        pickerFormat="DD MMM YYYY"
-                        presentation="date"
-                        required
-                        size="cover"
-                        >
-          </ion-datetime>
-        </div>
+      <!-- Botones Anterior y Siguiente -->
+      <ion-row>
+        <ion-col class="centrado">
+          <div class="ion-text-center tam-12">
+            <ion-button (click)="anterior()" class="p-x-20">
+              Anterior
+            </ion-button>
+          </div>    
+          <div class="ion-text-center tam-12">
+            <ion-button (click)="siguiente()"
+                        class="p-x-20"
+                        [disabled]="validacionAvisoP2 != 'OK'">
+              Siguiente
+            </ion-button>
+          </div>    
+        </ion-col>
+      </ion-row>
+      <!-- VALIDACION PASO 2-->
+      <ion-card *ngIf="(validacionAvisoP2 != 'OK') && paso === 2"
+                class="ion-text-center mb-50" color="light">
+        <ion-card-header>
+          <ion-card-subtitle>Para continuar debes...</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content class="validacion">
+          {{validacionAvisoP2}}
+        </ion-card-content>
+      </ion-card>
+      <ion-card *ngIf="validacionAvisoP2 === 'OK' && paso === 2"
+                class="ion-text-center" color="light">
+        <ion-card-header>
+          <ion-card-subtitle class="validacion-ok">Ya puedes continuar tocando el botón Siguiente</ion-card-subtitle>
+        </ion-card-header>
+      </ion-card>
+    </div>
+
+    <div *ngIf="paso === 3">
+      <!-- Fecha de la transferencia -->
+      <div class="ion-padding" color="light">
+        <ion-label color="primary" position="stacked">Fecha de la transferencia: </ion-label>
+        <ion-badge *ngIf="fechaTransf" color="success" mode="ios"> {{fechaTransf | fechaCorta : 'DD-MMM-YYYY' : ''}}</ion-badge>
+        <ion-datetime 
+                      displayFormat="DD MMM YYYY" 
+                      (ionChange)="validarAviso()"
+                      first-day-of-week="1"
+                      mode="ios"
+                      monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
+                      name="fechaTransferencia"
+                      [(ngModel)]="fechaTransf"
+                      pickerFormat="DD MMM YYYY"
+                      presentation="date"
+                      required
+                      size="cover"
+                      >
+        </ion-datetime>
+      </div>
+      <!-- Botones Anterior y Siguiente -->
+      <ion-row>
+        <ion-col class="centrado">
+          <div class="ion-text-center tam-12">
+            <ion-button (click)="anterior()" class="p-x-20">
+              Anterior
+            </ion-button>
+          </div>    
+          <div class="ion-text-center tam-12">
+            <ion-button (click)="siguiente()"
+                        class="p-x-20"
+                        [disabled]="validacionAvisoP3 != 'OK'">
+              Siguiente
+            </ion-button>
+          </div>    
+        </ion-col>
+      </ion-row>
+      <!-- VALIDACION PASO 3-->
+      <ion-card *ngIf="(validacionAvisoP3 != 'OK') && paso === 3"
+                class="ion-text-center mb-50" color="light">
+        <ion-card-header>
+          <ion-card-subtitle>Para continuar debes...</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content class="validacion">
+          {{validacionAvisoP3}}
+        </ion-card-content>
+      </ion-card>
+      <ion-card *ngIf="validacionAvisoP3 === 'OK' && paso === 3"
+                class="ion-text-center" color="light">
+        <ion-card-header>
+          <ion-card-subtitle class="validacion-ok">Ya puedes continuar tocando el botón Siguiente</ion-card-subtitle>
+        </ion-card-header>
+      </ion-card>
+    </div>
+    
+    <div *ngIf="paso === 4">
+        <!-- Observaciones -->
         <div class="ion-padding" color="light">
           <ion-label color="primary" position="stacked">Observaciones: </ion-label>
           <ion-textarea placeholder="Puedes escribir aquí alguna observación al encargado de revisar tu aviso de pago."
@@ -135,41 +305,21 @@
                         >
           </ion-textarea>  
         </div>
-      </ion-list>  
-      <div class="ion-text-center" style="margin-top: 10px;">
-        <ion-label>
-          <ion-badge color="warning" mode="ios" style="font-size: large;">
-            Total Aviso: ${{totalAviso | number : '1.0-0'}}
-          </ion-badge>
-        </ion-label>
-      </div> 
-      <div class="ion-text-center" style="padding-left: 10%; padding-right: 10%; padding-bottom: 10px;">
-        <ion-button type="submit"
-                  expand="block" 
-                  [disabled]="!formAviso.valid || totalAviso === 0 || (validacionAviso !== 'OK' && validacionAviso !== '')"
-                  style="width: 90%;"
-                  >
-          Enviar Aviso de Pago
-        </ion-button>
-        <ion-ripple-effect type="bounded"></ion-ripple-effect>
-      </div>
-      <!-- Validación del aviso -->
-      <div class="ion-text-center" style="padding-bottom: 50px;">
-        <ion-chip *ngIf="validacionAviso !== 'OK' && validacionAviso !== ''" color="danger" mode="ios">
-          <ion-label>{{validacionAviso}}</ion-label>
-        </ion-chip>
-        <ion-ripple-effect type="bounded"></ion-ripple-effect>
-      </div>
-    </ion-card>
-  </form>
-  <div *ngIf="totalDeuda === 0 && nuevoAvisoDePago.mesesPagados.length === 0"
-       class="ion-text-center"
-       style="padding-top: 10%;"
-       >
-    <img class="ion-padding" src="assets/images/no-data-10.png"/>
-    <ion-text color="primary">
-      <h2>Felicitaciones!!</h2>
-      <h2>estás al día en tus pagos.</h2>
-    </ion-text>
+      <!-- Botones Anterior y Enviar Aviso -->
+      <ion-row>
+        <ion-col class="centrado">
+          <div class="ion-text-center tam-12">
+            <ion-button (click)="anterior()">
+              Anterior
+            </ion-button>
+          </div>    
+          <div class="ion-text-center tam-12">
+            <ion-button (click)="guardarAvisoDePago()">
+              Enviar Aviso de Pago
+            </ion-button>
+          </div>    
+        </ion-col>
+      </ion-row>
+    </div>
   </div>
 </ion-content>
