@@ -85,12 +85,12 @@ export class FirebaseService {
   imagenEmergenciaSeguridad = 'assets/images/boton-emergencia-seguridad.png';
   imagenEmergenciaSeleccionada = '';
   imagenes: any[] = [];
+  intentosFB = 0;
   login = {
     email: '',
     contrasena: '',
     identificado: false
   };
-  // misPagosNoAdm: Pago[] = [];
   pagosDir: Pago[] = [];
   misMesesImpagos: MesImpago[] = [];
   pagosCreados = false;
@@ -837,18 +837,37 @@ export class FirebaseService {
     this.dark = estado;
   }
   validarVersionApp( data: string) {
-    const verNumDisp = parseInt(data.split('.').join(''));
-    const verNumAct = parseInt(this.parametrosFB.appVersionAndroidStr.split('.').join(''));
-    const verNumMin = parseInt(this.parametrosFB.minAppVersionAndroid.split('.').join(''));
-    if (verNumDisp < 1000) { verNumDisp * 10 }
-    if (verNumAct < 1000) { verNumAct * 10 }
-    if (verNumMin < 1000) { verNumMin * 10 }
-    this.actualizarApp = verNumDisp < verNumAct;
-    this.actualizarAppObligatorio = verNumDisp < verNumMin;
-    console.log('fbSrvc.actualizarApp: ', this.actualizarApp);
-    console.log('fbSrvc.actualizarApp Obligatorio: ', this.actualizarAppObligatorio);
-    if (this.actualizarApp) {
-      this.lanzarSonido('sms', 1);
+    if (this.parametrosFB.appVersionAndroidStr) {
+      this.intentosFB = 0;
+      let verNumDisp = parseInt(data.split('.').join(''), 10);
+      let verNumAct = parseInt(this.parametrosFB.appVersionAndroidStr.split('.').join(''), 10);
+      let verNumMin = parseInt(this.parametrosFB.minAppVersionAndroid.split('.').join(''), 10);
+      if (verNumDisp < 1000) { 
+        verNumDisp *= 10;
+      }
+      if (verNumAct < 1000) { 
+        verNumAct *= 10; 
+      }
+      if (verNumMin < 1000) { 
+        verNumMin *= 10;       
+      }
+      console.log('%cverNumDisp, verNumAct, verNumMin', 'color: #007acc;', `${verNumDisp}, ${verNumAct}, ${verNumMin}`);
+      this.actualizarApp = verNumDisp < verNumAct;
+      this.actualizarAppObligatorio = verNumDisp < verNumMin;
+      console.log('fbSrvc.actualizarApp: ', this.actualizarApp);
+      console.log('fbSrvc.actualizarApp Obligatorio: ', this.actualizarAppObligatorio);
+      if (this.actualizarApp) {
+        this.lanzarSonido('sms', 1);
+      }
+    } else {
+      // No se ha cargado aún los parámetros de Firebase
+      this.intentosFB++;
+      if (this.intentosFB <= 3) { // Tres intentos como máximo
+        console.log('%cfirebase.service.ts esperando 5 segundos a los parámetros de Firebase', 'color: #007acc;');
+        setTimeout(() => {
+          this.validarVersionApp(data); // Recursividad cada 5 segundos
+        }, 5000);
+      }
     }
   }
 }

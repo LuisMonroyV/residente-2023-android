@@ -215,25 +215,25 @@ export class ModalAvisoDePagoComponent implements OnInit {
     if (this.paso === 1) {
       this.validacionAvisoP1 = '';
       if (this.nuevoAvisoDePago.mesesPagados[0].documento.length === 0) {
-        this.validacionAvisoP1 = 'Falta agregar imagen del primer período.';
+        this.validacionAvisoP1 = 'Agregar imagen del primer período.';
       } else if (this.nuevoAvisoDePago.mesesPagados.length > 1 && !this.validarPagos()) {
-        this.validacionAvisoP1 = 'Los períodos deben ser avisados de manera cronológica.';
+        this.validacionAvisoP1 = 'Informar los períodos de manera cronológica.';
       } else {
         this.validacionAvisoP1 = 'OK';
       }
     } else if (this.paso === 2) {
       this.validacionAvisoP2 = '';
       if (this.nuevoAvisoDePago.transfiere.length === 0) {
-        this.validacionAvisoP2 = 'Falta el nombre de quien hizo la transferencia';
+        this.validacionAvisoP2 = 'Indicar el nombre de quien hizo la transferencia';
       } else {
         this.validacionAvisoP2 = 'OK';
       }
     } else if (this.paso === 3) {
       this.validacionAvisoP3 = '';
       if (!this.fechaTransf) {
-        this.validacionAvisoP3 = 'Falta indicar fecha de la transferencia';
+        this.validacionAvisoP3 = 'Indicar fecha de la transferencia';
       } else if (moment(this.fechaTransf).toDate() > moment().toDate()) {
-        this.validacionAvisoP3 = 'Fecha de la transferencia no puede ser a futuro';
+        this.validacionAvisoP3 = 'Indicar la fecha de la transferencia (no puede ser a futuro)';
       } else {
         this.validacionAvisoP3 = 'OK';
       }

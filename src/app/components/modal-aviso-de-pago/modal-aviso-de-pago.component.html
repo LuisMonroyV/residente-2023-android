@@ -16,138 +16,122 @@
     <!-- PASO 1 -->
     <div *ngIf="paso === 1" class="ion-padding">
       <!-- Total Deuda -->
-      <div class="ion-text-left" style="margin-top: 20px;">
-        <ion-chip color="warning" mode="ios" outline="false">
+      <div>
+        <ion-chip color="warning" mode="ios" outline="false" class="ion-text-left">
           <ion-label>Total Pendiente: ${{totalDeuda | number : '1.0-0'}}</ion-label>
         </ion-chip>
-        <!-- <ion-label>
-          <ion-badge color="warning" mode="ios" class="boton-deuda">
-            Total Pendiente: ${{totalDeuda | number : '1.0-0'}}
-          </ion-badge>
-        </ion-label> -->
+        <ion-badge *ngIf="!verElFuturo" class="proximos-periodos" color="success" mode="ios"(click)="verElFuturo = !verElFuturo;">Ver próximos períodos</ion-badge> 
+        <ion-badge *ngIf="verElFuturo" class="proximos-periodos" color="success" mode="ios" (click)="verElFuturo = !verElFuturo;">Ver sólo períodos atrasados</ion-badge>
       </div> 
+      <div *ngIf="!verElFuturo">
+        <div *ngIf="totalDeuda === 0"
+              class="ion-text-center"
+              >
+          <img class="ion-padding" src="assets/images/no-data-10.png"/><br>
+          <ion-text color="primary">
+            <strong>Felicitaciones!!</strong><br>
+            <strong>estás al día en tus pagos.</strong>
+          </ion-text>
+        </div>   
+      </div>
+      <br>
       <!-- Lista de períodos -->
       <ion-list *ngIf="nuevoAvisoDePago.mesesPagados.length > 0">
         <!-- itemes obligatorios -->
-        <div class="ion-no-padding"
-                  *ngFor="let mes of nuevoAvisoDePago.mesesPagados; let i = index"
-                  >
+        <div *ngFor="let mes of nuevoAvisoDePago.mesesPagados; let i = index"
+             class="ion-no-padding">
           <ion-grid fixed *ngIf="mes.fecha <= fechaCorte">
-            <div>
-              <!-- PERIODOS -->
-              <ion-row>
-                <ion-col size="8"                   
-                         style="padding-top: 15px;"
-                         >
-                  <span class="periodo" [ngClass]="{'texto-atrasado': mes.fecha <= fechaCorte}">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
-                </ion-col>
-                <ion-col size="2" class="ion-text-center">
-                  <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
-                                style="display: inline-block; vertical-align: middle;"
-                                 >
-                     <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
-                      <img style="border-radius: 10px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
-                     </a>
-                  </ion-thumbnail>
-                  <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
-                            name="attach-sharp" 
-                            (click)="abrirGaleria(i)"
-                            size="large"
-                            color="primary"
-                            >
-                  </ion-icon>
-                </ion-col>
-                <ion-col size="2" class="ion-text-center">
-                  <ion-icon name="trash-outline"
-                            color="danger"
-                            size="large"
-                            *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
-                            (click)="deseleccionarMes(i)"
-                            style="vertical-align: text-bottom;"
-                            >
-                  </ion-icon>
-                  <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
-                            name="camera-sharp" 
-                            (click)="tomarFoto(i)"
-                            size="large"
-                            color="primary"
-                            >
-                  </ion-icon>
+            <!-- PERIODOS -->
+            <ion-row>
+              <ion-col size="8"                   
+                        style="padding-top: 15px;"
+                        >
+                <span class="periodo" [ngClass]="{'texto-atrasado': mes.fecha <= fechaCorte}">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
               </ion-col>
-              </ion-row>
-            </div>
+              <ion-col size="2" class="ion-text-center">
+                <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                              style="display: inline-block; vertical-align: middle;"
+                                >
+                    <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
+                    <img style="border-radius: 6px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
+                    </a>
+                </ion-thumbnail>
+                <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                          name="attach-sharp" 
+                          (click)="abrirGaleria(i)"
+                          size="large"
+                          color="primary"
+                          >
+                </ion-icon>
+              </ion-col>
+              <ion-col size="2" class="ion-text-center">
+                <ion-icon name="trash-outline"
+                          color="danger"
+                          size="large"
+                          *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                          (click)="deseleccionarMes(i)"
+                          style="vertical-align: text-bottom;"
+                          >
+                </ion-icon>
+                <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                          name="camera-sharp" 
+                          (click)="tomarFoto(i)"
+                          size="large"
+                          color="primary"
+                          >
+                </ion-icon>
+              </ion-col>
+            </ion-row>
           </ion-grid>
-        </div>
-        <div *ngIf="!verElFuturo">
-          <div *ngIf="totalDeuda === 0"
-                class="ion-text-center"
-                >
-            <img class="ion-padding" src="assets/images/no-data-10.png"/><br>
-            <ion-text color="primary">
-              <strong>Felicitaciones!!</strong><br>
-              <strong>estás al día en tus pagos.</strong>
-            </ion-text>
-          </div>   
-          <div class="ion-text-center">
-            <ion-badge class="proximos-periodos" color="success" mode="ios"(click)="verElFuturo = !verElFuturo;">Ver próximos períodos</ion-badge> 
-          </div>
-        </div>
-        <div *ngIf="verElFuturo">
-          <div>
-            <ion-badge class="proximos-periodos" color="success" mode="ios" (click)="verElFuturo = !verElFuturo;">Ver sólo períodos atrasados</ion-badge>
-          </div>
-        </div>
-        <br>
-        <!-- itemes opcionales -->
-        <div *ngIf="verElFuturo">
-          <div class="ion-no-padding"
-                    *ngFor="let mesf of nuevoAvisoDePago.mesesPagados; let i = index"
-                    >
-            <ion-grid fixed>
-              <div *ngIf="mesf.fecha > fechaCorte && verElFuturo">
-                <!-- PERIODOS -->
-                <ion-row>
-                  <ion-col size="8"                   
-                           style="padding-top: 15px;"
-                           >
-                    <span class="periodo" [ngClass]="{'texto-atrasado': mesf.fecha <= fechaCorte}">{{mesf.fecha | date: 'MMMM - yyyy' }} - ${{ mesf.monto | number : '1.0-0'}} </span>
-                  </ion-col>
-                  <ion-col size="2" class="ion-text-center">
-                    <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
-                                  style="display: inline-block; vertical-align: middle;"
-                                   >
-                       <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
-                        <img style="border-radius: 10px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
-                       </a>
-                    </ion-thumbnail>
-                    <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
-                              name="attach-sharp" 
-                              (click)="abrirGaleria(i)"
-                              size="large"
-                              color="primary"
-                              >
-                    </ion-icon>
-                  </ion-col>
-                  <ion-col size="2" class="ion-text-center">
-                    <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
-                              name="trash-outline"
-                              color="danger"
-                              size="large"
-                              (click)="deseleccionarMes(i)"
-                              style="vertical-align: text-bottom;"
-                              >
-                    </ion-icon>
-                    <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
-                              name="camera-sharp" 
-                              (click)="tomarFoto(i)"
-                              size="large"
-                              color="primary"
-                              >
-                    </ion-icon>
-                  </ion-col>
-                </ion-row>
-              </div>
-            </ion-grid>
+          <!-- itemes opcionales -->
+          <div *ngIf="mes.fecha > fechaCorte && verElFuturo">
+            <div class="ion-no-padding">
+              <ion-grid fixed>
+                <div *ngIf="mes.fecha > fechaCorte && verElFuturo">
+                  <!-- PERIODOS -->
+                  <ion-row>
+                    <ion-col size="8"                   
+                             style="padding-top: 15px;"
+                             >
+                      <span class="periodo" [ngClass]="{'texto-atrasado': mes.fecha <= fechaCorte}">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
+                    </ion-col>
+                    <ion-col size="2" class="ion-text-center">
+                      <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                                    style="display: inline-block; vertical-align: middle;"
+                                     >
+                         <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
+                          <img style="border-radius: 6px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
+                         </a>
+                      </ion-thumbnail>
+                      <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                                name="attach-sharp" 
+                                (click)="abrirGaleria(i)"
+                                size="large"
+                                color="primary"
+                                >
+                      </ion-icon>
+                    </ion-col>
+                    <ion-col size="2" class="ion-text-center">
+                      <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                                name="trash-outline"
+                                color="danger"
+                                size="large"
+                                (click)="deseleccionarMes(i)"
+                                style="vertical-align: text-bottom;"
+                                >
+                      </ion-icon>
+                      <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                                name="camera-sharp" 
+                                (click)="tomarFoto(i)"
+                                size="large"
+                                color="primary"
+                                >
+                      </ion-icon>
+                    </ion-col>
+                  </ion-row>
+                </div>
+              </ion-grid>
+            </div>
           </div>
         </div>
       </ion-list>  

@@ -220,6 +220,7 @@ export class AppComponent implements OnInit {
         } else if (this.platform.is('android')) {
           this.appVersion.getVersionNumber()
           .then( data => {
+            console.log('%capp.component.ts getVersionNumber()', 'color: #007acc;', data);
             this.fbSrvc.verAppStr = data;
             this.fbSrvc.persona.versionApp = data;
             this.fbSrvc.putPersona(this.fbSrvc.persona);
@@ -231,7 +232,7 @@ export class AppComponent implements OnInit {
             console.error('error getVersionNumber: ', err);
           });
         }
-      }, 15000);
+      }, 5000);
   }
   limpiarParametros() {
     this.fbSrvc.parametros.codigoDir = '';
