@@ -1,0 +1,49 @@
+.texto-atrasado {
+    color: red;
+}
+.periodo {
+    vertical-align: text-bottom; 
+    padding-left: 15px;
+    font-size: 15px;
+}
+.proximos-periodos {
+    padding: 10px;
+    float: right;
+}
+.centrado {
+    display: flex;
+    justify-content: center;
+}
+.boton-deuda {
+    font-size: large;
+    padding: 10px;
+}
+.p-x-40 {
+    padding-left: 40px;
+    padding-right: 40px;
+    width: -webkit-fill-available;
+}
+.p-x-20 {
+    padding-left: 20px;
+    padding-right: 20px;
+    width: -webkit-fill-available;
+}
+.validacion {
+    color: var(--ion-color-danger);
+    text-align: center;
+}
+.validacion-ok {
+    color: var(--ion-color-primary);
+    text-align: center;
+}
+.mb-50 {
+    margin-bottom: 50px;
+}
+.mb-20 {
+    margin-bottom: 20px;
+}
+.boton-total-aviso {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}

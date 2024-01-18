@@ -1,5 +1,4 @@
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-// import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
@@ -18,7 +17,7 @@ import * as  moment from 'moment';
 export class NoticiaAddPage implements OnInit {
   creandoNoticia = false;
   duracion = this.fbSrvc.parametrosFB.maxDiasNoticias;
-  hoy = moment().toISOString();
+  hoy = moment().toISOString(true);
   nuevaNoticia: Noticia = {
     creadaPor: `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`,
     fecha: moment().utc().toDate(),
