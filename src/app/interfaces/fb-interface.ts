@@ -125,7 +125,7 @@ export interface Parametros {
     horaInicioSabado: number;
     horaInicioFeriado: number;
     feriados: Date[];
-    llamadaReal: boolean;
+    // llamadaReal: boolean;
     maxAnoPagos: number;
     maxEstadisticas: number;
     maxDiasAvisos: number;
@@ -144,12 +144,12 @@ export interface Parametros {
     moduloMisDatos: boolean;
     moduloPagos: boolean;
     moduloReservas: boolean;
-    montoCuotaActual: number;
-    montoCuotaAnterior: number;
     pruebasTienda: boolean;
     seguridadComunal: string;
     urlAppAndroid: string;
     urlAppIos: string;
+    valorCuotaActual: number;
+    valorCuotaAnterior: number;
 }
 export interface ParametrosApp {
     codigoDir: string; // codigo calle + numero

@@ -39,7 +39,6 @@ export class ContrasenaPage implements OnInit {
       this.passInput.setFocus();
     }, 500);
     this.getAut.onAuthStateChanged( aut => {
-      console.log('%ccontrasena.page.ts onAuthStateChanged ', 'color: #007acc;',  aut);
         this.fbSrvc.getParametrosFB();
         // this.fbSrvc.loading(`Ingresando...`);
         if (aut) {

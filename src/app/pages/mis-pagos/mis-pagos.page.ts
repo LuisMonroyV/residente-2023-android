@@ -109,7 +109,7 @@ export class MisPagosPage implements OnInit {
       } else {
         montoEspecial = null;
       }
-      const montoPago = casoEsp.length > 0 ? montoEspecial : (fechaPago > this.fbSrvc.parametrosFB.fechaCambioCuota) ? this.fbSrvc.parametrosFB.montoCuotaActual : this.fbSrvc.parametrosFB.montoCuotaAnterior;
+      const montoPago = casoEsp.length > 0 ? montoEspecial : (fechaPago > this.fbSrvc.parametrosFB.fechaCambioCuota) ? this.fbSrvc.parametrosFB.valorCuotaActual : this.fbSrvc.parametrosFB.valorCuotaAnterior;
       if (!pago.pagado && (moment(fechaPago).diff(moment(fechaCorte), 'days') <= 0) &&
          (casoEsp.length === 0 || (casoEsp && casoEsp[0] && casoEsp[0].cuotaEspecial && casoEsp[0].cuotaEspecial > 0))) {
           console.log('%MES IMPAGO: ', 'color: #007acc;', fechaPago, pago.pagado, moment(fechaPago).diff(moment(fechaCorte), 'days'));          

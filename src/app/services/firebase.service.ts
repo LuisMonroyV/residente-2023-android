@@ -118,7 +118,7 @@ export class FirebaseService {
     horaInicioSemana: null,
     horaInicioSabado: null,
     horaInicioFeriado: null,
-    llamadaReal: false,
+    // llamadaReal: false,
     maxAnoPagos: 0,
     maxDiasNoticias: 365,
     maxDiasAvisos: 30,
@@ -137,12 +137,12 @@ export class FirebaseService {
     moduloMisDatos: true,
     moduloPagos: true,
     moduloReservas: true,
-    montoCuotaActual: 0,
-    montoCuotaAnterior: 0,
     pruebasTienda: false,
     seguridadComunal: '',
     urlAppAndroid: '',
     urlAppIos: '',
+    valorCuotaActual: 0,
+    valorCuotaAnterior: 0,
   };
   pasoAlerta = 0;
   persona: Persona = {
@@ -193,6 +193,7 @@ export class FirebaseService {
     .catch( err => {
         console.log('No se pudo habilitar persistencia de datos para FireBase: ', err.code);
     });
+    // console.log('%cLlamando a getParametrosFB() desde firebaseService.ts', 'color: #007acc;');
     this.getParametrosFB();
   }
 
@@ -488,60 +489,60 @@ export class FirebaseService {
                                                        .valueChanges();
   }
   getParametrosFB() {
-    console.log('%cfirebase.service.ts getParametrosFB', 'color: #007acc;', moment().format('HH:mm:ss'));
-    this.db.collection('parametros')
-    .get()
+    this.db.collection<Parametros>('parametros')
+    .valueChanges()
     .subscribe( params => {
+      console.log('%cfirebase.service.ts getParametrosFB', 'color: #007acc;', moment().format('HH:mm:ss'));
       // ACTIVACIONES
-      this.parametrosFB.llamadaReal = params.docs[0].get('llamadaReal');
-      this.parametrosFB.moduloAgenda = params.docs[0].get('moduloAgenda');
+      // this.parametrosFB.llamadaReal = params[0].llamadaReal;
+      this.parametrosFB.moduloAgenda = params[0].moduloAgenda;
       this.appPages[0].visible = this.parametrosFB.moduloAgenda;
-      this.parametrosFB.moduloAvisoVisitas = params.docs[0].get('moduloAvisoVisitas');
+      this.parametrosFB.moduloAvisoVisitas = params[0].moduloAvisoVisitas;
       this.appPages[1].visible = this.parametrosFB.moduloAvisoVisitas;
-      this.parametrosFB.pruebasTienda = params.docs[0].get('pruebasTienda');
+      this.parametrosFB.pruebasTienda = params[0].pruebasTienda;
       this.appPages[2].visible = (!this.parametrosFB.pruebasTienda || !this.persona.esAdmin);
-      this.parametrosFB.moduloEstadisticas = params.docs[0].get('moduloEstadisticas');
+      this.parametrosFB.moduloEstadisticas = params[0].moduloEstadisticas;
       this.appPages[3].visible = this.parametrosFB.moduloEstadisticas;
-      this.parametrosFB.moduloMisDatos = params.docs[0].get('moduloMisDatos');
+      this.parametrosFB.moduloMisDatos = params[0].moduloMisDatos;
       this.appPages[4].visible = this.parametrosFB.moduloMisDatos;
-      this.parametrosFB.moduloPagos = params.docs[0].get('moduloPagos');
+      this.parametrosFB.moduloPagos = params[0].moduloPagos;
       this.appPages[5].visible = this.parametrosFB.moduloPagos;
-      this.parametrosFB.moduloReservas = params.docs[0].get('moduloReservas');
+      this.parametrosFB.moduloReservas = params[0].moduloReservas;
       this.appPages[6].visible = this.parametrosFB.moduloReservas;
       // FECHAS
-      this.parametrosFB.fechaCambioCuota = params.docs[1].get('fechaCambioCuota').toDate();
-      this.parametrosFB.montoCuotaActual = params.docs[1].get('valorCuotaActual');
-      this.parametrosFB.montoCuotaAnterior = params.docs[1].get('valorCuotaAnterior');
-      // MAXIMOS
-      this.parametrosFB.appVersionAndroidStr = params.docs[2].get('appVersionAndroidStr');
-      this.parametrosFB.appVersionIosStr = params.docs[2].get('appVersionIosStr');
-      this.parametrosFB.maxAnoPagos = params.docs[2].get('maxAnoPagos'); // 2021
-      this.parametrosFB.maxDiasAvisos = params.docs[2].get('maxDiasAvisos');
-      this.parametrosFB.maxDiasAvisosDePago = params.docs[2].get('maxDiasAvisosDePago');
-      this.parametrosFB.maxDiasNoticias = params.docs[2].get('maxDiasNoticias');
-      this.parametrosFB.maxEstadisticas = params.docs[2].get('maxEstadisticas');
-      this.parametrosFB.maxNumAccesos = params.docs[2].get('maxNumAccesos');
-      this.parametrosFB.maxNumEmergencias = params.docs[2].get('maxNumEmergencias');
-      this.parametrosFB.maxNumNoticias = params.docs[2].get('maxNumNoticias');
-      this.parametrosFB.maxNumRondas = params.docs[2].get('maxNumRondas');
-      this.parametrosFB.minAppVersionAndroid = params.docs[2].get('minAppVersionAndroid');
-      this.parametrosFB.minAppVersionIos = params.docs[2].get('minAppVersionIos');
-      // NUMEROS
-      this.parametrosFB.cuadrante = params.docs[3].get('cuadrante');
-      this.parametrosFB.guardia = params.docs[3].get('guardia');
-      this.parametrosFB.seguridadComunal = params.docs[3].get('seguridadComunal');
-      this.parametrosFB.emergenciaComunal = params.docs[3].get('emergenciaComunal');
-      // RERSERVAS
-      this.parametrosFB.horaFinSemana = params.docs[4].get('horaFinSemana');
-      this.parametrosFB.horaFinSabado = params.docs[4].get('horaFinSabado');
-      this.parametrosFB.horaFinFeriado = params.docs[4].get('horaFinFeriado');
-      this.parametrosFB.horaInicioSemana = params.docs[4].get('horaInicioSemana');
-      this.parametrosFB.horaInicioSabado = params.docs[4].get('horaInicioSabado');
-      this.parametrosFB.horaInicioFeriado = params.docs[4].get('horaInicioFeriado');
-      this.parametrosFB.feriados = params.docs[4].get('feriados');        
-      // URLS
-      this.parametrosFB.urlAppAndroid = params.docs[5].get('urlAppAndroid');
-      this.parametrosFB.urlAppIos = params.docs[5].get('urlAppIos');
+      this.parametrosFB.fechaCambioCuota = this.timestampToDate(params[1].fechaCambioCuota);
+      this.parametrosFB.valorCuotaActual = params[1].valorCuotaActual;
+      this.parametrosFB.valorCuotaAnterior = params[1].valorCuotaAnterior;
+      // // MAXIMOS
+      this.parametrosFB.appVersionAndroidStr = params[2].appVersionAndroidStr;
+      this.parametrosFB.appVersionIosStr = params[2].appVersionIosStr;
+      this.parametrosFB.maxAnoPagos = params[2].maxAnoPagos;
+      this.parametrosFB.maxDiasAvisos = params[2].maxDiasAvisos;
+      this.parametrosFB.maxDiasAvisosDePago = params[2].maxDiasAvisosDePago;
+      this.parametrosFB.maxDiasNoticias = params[2].maxDiasNoticias;
+      this.parametrosFB.maxEstadisticas = params[2].maxEstadisticas;
+      this.parametrosFB.maxNumAccesos = params[2].maxNumAccesos;
+      this.parametrosFB.maxNumEmergencias = params[2].maxNumEmergencias;
+      this.parametrosFB.maxNumNoticias = params[2].maxNumNoticias;
+      this.parametrosFB.maxNumRondas = params[2].maxNumRondas;
+      this.parametrosFB.minAppVersionAndroid = params[2].minAppVersionAndroid;
+      this.parametrosFB.minAppVersionIos = params[2].minAppVersionIos;
+      // // NUMEROS
+      this.parametrosFB.cuadrante = params[3].cuadrante;
+      this.parametrosFB.guardia = params[3].guardia;
+      this.parametrosFB.seguridadComunal = params[3].seguridadComunal;
+      this.parametrosFB.emergenciaComunal = params[3].emergenciaComunal;
+      // // RERSERVAS
+      this.parametrosFB.horaFinSemana = params[4].horaFinSemana;
+      this.parametrosFB.horaFinSabado = params[4].horaFinSabado;
+      this.parametrosFB.horaFinFeriado = params[4].horaFinFeriado;
+      this.parametrosFB.horaInicioSemana = params[4].horaInicioSemana;
+      this.parametrosFB.horaInicioSabado = params[4].horaInicioSabado;
+      this.parametrosFB.horaInicioFeriado = params[4].horaInicioFeriado;
+      this.parametrosFB.feriados = params[4].feriados;
+      // // URLS
+      this.parametrosFB.urlAppAndroid = params[5].urlAppAndroid;
+      this.parametrosFB.urlAppIos = params[5].urlAppIos;
       console.log('%cfirebase.service.ts getParametrosFB [OK]', 'color: #007acc;', moment().format('HH:mm:ss'),this.parametrosFB);
       this.appRef.tick();
     });
