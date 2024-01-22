@@ -36,8 +36,6 @@ export class MisAvisosDePagoPage implements OnInit {
           aviso.revisor = `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`;
           aviso.obsRevisor = this.motivo;
           this.pagarPorAviso(aviso);
-          this.fbSrvc.putAvisoDePago(aviso);
-          this.avisarResidentes(aviso);
           this.listaP.closeSlidingItems();
         } else {
           this.fbSrvc.mostrarMensaje('Aprobación cancelada.');
@@ -181,6 +179,7 @@ export class MisAvisosDePagoPage implements OnInit {
   }
   pagarPorAviso(aviso: AvisoDePago) {
     if (this.fbSrvc.persona.esTesorero) {
+      let pagadosOK = 0;
       aviso.mesesPagados.forEach( mesP => {
         const pagoPorAviso: Pago = { ano: parseInt(mesP.mesAno.substring(3), 10),
                                      comentario: `Aprobado por ${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno}`,
@@ -189,15 +188,24 @@ export class MisAvisosDePagoPage implements OnInit {
                                      pagado: true,
                                      ultAct: null
                                     };
-        // debugger;
         this.fbSrvc.putPago(pagoPorAviso)
         .then( () => {
-          console.log(`pago actualizado OK`);
-          this.fbSrvc.mostrarMensaje('Pago actualizado.');
+          console.log(`pago ${pagoPorAviso.mes}-${pagoPorAviso.ano} actualizado OK`);
+          pagadosOK++;
+          if (pagadosOK === aviso.mesesPagados.length) {
+            this.fbSrvc.mostrarMensaje('Pago actualizado.');
+            this.fbSrvc.putAvisoDePago(aviso);
+            this.avisarResidentes(aviso);
+          }
         })
         .catch( err => {
           console.log('No se actualizó el pago: ', err);
-          this.fbSrvc.mostrarMensaje('No se pudo actualizar el pago.');
+          this.fbSrvc.mostrarMensaje('No se pudo actualizar el aviso de pago.');
+          // Rollback
+          aviso.estadoAviso = '0-Pendiente';
+          aviso.fechaAprobacion = null;
+          this.fbSrvc.putAvisoDePago(aviso);
+          return;
         });
       });
     } else {
