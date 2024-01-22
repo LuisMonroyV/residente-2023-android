@@ -142,7 +142,7 @@ export class ModalAvisoDePagoComponent implements OnInit {
         const newMesImpago: MesImpago = {
           fecha: moment(`1-${index}-${año}`,'DD-MM-YYYY').toDate(),
           mesAno,
-          monto: this.fbSrvc.parametrosFB.montoCuotaActual,
+          monto: this.fbSrvc.parametrosFB.valorCuotaActual,
           documento: '',
           idTransaccion: ''
         };

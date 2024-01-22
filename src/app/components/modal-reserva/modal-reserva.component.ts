@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { IonTextarea, ModalController } from '@ionic/angular';
 import * as moment from 'moment';
 import { start } from 'repl';
 import { Reserva } from 'src/app/interfaces/fb-interface';
@@ -11,6 +11,7 @@ import { FirebaseService } from 'src/app/services/firebase.service';
   styleUrls: ['./modal-reserva.component.scss'],
 })
 export class ModalReservaComponent implements OnInit {
+  // @ViewChild('descripcion') desc!: IonTextarea;
   fechasDisponibles: Date[] = [];
   horariosDisponibles: Date[] = [];
   fechaSeleccionada = false;
@@ -19,17 +20,17 @@ export class ModalReservaComponent implements OnInit {
     fechaSolicitud: null,
     fechaInicioReserva: null,
     fechaFinReserva: null,
-    estado: 'Solicitada',
+    estado: '0-Solicitada',
     idDireccion: this.fbSrvc.parametros.codigoDir,
     obs: '',
     idReserva: ''
   }
-  constructor(
-              private modalCtrl: ModalController,
-              public fbSrvc: FirebaseService
-             ) {
-   }
-
+  paso = 1;
+  constructor( private modalCtrl: ModalController,
+               public fbSrvc: FirebaseService) {}
+  anterior() {
+    this.paso--;
+  }
   cerrarModal() {
     console.log('%ccerrarModal()', 'color: #007acc;');
     this.modalCtrl.dismiss();
@@ -37,6 +38,9 @@ export class ModalReservaComponent implements OnInit {
   guardarReserva() {
     this.modalCtrl.dismiss({ guardar: 'SI', reserva: this.nuevaReserva });
   }
+  // ionViewDidEnter() {
+  //   this.desc.setFocus();
+  // }
   ngOnInit() {
     for (let index = 0; index <= 6; index++) {
       const element = moment().startOf('day').add(index, 'days').toDate();
@@ -74,19 +78,26 @@ export class ModalReservaComponent implements OnInit {
         this.recalculaHoras(this.fbSrvc.parametrosFB.horaInicioSemana, this.fbSrvc.parametrosFB.horaFinSemana);
         break;
     }
+    this.siguiente();
   }
 
   seleccionaHora(idx: number) {
-    // if (!this.horaSeleccionada) {
-      this.horaSeleccionada = true;
-      this.nuevaReserva.fechaSolicitud = moment().toDate();    
-      this.nuevaReserva.fechaInicioReserva = moment(this.nuevaReserva.fechaInicioReserva).startOf('day').add(moment(this.horariosDisponibles[idx]).hour(),'hours').toDate();    
-      this.nuevaReserva.fechaFinReserva = moment(this.nuevaReserva.fechaInicioReserva).add(59,'minutes').add(59,'seconds').toDate();    
-    // } else {
-      // this.horaSeleccionada = false;
-      // this.nuevaReserva.fechaInicioReserva = null;    
-    // }
+    this.horaSeleccionada = true;
+    this.nuevaReserva.fechaSolicitud = moment().toDate();    
+    this.nuevaReserva.fechaInicioReserva = moment(this.nuevaReserva.fechaInicioReserva).startOf('day').add(moment(this.horariosDisponibles[idx]).hour(),'hours').toDate();    
+    this.nuevaReserva.fechaFinReserva = moment(this.nuevaReserva.fechaInicioReserva).add(59,'minutes').add(59,'seconds').toDate();    
     console.log('%cmodal-reserva.component.ts line:84 this.nuevaReserva', 'color: #007acc;', this.nuevaReserva);
+    this.siguiente();
+  }
+  siguiente() {
+    this.paso++;
+    if (this.paso === 3) {
+      setTimeout(() => {
+        const divTextarea = document.getElementById('paso3');
+        const textarea = divTextarea.querySelector('ion-textarea');
+        textarea.setFocus();
+      }, 600);
+    }
   }
 
   sumarMinutos(hora: Date) {

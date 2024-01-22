@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
   retorno: any[];
   auth = getAuth();
   public selectedIndex = 0;
+  temaCambiado = false;
   constructor(
               private appVersion: AppVersion,
               private audio: NativeAudio,
@@ -74,6 +75,10 @@ export class AppComponent implements OnInit {
         console.log('moviendo a Emergencias...');
         this.fbSrvc.expandidoEmergencias = true;
         this.router.navigateByUrl('/folder/inicio#emergencias');
+      } else if (notifR.getNotification().additionalData['nombre'] === 'reservas de multicancha') {
+        this.fbSrvc.lanzarSonido('siren');
+        console.log('moviendo a Reservas...');
+        this.router.navigateByUrl('/reservas-cancha');
       }
       notifR.complete(notificationR);
     });
@@ -104,11 +109,10 @@ export class AppComponent implements OnInit {
         } else if (notifO.notification.additionalData['nombre'] === 'Tu aviso de pago ha cambiado de estado' ||
                    notifO.notification.additionalData['nombre'] === 'Nuevo aviso de pago esperando aprobación') {
           this.router.navigate(['/mis-pagos']);
+        } else if (notifO.notification.additionalData['nombre'] === 'reservas de multicancha') {
+          this.router.navigateByUrl('/reservas-cancha');
         }
-    });
-    // Prompts the user for notification permissions.
-    //    * Since this shows a generic native prompt, we recommend instead using an In-App Message to prompt
-    //   for notification permission (See step 7) to better communicate to your users what notifications they will get.
+      });
     OneSignal.promptForPushNotificationsWithUserResponse(accepted => {
       console.log('User accepted notifications: ' + accepted);
     });
@@ -291,7 +295,10 @@ export class AppComponent implements OnInit {
     // Listen for changes to the prefers-color-scheme media query
     prefersDark.addEventListener('change', mediaQuery => {
       this.fbSrvc.dark = mediaQuery.matches;
-      this.fbSrvc.toggleDarkTheme(mediaQuery.matches);
+      if (!this.temaCambiado) { // Para que lo haga una sola vez 
+        this.temaCambiado = true;
+        this.fbSrvc.toggleDarkTheme(mediaQuery.matches);
+      }
     });
 
   }

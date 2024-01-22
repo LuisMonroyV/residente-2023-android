@@ -20,6 +20,11 @@
     color: var(--ion-color-warning);
 }
 .reservada {
+    border: 1px solid var(--ion-color-primary);
+    border-radius: 6px;
+    color: var(--ion-color-primary);
+}
+.rechazada {
     border: 1px solid var(--ion-color-danger);
     border-radius: 6px;
     // color: var(--ion-color-danger);

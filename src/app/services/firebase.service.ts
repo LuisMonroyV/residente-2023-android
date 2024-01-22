@@ -308,8 +308,9 @@ export class FirebaseService {
       console.log('auth - Error al eliminar usuario: ', err);
     });
   }
-  esFeriado(fecha: Date): boolean {
-    return this.parametrosFB.feriados.findIndex(fer => this.soloFecha(this.timestampToDate(fer)) === this.soloFecha(fecha)) > -1;
+  esFeriado(fecha: Date): boolean { // Retorna true si es feriado o Domingo
+    return (this.parametrosFB.feriados.findIndex(fer => this.soloFecha(this.timestampToDate(fer)) === this.soloFecha(fecha)) > -1) || 
+           (moment(fecha).day() === 0);
   }
   getAdministradores() {
     return this.db.collection<Persona>('persona', ref => ref.where('esAdmin', '==', true)).get();

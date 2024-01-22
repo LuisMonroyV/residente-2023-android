@@ -1,10 +1,11 @@
-import { ApplicationRef, Component, OnInit } from '@angular/core';
-import { AlertController, ModalController } from '@ionic/angular';
+import { ApplicationRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AlertController, IonList, ModalController } from '@ionic/angular';
 import * as moment from 'moment';
 import { Dia, Hora, Reserva } from 'src/app/interfaces/fb-interface';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { ModalReservaComponent } from '../modal-reserva/modal-reserva.component';
 import { PushService } from 'src/app/services/push.service';
+import { ModalRechazoComponent } from '../../components/modal-rechazo/modal-rechazo.component';
 
 @Component({
   selector: 'app-reservas',
@@ -12,8 +13,11 @@ import { PushService } from 'src/app/services/push.service';
   styleUrls: ['./reservas.component.scss'],
 })
 export class ReservasComponent implements OnInit {
+@ViewChild('listaPendientes', { static: false }) listaP: IonList;
 diaSemHoy = moment().weekday();
+guardar = false;
 misReservasSemana: Reserva[] = [];
+motivo = '';
 solictudesCanchaPendientes: Reserva[] = [];
 seccion = 'calendario';
 semana: Dia[] = [];
@@ -26,7 +30,9 @@ solicitudesHoy = 0;
                private appRef: ApplicationRef,
                private pushSrvc: PushService
              ) { }
-
+  alertaReserva() {
+    this.fbSrvc.mostrarMensaje('Para reservar esa hora toca el botón (+).', 3000);
+  }
   async anular(pos: number) {
     const alert = await this.alertCtrl.create({
         header: 'Eliminar Reserva ' + moment(this.misReservasSemana[pos].fechaInicioReserva).format('DD-MMM @HH:mm'),
@@ -59,6 +65,26 @@ solicitudesHoy = 0;
     });
     await alert.present(); 
   }
+  aprobar( reserva: Reserva) {
+    if (this.fbSrvc.persona.esAdminCancha) {
+      this.modalMotivo('aprobar')
+      .then( () => {
+        if (this.guardar) {
+          reserva.estado = '1-Reservada';
+          reserva.obs = this.motivo;
+          this.fbSrvc.putReserva(reserva);
+          this.avisarResidentes(reserva);
+          this.listaP.closeSlidingItems();
+        } else {
+          this.fbSrvc.mostrarMensaje('Aprobación cancelada.');
+          this.listaP.closeSlidingItems();
+        }
+      });
+    } else {
+      this.fbSrvc.mostrarMensaje('No puedes aprobar avisos de pago.');
+      this.listaP.closeSlidingItems();
+    }
+  }
   avisarAdminsCancha() {
     this.fbSrvc.getAdminsCancha()
     .subscribe( admins => {
@@ -71,6 +97,22 @@ solicitudesHoy = 0;
           }
         });
         this.pushSrvc.notificarNuevaReserva(adminsC);
+      }
+    });
+  }
+  avisarResidentes(solicitud: Reserva) {
+    this.fbSrvc.getPersonasxDireccion(solicitud.idDireccion)
+    .subscribe( personas => {
+      if (personas && !personas.empty) {
+        console.log('# Residentes: ', personas.size);
+        // eslint-disable-next-line prefer-const
+        let residentes: string[] = [];
+        personas.docs.forEach( per => {
+          if (per.data().idMovil && per.data().idMovil.length > 0) {
+            residentes.push(per.data().idMovil);
+          }
+        });
+        this.pushSrvc.notificarReserva(residentes);
       }
     });
   }
@@ -130,11 +172,34 @@ solicitudesHoy = 0;
     // console.log('%creservas.component.ts line:74 this.semana', 'color: #007acc;', this.semana);
     this.appRef.tick();
   }
+  async modalMotivo( tipo: string) {
+    const modalMotivo = await this.modalCtrl.create({
+      component: ModalRechazoComponent,
+      componentProps: {
+        guardar: '?',
+        motivo: this.motivo,
+        tipo
+      }
+    });
+    await modalMotivo.present();
+    const {data} = await modalMotivo.onDidDismiss();
+    if (data) {
+      if (data) {
+        if (data.guardar === 'SI') {
+          this.motivo = data.motivo;
+          this.guardar = true;
+        } else {
+          this.guardar = false;
+        }
+      }
+    }
+  }
   ngOnInit() {
     this.fbSrvc.getReservas()
     .subscribe(reserva => {
-      console.log('%creservas.component.ts Cambio en reservas', 'color: #007acc;');
+      console.log('%creservas.component.ts Cambio en reservas', 'color: #007acc;', reserva);
       this.fbSrvc.reservasCancha = [];
+      this.solictudesCanchaPendientes = [];
       if (reserva && reserva.length > 0) {
         // console.log('%creservas.component.ts reservas', 'color: #007acc;', reserva);
         reserva.forEach(res => {
@@ -186,8 +251,31 @@ solicitudesHoy = 0;
     });
     this.inicializaSemana();    
   }
+  rechazar(reserva: Reserva) {
+    if (this.fbSrvc.persona.esAdminCancha) {
+      this.modalMotivo('rechazar')
+      .then( () => {
+        if (this.guardar) {
+          console.log('Motivo de rechazo:', this.motivo);
+          reserva.estado = '-1-Rechazada';
+          reserva.obs = this.motivo;
+          this.fbSrvc.putReserva(reserva);
+          this.avisarResidentes(reserva);
+        } else {
+          this.fbSrvc.mostrarMensaje('Debe indicar el motivo de rechazo.');
+          this.listaP.closeSlidingItems();
+        }
+      })
+      .catch( err => {
+        console.log('Error al rechazar aviso de pago: ', err);
+      });
+    } else {
+      this.fbSrvc.mostrarMensaje('No puedes rechazar solicitudes de reserva.');
+      this.listaP.closeSlidingItems();
+    }
+  }
   async solicitar() {
-    if (this.solicitudesHoy < this.fbSrvc.parametrosFB.maxReservasDiarias) {
+    if (this.solicitudesHoy < this.fbSrvc.parametrosFB.maxReservasDiarias || this.fbSrvc.persona.esAdminCancha) {
       const modalNuevaReserva = await this.modalCtrl.create({
         component: ModalReservaComponent,
       });

@@ -1,4 +1,19 @@
+.grilla {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+}
 .seleccionado {
     background-color: var(--ion-color-primary);
     color: #fff;
+}
+.p-x-20 {
+    padding-left: 20px;
+    padding-right: 20px;
+    width: -webkit-fill-available;
+}
+.p-x-10 {
+    padding-left: 10px;
+    padding-right: 10px;
+    width: -webkit-fill-available;
 }
