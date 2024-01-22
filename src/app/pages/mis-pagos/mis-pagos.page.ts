@@ -223,6 +223,7 @@ export class MisPagosPage implements OnInit {
       .subscribe( pag => {
         if (pag && pag.length > 0) {
           this.completarPagos(pag);
+          this.fbSrvc.pagosDir = pag;
         }
       });
       this.fbSrvc.cargando = false;
