@@ -12,9 +12,10 @@ export class FiltroUsuariosPipe implements PipeTransform {
     } else {
       texto = texto.toLowerCase();
       return arreglo.filter( text => {
-        const dataUsuario = `${text.nombres}${text.apellidoPaterno}${text.apellidoMaterno}${text.calle}${text.numero}${text.movil}`;
+        const dataUsuario = `${text.nombres}${text.apellidoPaterno}${text.apellidoMaterno}${text.calle}${text.numero}${text.movil}${text.versionApp}`;
         return (dataUsuario.toLowerCase()).includes(texto);
       });
     }
   }
 }
+

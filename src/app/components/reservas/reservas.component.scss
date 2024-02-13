@@ -9,6 +9,11 @@
 .borde-chip {
     border: 1px solid;
 }
+.card-solicitudes {
+    width: 100%;
+    border-left: 6px solid var(--ion-color-primary);
+    border-right: 6px solid var(--ion-color-danger);
+}
 .disponible {
     border: 1px solid var(--ion-color-whatsapp-green);
     border-radius: 6px;
@@ -27,7 +32,7 @@
 .rechazada {
     border: 1px solid var(--ion-color-danger);
     border-radius: 6px;
-    // color: var(--ion-color-danger);
+    color: var(--ion-color-danger);
 }
 .centrado {
     // display: inherit;

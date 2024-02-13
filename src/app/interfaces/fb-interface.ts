@@ -218,13 +218,15 @@ export interface RegistroVisitaS {
     turno: string;
 }
 export interface Reserva {
+    contacto: string;
     estado: string;
     fechaFinReserva: Date;
     fechaInicioReserva: Date;
     fechaSolicitud: Date;
     idDireccion: string;
     idReserva: string;
-    obs: string;
+    obsAdmin: string;
+    obsResid: string;
 }
 export interface Ronda {
     fechaInicio: Date;

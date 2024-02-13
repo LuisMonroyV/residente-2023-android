@@ -53,7 +53,7 @@ solicitudesHoy = 0;
                 this.misReservasSemana.splice(pos, 1);
                 // this.inicializaSemana();    
                 this.fbSrvc.mostrarMensaje('Reserva eliminada.', 3);
-                this.appRef.tick();
+                // this.appRef.tick();
               })
               .catch(err => {
                 this.fbSrvc.mostrarMensaje(`No se pudo eliminar la reserva: ${err}`, 3);
@@ -70,8 +70,8 @@ solicitudesHoy = 0;
       this.modalMotivo('aprobar')
       .then( () => {
         if (this.guardar) {
-          reserva.estado = '1-Reservada';
-          reserva.obs = this.motivo;
+          reserva.estado = 'Reservada';
+          reserva.obsAdmin = this.motivo;
           this.fbSrvc.putReserva(reserva);
           this.avisarResidentes(reserva);
           this.listaP.closeSlidingItems();
@@ -123,12 +123,14 @@ solicitudesHoy = 0;
   inicializaSemana() {
     // console.log('%cinicializaSemana()', 'color: #007acc;');
     const reservaVacia: Reserva = {
+      contacto: null,
       fechaSolicitud: null,
       fechaInicioReserva: null,
       fechaFinReserva: null,
       estado: 'Disponible',
       idDireccion: '',
-      obs: '',
+      obsAdmin: '',
+      obsResid: '',
       idReserva: ''
     };
     this.semana = [];
@@ -204,12 +206,14 @@ solicitudesHoy = 0;
         // console.log('%creservas.component.ts reservas', 'color: #007acc;', reserva);
         reserva.forEach(res => {
           const newReserva: Reserva = {
+            contacto: res.contacto,
             fechaSolicitud: this.fbSrvc.timestampToDate(res.fechaSolicitud),
             fechaInicioReserva: this.fbSrvc.timestampToDate(res.fechaInicioReserva),
             fechaFinReserva: this.fbSrvc.timestampToDate(res.fechaFinReserva),
             estado: res.estado,
             idDireccion: res.idDireccion,
-            obs: res.obs,
+            obsAdmin: res.obsAdmin,
+            obsResid: res.obsResid,
             idReserva: res.idReserva
           };
           this.fbSrvc.reservasCancha.push(newReserva);
@@ -229,12 +233,14 @@ solicitudesHoy = 0;
         this.solicitudesHoy = 0;
         misRes.forEach( res => {
           const miReserva: Reserva = {
+            contacto: res.contacto,
             fechaSolicitud: this.fbSrvc.timestampToDate(res.fechaSolicitud),
             fechaInicioReserva: this.fbSrvc.timestampToDate(res.fechaInicioReserva),
             fechaFinReserva: moment(this.fbSrvc.timestampToDate(res.fechaFinReserva)).toDate(),
             estado: res.estado,
             idDireccion: res.idDireccion,
-            obs: res.obs,
+            obsAdmin: res.obsAdmin,
+            obsResid: res.obsResid,
             idReserva: res.idReserva
           };
           this.misReservasSemana.push(miReserva);
@@ -257,8 +263,8 @@ solicitudesHoy = 0;
       .then( () => {
         if (this.guardar) {
           console.log('Motivo de rechazo:', this.motivo);
-          reserva.estado = '-1-Rechazada';
-          reserva.obs = this.motivo;
+          reserva.estado = 'Disponible';
+          reserva.obsAdmin = this.motivo;
           this.fbSrvc.putReserva(reserva);
           this.avisarResidentes(reserva);
         } else {

@@ -58,7 +58,7 @@
             </ion-row>
           </ion-item>
           <ion-item>
-            <ion-button (click)="anterior()" class="p-x-20">
+            <ion-button (click)="anterior()" class="p-x-50">
               Anterior
             </ion-button>
           </ion-item>
@@ -79,18 +79,19 @@
             <ion-row>
               <ion-col>
                 <ion-label color="primary" position="stacked">Descripción: </ion-label>
-                <ion-textarea [(ngModel)]="nuevaReserva.obs"
+                <ion-textarea [(ngModel)]="nuevaReserva.obsResid"
                               name="observaciones"
                               required
                               id="desc"
                               #descripcion
+                              spellcheck = "true"
                               >
                 </ion-textarea>  
               </ion-col>
             </ion-row>
           </ion-item>
           <ion-item class="ion-text-center">
-            <ion-button (click)="anterior()" class="p-x-10">
+            <ion-button (click)="anterior()" fill="outline" class="p-x-10">
               Anterior
             </ion-button>
             <ion-button type="submit"

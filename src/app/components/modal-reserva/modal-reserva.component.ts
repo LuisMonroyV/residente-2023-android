@@ -11,18 +11,19 @@ import { FirebaseService } from 'src/app/services/firebase.service';
   styleUrls: ['./modal-reserva.component.scss'],
 })
 export class ModalReservaComponent implements OnInit {
-  // @ViewChild('descripcion') desc!: IonTextarea;
   fechasDisponibles: Date[] = [];
   horariosDisponibles: Date[] = [];
   fechaSeleccionada = false;
   horaSeleccionada = false;
   nuevaReserva: Reserva = {
+    contacto: this.fbSrvc.persona.movil,
     fechaSolicitud: null,
     fechaInicioReserva: null,
     fechaFinReserva: null,
-    estado: '0-Solicitada',
+    estado: 'Solicitada',
     idDireccion: this.fbSrvc.parametros.codigoDir,
-    obs: '',
+    obsAdmin: '',
+    obsResid: '',
     idReserva: ''
   }
   paso = 1;

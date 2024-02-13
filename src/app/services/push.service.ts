@@ -131,7 +131,7 @@ export class PushService {
       app_id: oSAppIdCliente,
       include_player_ids: idUsers,
       data: {
-        nombre: 'Se ha solicitado una reserva de cancha.',
+        nombre: 'reservas de multicancha',
         calle: this.fbSrvc.persona.calle,
         numero: this.fbSrvc.persona.numero,
       },
