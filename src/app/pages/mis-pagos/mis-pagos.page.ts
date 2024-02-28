@@ -81,6 +81,7 @@ export class MisPagosPage implements OnInit {
       }
     });
     console.log('this.misPagos: ', this.misPagos);
+    this.fbSrvc.pagosDir = this.misPagos;
     this.estadoPagos();
   }
   estadoPagos() {
