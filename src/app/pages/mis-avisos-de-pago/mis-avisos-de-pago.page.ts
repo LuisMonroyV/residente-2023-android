@@ -136,11 +136,11 @@ export class MisAvisosDePagoPage implements OnInit {
       // console.log('%ccambio en getMisAvisosDePago', 'color: #007acc;');
       if (dataAP && dataAP.length > 0) {
         this.misAvisosDePago = dataAP;
+        setTimeout(() => {
+          this.rebajarPendientes(this.misAvisosDePago);
+        }, 1000);
       }
     });
-    setTimeout(() => {
-      this.rebajarPendientes(this.misAvisosDePago);
-    }, 500);
     if (this.fbSrvc.persona.esAdmin) {
       this.fbSrvc.getAvisosDePago()
       .subscribe( dataAPP => {
