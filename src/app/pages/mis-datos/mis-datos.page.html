@@ -9,7 +9,10 @@
             <ion-avatar>
               <img src="assets/images/no-avatar.png" alt="">
               </ion-avatar>
-            <ion-label color="medium">{{fbSrvc.persona.nombres + ' ' + fbSrvc.persona.apellidoPaterno + ' ' + fbSrvc.persona.apellidoMaterno}}</ion-label>
+            <ion-label color="medium">{{fbSrvc.persona.nombres + ' ' + fbSrvc.persona.apellidoPaterno}}</ion-label>
+          </ion-chip>
+          <ion-chip color="danger" mode="ios" outline="false" (click)="confirmacion(0, 'Cuenta')">
+            <ion-label>Eliminar mi cuenta</ion-label>
           </ion-chip>
         </ion-item>
       </ion-list>  

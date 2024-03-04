@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
-import { Visita } from '../../interfaces/fb-interface';
-import { ModalController, AlertController, IonInput, IonToggle } from '@ionic/angular';
+import { Persona, Visita } from '../../interfaces/fb-interface';
+import { ModalController, AlertController } from '@ionic/angular';
 import { ModalVisitasComponent } from '../../components/modal-visitas/modal-visitas.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mis-datos',
@@ -21,7 +22,8 @@ export class MisDatosPage implements OnInit {
 
   constructor( public fbSrvc: FirebaseService,
                private modalCtrl: ModalController,
-               private alertCtrl: AlertController) { }
+               private alertCtrl: AlertController,
+               private router: Router) { }
 
   ngOnInit() {
     this.fbSrvc.getMisVisitas()
@@ -54,6 +56,19 @@ export class MisDatosPage implements OnInit {
       }
     this.guardando = false;
   }
+  eliminarCuenta() {
+    let cambios: Persona = {...this.fbSrvc.persona};
+    cambios.adminOk = false;
+    cambios.emailOk = false;
+    cambios.estado = '1-rechazado';
+    cambios.obs = 'Eliminación de datos solicitada por el residente';
+    this.fbSrvc.putPersona(cambios)
+    .then( () => {
+      this.limpiarParametros();
+      // this.fbSrvc.logOutFirebase();
+      this.router.navigate(['activar-mail']);
+    })
+  }
   eliminarVisitaAutorizada( pos: number) {
     this.misVisitas.autorizados.splice(pos, 1);
     this.guardarCambios();
@@ -61,6 +76,13 @@ export class MisDatosPage implements OnInit {
   eliminarVisitaRechazada( pos: number) {
     this.misVisitas.rechazados.splice(pos, 1);
     this.guardarCambios();
+  }
+  limpiarParametros() {
+    this.fbSrvc.parametros.validado = false;
+    this.fbSrvc.parametros.verificado = false;
+    this.fbSrvc.parametros.identificado = false;
+    this.fbSrvc.parametros.primeraVez = false;
+    this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
   }
   async modalVisita() {
     const modalOpc = await this.modalCtrl.create({
@@ -86,9 +108,15 @@ export class MisDatosPage implements OnInit {
     }
   }
   async confirmacion( pos: number, tipo: string ) {
+    let header = 'Eliminación de datos de tu cuenta';
+    let message = '¿Estás seguro que deseas eliminar tu cuenta?'
+    if (tipo != 'Cuenta') {
+      header = 'Eliminar Visita ' + tipo;
+      message = 'Seguro deseas <strong>eliminar</strong> esta visita?'  
+    }
     const alert = await this.alertCtrl.create({
-      header: 'Eliminar Visita ' + tipo,
-      message: 'Seguro deseas <strong>eliminar</strong> esta visita?',
+      header,
+      message,
       buttons: [
         {
           text: 'Cancelar',
@@ -102,8 +130,10 @@ export class MisDatosPage implements OnInit {
           handler: () => {
             if (tipo === 'Autorizada') {
               this.eliminarVisitaAutorizada( pos );
-            } else {
+            } else if (tipo === 'Rechazada'){
               this.eliminarVisitaRechazada( pos );
+            } else {
+              this.eliminarCuenta();
             }
           }
         }

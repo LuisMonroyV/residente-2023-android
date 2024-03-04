@@ -77,7 +77,7 @@
                   color="warning"
                   [disabled]="eliminando"
                   >
-        Reintentar Registro
+        Borrar mis datos
       </ion-button>
       <ion-button *ngIf="fbSrvc.persona.estado === '3-suspendido'"
                   (click)="eliminarCuenta()" 
@@ -86,7 +86,7 @@
                   >
         Eliminar cuenta
       </ion-button>
-      <br>
+      <br><br>
       <ion-text color="danger">Esto eliminará todos sus datos ingresados para poder empezar nuevamente.</ion-text>
     </div>
   </div>
