@@ -76,7 +76,7 @@ export class AppComponent implements OnInit {
         this.fbSrvc.expandidoEmergencias = true;
         this.router.navigateByUrl('/folder/inicio#emergencias');
       } else if (notifR.getNotification().additionalData['nombre'] === 'reservas de multicancha') {
-        this.fbSrvc.lanzarSonido('siren');
+        this.fbSrvc.lanzarSonido('ding');
         console.log('moviendo a Reservas...');
         this.router.navigateByUrl('/reservas-cancha');
       }

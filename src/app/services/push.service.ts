@@ -220,8 +220,8 @@ export class PushService {
         en: 'Tu reserva ha sido procesada.',
         es: 'Tu reserva ha sido procesada.'
       },
-      ios_sound: 'woopWoop.mp3',
-      android_sound: 'woopWoop',
+      ios_sound: 'blop.mp3',
+      android_sound: 'blop',
     };
     console.log({body});
     return this.http.post(oSApiUrl, body, { headers } )
