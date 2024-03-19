@@ -14,6 +14,7 @@ import * as moment from 'moment';
 export class ModalAvisoDePagoComponent implements OnInit {
   fechaCorte = moment().startOf('month').toDate(); // primero del mes
   fechaTransf = null;
+  misAvisosDePago: AvisoDePago[] = [];
   nuevoAvisoDePago: AvisoDePago = {
     estadoAviso: '0-Pendiente',
     fechaAprobacion: null,
@@ -149,6 +150,16 @@ export class ModalAvisoDePagoComponent implements OnInit {
         this.fbSrvc.misMesesImpagos.push(newMesImpago);
       }
     }
+    this.fbSrvc.getMisAvisosDePago()
+    .subscribe( dataAP => {
+      this.misAvisosDePago = [];
+      if (dataAP && dataAP.length > 0) {
+        this.misAvisosDePago = dataAP;
+      }
+    });
+    setTimeout(() => {
+      this.rebajarPendientes(this.misAvisosDePago);
+    }, 500);
     // orden cronológico
     this.fbSrvc.misMesesImpagos = this.fbSrvc.misMesesImpagos.sort((a,b) => {
       if ( a.fecha < b.fecha ){
@@ -161,6 +172,24 @@ export class ModalAvisoDePagoComponent implements OnInit {
     });
     this.nuevoAvisoDePago.mesesPagados = this.fbSrvc.misMesesImpagos;
     //console.log('%cthis.nuevoAvisoDePago ', 'color: #007acc;', this.nuevoAvisoDePago);
+  }
+  rebajarPendientes(avisos: AvisoDePago[]) {
+    // this.fbSrvc.consola('RebajarPendientes()');
+    // rebajo los pagos pendientes de los impagos
+    avisos.forEach( element => {
+      if (element.estadoAviso === '0-Pendiente') {
+        element.mesesPagados.forEach( mesP => {
+          // ubico la fecha en el arreglo de meses impagos
+          const posImpago = this.fbSrvc.misMesesImpagos.findIndex( mesesImp => mesesImp.mesAno === mesP.mesAno );
+          if (posImpago > -1) {
+            // this.fbSrvc.misMesesImpagos.splice(posImpago, 1);
+            this.fbSrvc.misMesesImpagos[posImpago].idTransaccion = 'Pendiente';
+            // this.fbSrvc.consola('%Rebajado Aviso de ', mesP.mesAno);
+          }
+        });
+      }
+    });
+    console.log('Mis meses impagos Rebajados: ', this.fbSrvc.misMesesImpagos);
   }
   siguiente() {
     this.paso++;
@@ -213,10 +242,12 @@ export class ModalAvisoDePagoComponent implements OnInit {
   }
   validarAviso() {
     if (this.paso === 1) {
+      // saco posible avisos pendientes
+      const mesesValidos = this.nuevoAvisoDePago.mesesPagados.filter( pagoOk => pagoOk.idTransaccion != 'Pendiente');
       this.validacionAvisoP1 = '';
-      if (this.nuevoAvisoDePago.mesesPagados[0].documento.length === 0) {
+      if (mesesValidos[0].documento.length === 0) {
         this.validacionAvisoP1 = 'Agregar imagen del primer período.';
-      } else if (this.nuevoAvisoDePago.mesesPagados.length > 1 && !this.validarPagos()) {
+      } else if (mesesValidos.length > 1 && !this.validarPagos()) {
         this.validacionAvisoP1 = 'Informar los períodos de manera cronológica.';
       } else {
         this.validacionAvisoP1 = 'OK';
@@ -240,15 +271,17 @@ export class ModalAvisoDePagoComponent implements OnInit {
     }
   }
   validarPagos(): boolean {
+    // saco posible avisos pendientes
+    const mesesValidos = this.nuevoAvisoDePago.mesesPagados.filter( pagoOk => pagoOk.idTransaccion != 'Pendiente');
     let laguna = false;
     let retorno = true;
     // Validación del pagos en orden
     // Busco si la primera deuda no está ok retorna de inmediato
-    if (this.nuevoAvisoDePago.mesesPagados[0].documento.length === 0) {
+    if (mesesValidos[0].documento.length === 0) {
       return false;
     } else {
       // recorro arreglo de pagos para ver que no hayan lagunas
-      this.nuevoAvisoDePago.mesesPagados.forEach(element => {
+      mesesValidos.forEach(element => {
         // laguna es un orden impago - pago
         if (element.documento.length === 0) {
           laguna = true;
