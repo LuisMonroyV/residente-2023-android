@@ -24,9 +24,9 @@
         <ion-badge *ngIf="verElFuturo" class="proximos-periodos" color="success" mode="ios" (click)="verElFuturo = !verElFuturo;">Ver sólo períodos atrasados</ion-badge>
       </div> 
       <div *ngIf="!verElFuturo">
-        <div *ngIf="totalDeuda === 0"
-              class="ion-text-center"
-              >
+        <div *ngIf="totalDeuda === 0 || (totalDeuda > 0 && fbSrvc.misMesesImpagos.length === 0)"
+             class="ion-text-center"
+             >
           <img class="ion-padding" src="assets/images/no-data-10.png"/><br>
           <ion-text color="primary">
             <strong>Felicitaciones!!</strong><br>
@@ -46,41 +46,62 @@
               <ion-col size="8"                   
                         style="padding-top: 15px;"
                         >
-                <span class="periodo" [ngClass]="{'texto-atrasado': mes.fecha <= fechaCorte}">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
+                <span class="periodo" [ngClass]="{'texto-pendiente': mes.idTransaccion === 'Pendiente' ,
+                                                  'texto-atrasado': mes.fecha <= fechaCorte}">
+                  {{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} 
+                </span>
               </ion-col>
-              <ion-col size="2" class="ion-text-center">
-                <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
-                              style="display: inline-block; vertical-align: middle;"
-                                >
-                    <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
-                    <img style="border-radius: 6px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
-                    </a>
-                </ion-thumbnail>
-                <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
-                          name="attach-sharp" 
-                          (click)="abrirGaleria(i)"
-                          size="large"
-                          color="primary"
-                          >
-                </ion-icon>
+              <!-- Con aviso pendiente -->
+              <ion-col  *ngIf="mes.idTransaccion === 'Pendiente'" 
+                        size="4"
+                        style="padding-top: 15px;"
+                        class="ion-text-center"
+                        >
+              <!-- Texto de aviso Pendiente -->
+                <span class="texto-pendiente">Aviso Pendiente</span>
               </ion-col>
-              <ion-col size="2" class="ion-text-center">
-                <ion-icon name="trash-outline"
-                          color="danger"
-                          size="large"
-                          *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
-                          (click)="deseleccionarMes(i)"
-                          style="vertical-align: text-bottom;"
-                          >
-                </ion-icon>
-                <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
-                          name="camera-sharp" 
-                          (click)="tomarFoto(i)"
-                          size="large"
-                          color="primary"
-                          >
-                </ion-icon>
-              </ion-col>
+              <!-- Atrasados -->
+              <ion-col *ngIf="mes.idTransaccion === ''"
+                        size="4"        
+                        style="padding-top: 15px;"
+                        class="ion-text-center">
+                <ion-col size="2" class="ion-text-center">
+                  <!-- Imagen del doc subido -->
+                  <ion-thumbnail *ngIf="mes.documento.length > 0"
+                                  style="display: inline-block; vertical-align: middle;"
+                                  >
+                      <a [href]="mes.documento" target="_blank" rel="noopener noreferrer">            
+                      <img style="border-radius: 6px; height: -webkit-fill-available;" [src]="mes.documento" />
+                      </a>
+                  </ion-thumbnail>
+                  <!-- Galería -->
+                  <ion-icon *ngIf="mes.documento.length === 0 && mes.idTransaccion.length === 0"
+                            name="attach-sharp" 
+                            (click)="abrirGaleria(i)"
+                            size="large"
+                            color="primary"
+                            >
+                  </ion-icon>
+                </ion-col>
+                <!-- Icono para eliminar doc -->
+                <ion-col size="2" class="ion-text-center">
+                  <ion-icon *ngIf="mes.documento.length > 0" 
+                            name="trash-outline"
+                            color="danger"
+                            size="large"
+                            (click)="deseleccionarMes(i)"
+                            style="vertical-align: text-bottom;"
+                            >
+                  </ion-icon>
+                  <ion-icon *ngIf="mes.documento.length === 0"
+                            name="camera-sharp" 
+                            (click)="tomarFoto(i)"
+                            size="large"
+                            color="primary"
+                            >
+                  </ion-icon>
+                </ion-col>
+              </ion-col>                
             </ion-row>
           </ion-grid>
           <!-- itemes opcionales -->
@@ -96,14 +117,14 @@
                       <span class="periodo" [ngClass]="{'texto-atrasado': mes.fecha <= fechaCorte}">{{mes.fecha | date: 'MMMM - yyyy' }} - ${{ mes.monto | number : '1.0-0'}} </span>
                     </ion-col>
                     <ion-col size="2" class="ion-text-center">
-                      <ion-thumbnail *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                      <ion-thumbnail *ngIf="mes.documento.length > 0"
                                     style="display: inline-block; vertical-align: middle;"
                                      >
-                         <a [href]="nuevoAvisoDePago.mesesPagados[i].documento" target="_blank" rel="noopener noreferrer">            
-                          <img style="border-radius: 6px; height: -webkit-fill-available;" [src]="nuevoAvisoDePago.mesesPagados[i].documento" />
+                         <a [href]="mes.documento" target="_blank" rel="noopener noreferrer">            
+                          <img style="border-radius: 6px; height: -webkit-fill-available;" [src]="mes.documento" />
                          </a>
                       </ion-thumbnail>
-                      <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                      <ion-icon *ngIf="mes.documento.length === 0"
                                 name="attach-sharp" 
                                 (click)="abrirGaleria(i)"
                                 size="large"
@@ -112,7 +133,7 @@
                       </ion-icon>
                     </ion-col>
                     <ion-col size="2" class="ion-text-center">
-                      <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length > 0"
+                      <ion-icon *ngIf="mes.documento.length > 0"
                                 name="trash-outline"
                                 color="danger"
                                 size="large"
@@ -120,7 +141,7 @@
                                 style="vertical-align: text-bottom;"
                                 >
                       </ion-icon>
-                      <ion-icon *ngIf="nuevoAvisoDePago.mesesPagados[i].documento.length === 0"
+                      <ion-icon *ngIf="mes.documento.length === 0"
                                 name="camera-sharp" 
                                 (click)="tomarFoto(i)"
                                 size="large"
@@ -146,8 +167,8 @@
       <!-- Botón Siguiente -->
       <ion-row *ngIf="verElFuturo || totalDeuda > 0">
         <ion-col>
-          <div class="ion-text-center tam-12">
-            <ion-button (click)="siguiente()" class="p-x-40"
+          <div class="ion-text-center tam-12" style="width: -webkit-fill-available;">
+            <ion-button (click)="siguiente()" class="p-x-20"
                         [disabled]="validacionAvisoP1 != 'OK'">
               Siguiente
             </ion-button>
@@ -192,14 +213,16 @@
       <!-- Botones Anterior y Siguiente -->
       <ion-row>
         <ion-col class="centrado">
-          <div class="ion-text-center tam-12">
-            <ion-button (click)="anterior()" class="p-x-20">
+          <div class="ion-text-center tam-12" style="width: -webkit-fill-available;">
+            <ion-button (click)="anterior()" 
+                        class="p-x-10" 
+                        fill="outline">
               Anterior
             </ion-button>
           </div>    
-          <div class="ion-text-center tam-12">
+          <div class="ion-text-center tam-12" style="width: -webkit-fill-available;">
             <ion-button (click)="siguiente()"
-                        class="p-x-20"
+                        class="p-x-10"
                         [disabled]="validacionAvisoP2 != 'OK'">
               Siguiente
             </ion-button>
@@ -247,14 +270,16 @@
       <!-- Botones Anterior y Siguiente -->
       <ion-row>
         <ion-col class="centrado">
-          <div class="ion-text-center tam-12">
-            <ion-button (click)="anterior()" class="p-x-20">
+          <div class="ion-text-center tam-12" style="width: -webkit-fill-available;">
+            <ion-button (click)="anterior()" 
+                        class="p-x-10" 
+                        fill="outline">
               Anterior
             </ion-button>
           </div>    
-          <div class="ion-text-center tam-12">
+          <div class="ion-text-center tam-12" style="width: -webkit-fill-available;">
             <ion-button (click)="siguiente()"
-                        class="p-x-20"
+                        class="p-x-10"
                         [disabled]="validacionAvisoP3 != 'OK'">
               Siguiente
             </ion-button>
@@ -292,13 +317,16 @@
       <!-- Botones Anterior y Enviar Aviso -->
       <ion-row>
         <ion-col class="centrado">
-          <div class="ion-text-center tam-12">
-            <ion-button (click)="anterior()">
+          <div class="ion-text-center tam-12" style="width: -webkit-fill-available;">
+            <ion-button (click)="anterior()" 
+                        class="p-x-10" 
+                        fill="outline">
               Anterior
             </ion-button>
           </div>    
-          <div class="ion-text-center tam-12">
-            <ion-button (click)="guardarAvisoDePago()">
+          <div class="ion-text-center tam-12" style="width: -webkit-fill-available;">
+            <ion-button (click)="guardarAvisoDePago()"
+                        class="p-x-10">
               Enviar Aviso de Pago
             </ion-button>
           </div>    
