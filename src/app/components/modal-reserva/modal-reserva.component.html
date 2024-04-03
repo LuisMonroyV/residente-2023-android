@@ -28,11 +28,24 @@
                   <ion-chip color="primary" mode="ios" outline="true" (click)="recalculaMinMax(i)"
                             class="grilla"
                             [ngClass]="{'seleccionado': fbSrvc.soloFecha(this.nuevaReserva.fechaInicioReserva) == fbSrvc.soloFecha(dia)}">
-                    <ion-label>{{dia | date : 'EEE dd-MMM' | titlecase }}</ion-label>
+                    <ion-label [ngClass]="{'feriado': fbSrvc.esFeriado(dia)}">{{dia | date : 'EEE dd-MMM' | titlecase }}</ion-label>
                   </ion-chip>
               </ion-col>
             </ion-row>
           </ion-grid> 
+          </ion-item>
+          <ion-item>
+            <ion-button (click)="cerrarModal()"
+                        class="btn-anterior"
+                        fill="outline"
+                        >
+              Anterior
+            </ion-button>
+            <ion-button (click)="siguiente()" 
+                        class="btn-siguiente"
+                        [disabled]="!formReserva.valid || !fechaSeleccionada">
+              Siguiente
+            </ion-button>
           </ion-item>
         </div>
         <div *ngIf="paso === 2">
@@ -58,8 +71,15 @@
             </ion-row>
           </ion-item>
           <ion-item>
-            <ion-button (click)="anterior()" class="p-x-50">
+            <ion-button (click)="anterior()" 
+                        class="btn-anterior"
+                        fill="outline">
               Anterior
+            </ion-button>
+            <ion-button (click)="siguiente()" 
+                        class="btn-siguiente"
+                        [disabled]="!formReserva.valid || !horaSeleccionada">
+              Siguiente
             </ion-button>
           </ion-item>
         </div>
@@ -91,13 +111,14 @@
             </ion-row>
           </ion-item>
           <ion-item class="ion-text-center">
-            <ion-button (click)="anterior()" fill="outline" class="p-x-10">
+            <ion-button (click)="anterior()" 
+                        fill="outline" 
+                        class="btn-anterior">
               Anterior
             </ion-button>
             <ion-button type="submit"
-                        expand="block" 
                         [disabled]="!formReserva.valid || !horaSeleccionada || !fechaSeleccionada"
-                        class="p-x-10"
+                        class="btn-siguiente"
                         >
               Guardar Cambios
             </ion-button>

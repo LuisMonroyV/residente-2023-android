@@ -49,46 +49,53 @@
         </ion-col>    
       </ion-row>
     </ion-grid>
-    <ion-grid fixed class="borde-horario" *ngIf="misReservasSemana && misReservasSemana.length > 0">
+    <ion-grid fixed class="borde-horario">
       <ion-row class="centrado-flex">
         <ion-col class="centrado-flex">
-          <h4>Mis reservas</h4>
+          <span class="tam-20">Mis reservas</span>
         </ion-col>
       </ion-row>
-      <ion-row *ngFor="let reserva of misReservasSemana; let i = index" class="card-reservas">
-        <ion-card [ngClass]="{'solicitada': reserva.estado === 'Solicitada', 
-                              'reservada': reserva.estado === 'Reservada', 
-                              'rechazada': reserva.estado === 'Disponible'}">
-          <ion-card-content  class="ion-no-padding">
-            <ion-grid fixed>
-              <ion-row>
-                <ion-col size="10" class="tam-18">
-                  <ion-chip mode="ios">
-                    <ion-label>{{reserva.fechaSolicitud | fechaCorta : '' : 'pasado'}}</ion-label>
-                  </ion-chip>
-                  <ion-chip mode="ios"
-                            [ngClass]="{'solicitada': reserva.estado === 'Solicitada', 
-                                        'reservada': reserva.estado === 'Reservada', 
-                                        'rechazada': reserva.estado === 'Disponible'}">
-                    <ion-label>{{reserva.estado === 'Disponible' ? 'Rechazada' : reserva.estado}}</ion-label>
-                  </ion-chip><br>
-                  <ion-label>Para el: {{reserva.fechaInicioReserva | date : 'dd-MMM'}} de {{reserva.fechaInicioReserva | date : 'HH-mm'}} a {{reserva.fechaFinReserva | date : 'HH-mm'}}</ion-label> <br>
-                  <ion-label>Actividad: {{reserva.obsResid}}</ion-label><br>
-                  <ion-label *ngIf="reserva.estado === 'Disponible'">Obs. Admin.: {{reserva.obsAdmin}}</ion-label>
-                </ion-col>
-                <ion-col size="2" class="centrado pt-40">
-                  <ion-icon name="trash-outline"
-                            color="danger"
-                            (click)="anular(i)"
-                            size="large"
-                            >
-                  </ion-icon>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-card-content>
-        </ion-card>
-      </ion-row>
+      <div *ngIf="misReservasSemana && misReservasSemana.length > 0">
+        <ion-row *ngFor="let reserva of misReservasSemana; let i = index" class="card-reservas">
+          <ion-card [ngClass]="{'solicitada': reserva.estado === 'Solicitada', 
+                                'reservada': reserva.estado === 'Reservada', 
+                                'rechazada': reserva.estado === 'Disponible'}">
+            <ion-card-content  class="ion-no-padding">
+              <ion-grid fixed>
+                <ion-row>
+                  <ion-col size="10" class="tam-18">
+                    <ion-chip mode="ios">
+                      <ion-label>{{reserva.fechaSolicitud | fechaCorta : '' : 'pasado'}}</ion-label>
+                    </ion-chip>
+                    <ion-chip mode="ios"
+                              [ngClass]="{'solicitada': reserva.estado === 'Solicitada', 
+                                          'reservada': reserva.estado === 'Reservada', 
+                                          'rechazada': reserva.estado === 'Disponible'}">
+                      <ion-label>{{reserva.estado === 'Disponible' ? 'Rechazada' : reserva.estado}}</ion-label>
+                    </ion-chip><br>
+                    <ion-label>Para el: {{reserva.fechaInicioReserva | date : 'dd-MMM'}} de {{reserva.fechaInicioReserva | date : 'HH-mm'}} a {{reserva.fechaFinReserva | date : 'HH-mm'}}</ion-label> <br>
+                    <ion-label>Actividad: {{reserva.obsResid}}</ion-label><br>
+                    <ion-label *ngIf="reserva.estado === 'Disponible'">Obs. Admin.: {{reserva.obsAdmin}}</ion-label>
+                  </ion-col>
+                  <ion-col size="2" class="centrado pt-40">
+                    <ion-icon name="trash-outline"
+                              color="danger"
+                              (click)="anular(i)"
+                              size="large"
+                              >
+                    </ion-icon>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-card-content>
+          </ion-card>
+        </ion-row>
+      </div>
+      <div *ngIf="!misReservasSemana || misReservasSemana.length === 0"
+            class="ion-text-center"
+            >
+        <img class="ion-padding" src="assets/images/no-data-10.png"/>
+      </div>
     </ion-grid>
   </div>
   <!-- Sección Solicitudes -->

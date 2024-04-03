@@ -31,17 +31,30 @@ export class ModalReservaComponent implements OnInit {
                public fbSrvc: FirebaseService) {}
   anterior() {
     this.paso--;
+    if (this.paso === 2) {
+      const fechaARecalcular = moment(this.nuevaReserva.fechaInicioReserva).format('DD-MM-YYYY');
+      const posFecha = this.fechasDisponibles.findIndex(fec => moment(fec).format('DD-MM-YYYY') == fechaARecalcular)
+      this.recalculaMinMax(posFecha);
+    }
   }
   cerrarModal() {
     console.log('%ccerrarModal()', 'color: #007acc;');
     this.modalCtrl.dismiss();
   }
-  guardarReserva() {
-    this.modalCtrl.dismiss({ guardar: 'SI', reserva: this.nuevaReserva });
+  existeReserva() :boolean {
+    return this.fbSrvc.reservasCancha.findIndex(res => this.fbSrvc.soloFecha(res.fechaInicioReserva) === this.fbSrvc.soloFecha(this.nuevaReserva.fechaInicioReserva) &&
+                                                       this.fbSrvc.soloHora(res.fechaInicioReserva) === this.fbSrvc.soloHora(this.nuevaReserva.fechaInicioReserva) &&
+                                                       (res.estado === 'Solicitada' || res.estado === 'Reservada')
+                                                ) > -1;
   }
-  // ionViewDidEnter() {
-  //   this.desc.setFocus();
-  // }
+  guardarReserva() {
+    if (this.existeReserva()) {
+      this.fbSrvc.mostrarMensaje('Ese horario ya no está disponible', 3000);
+    } else {
+      this.modalCtrl.dismiss({ guardar: 'SI', reserva: this.nuevaReserva });
+
+    }
+  }
   ngOnInit() {
     for (let index = 0; index <= 6; index++) {
       const element = moment().startOf('day').add(index, 'days').toDate();
@@ -62,24 +75,26 @@ export class ModalReservaComponent implements OnInit {
   }
 
   recalculaMinMax(idx: number) {
-    this.fechaSeleccionada = true;
-    this.nuevaReserva.fechaInicioReserva = this.fechasDisponibles[idx];
-    let diaSem = moment(this.fechasDisponibles[idx]).day(); // Domingo 0 .. Sábado 6
-    if (this.fbSrvc.esFeriado(moment(this.fechasDisponibles[idx]).toDate()) || diaSem === 0) {
-      diaSem = 0;  // Le asigno dia feriado o domingo
-    }
-    switch (diaSem) {
-      case 6: // Sábado
-        this.recalculaHoras(this.fbSrvc.parametrosFB.horaInicioSabado, this.fbSrvc.parametrosFB.horaFinSabado);
+    if (idx >= 0) {
+      this.fechaSeleccionada = true;
+      this.nuevaReserva.fechaInicioReserva = this.fechasDisponibles[idx];
+      let diaSem = moment(this.fechasDisponibles[idx]).day(); // Domingo 0 .. Sábado 6
+      if (this.fbSrvc.esFeriado(moment(this.fechasDisponibles[idx]).toDate()) || diaSem === 0) {
+        diaSem = 0;  // Le asigno dia feriado o domingo
+      }
+      switch (diaSem) {
+        case 6: // Sábado
+          this.recalculaHoras(this.fbSrvc.parametrosFB.horaInicioSabado, this.fbSrvc.parametrosFB.horaFinSabado);
+          break;
+        case 0: // Domingo o Feriado
+        this.recalculaHoras(this.fbSrvc.parametrosFB.horaInicioFeriado, this.fbSrvc.parametrosFB.horaFinFeriado);
         break;
-      case 0: // Domingo o Feriado
-      this.recalculaHoras(this.fbSrvc.parametrosFB.horaInicioFeriado, this.fbSrvc.parametrosFB.horaFinFeriado);
-      break;
-      default: // Dia de semana
-        this.recalculaHoras(this.fbSrvc.parametrosFB.horaInicioSemana, this.fbSrvc.parametrosFB.horaFinSemana);
-        break;
+        default: // Dia de semana
+          this.recalculaHoras(this.fbSrvc.parametrosFB.horaInicioSemana, this.fbSrvc.parametrosFB.horaFinSemana);
+          break;
+      }
+      // this.siguiente();
     }
-    this.siguiente();
   }
 
   seleccionaHora(idx: number) {
@@ -88,7 +103,7 @@ export class ModalReservaComponent implements OnInit {
     this.nuevaReserva.fechaInicioReserva = moment(this.nuevaReserva.fechaInicioReserva).startOf('day').add(moment(this.horariosDisponibles[idx]).hour(),'hours').toDate();    
     this.nuevaReserva.fechaFinReserva = moment(this.nuevaReserva.fechaInicioReserva).add(59,'minutes').add(59,'seconds').toDate();    
     console.log('%cmodal-reserva.component.ts line:84 this.nuevaReserva', 'color: #007acc;', this.nuevaReserva);
-    this.siguiente();
+    // this.siguiente();
   }
   siguiente() {
     this.paso++;

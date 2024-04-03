@@ -174,6 +174,7 @@ export class FirebaseService {
   registrando = false;
   registroAvisado = false;
   reservasCancha: Reserva[] = [];
+  temaCambiado = false;
   textoAlerta = '';
   ultimoAcceso: Date;
   verAppStr = '';
@@ -650,7 +651,8 @@ export class FirebaseService {
   }
   hayReserva(fecha: Date): Reserva {
     return this.reservasCancha.find(res => this.soloFecha(res.fechaInicioReserva) === this.soloFecha(fecha) &&
-                                           this.soloHora(res.fechaInicioReserva) === this.soloHora(fecha));
+                                           this.soloHora(res.fechaInicioReserva) === this.soloHora(fecha) &&
+                                           (res.estado === 'Reservada' || res.estado === 'Solicitada'));
   }
   lanzarSonido( id: string, times?: number ) {
     setTimeout(() => {
@@ -912,10 +914,18 @@ export class FirebaseService {
       return moment(fechaTS).toDate();
     }
   }
-  toggleDarkTheme(estado: boolean) {
-    console.log('cambiar darkMode a:', estado);
-    document.body.classList.toggle('dark', estado);
-    this.dark = estado;
+  toggleDarkTheme(estado: boolean, origen: string = 'html') {
+    if (!this.temaCambiado || origen === 'html') {
+      console.log('cambiar darkMode a:', estado);
+      document.body.classList.toggle('dark', estado);
+      this.dark = !this.dark;
+      this.temaCambiado = !this.temaCambiado;
+    } else {
+      console.log('Tema ya fue cambiado hace poco');
+      setTimeout(() => {
+        this.temaCambiado = false;
+      }, 60000); // al menos una hora
+    }
   }
   validarVersionApp( data: string) {
     if (this.parametrosFB.appVersionAndroidStr) {

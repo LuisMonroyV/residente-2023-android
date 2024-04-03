@@ -40,7 +40,7 @@
                 <ion-item lines="none">
                 <ion-icon slot="start" name="moon-sharp"></ion-icon>
                 <ion-label>Modo Oscuro</ion-label>
-                <ion-toggle (ionChange)="fbSrvc.toggleDarkTheme(!fbSrvc.dark)"
+                <ion-toggle (ionChange)="fbSrvc.toggleDarkTheme(!fbSrvc.dark, 'html')"
                             name="darkMode"
                             [checked]="fbSrvc.dark"
                             mode="ios">

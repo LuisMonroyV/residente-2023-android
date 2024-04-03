@@ -223,13 +223,14 @@ solicitudesHoy = 0;
         });
       } else {
         console.log('%creservas.component.ts No hay reservas', 'color: #007acc;');
+        this.fbSrvc.reservasCancha
       }
       this.inicializaSemana();    
     });
     this.fbSrvc.getMisReservas()
     .subscribe( misRes => {
+      this.misReservasSemana = [];
       if (misRes && misRes.length > 0) {
-        this.misReservasSemana = [];
         this.solicitudesHoy = 0;
         misRes.forEach( res => {
           const miReserva: Reserva = {
@@ -245,7 +246,8 @@ solicitudesHoy = 0;
           };
           this.misReservasSemana.push(miReserva);
           // Cuenta de solicitudes diarias
-          if (this.fbSrvc.soloFecha(this.fbSrvc.timestampToDate(res.fechaSolicitud)) === this.fbSrvc.soloFecha(moment().toDate())) {
+          if (this.fbSrvc.soloFecha(this.fbSrvc.timestampToDate(res.fechaSolicitud)) === this.fbSrvc.soloFecha(moment().toDate()) && 
+              (res.estado === 'Solicitada' || res.estado === 'Reservada')) {
             this.solicitudesHoy++;
           }
         });

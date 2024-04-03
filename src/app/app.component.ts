@@ -22,7 +22,6 @@ export class AppComponent implements OnInit {
   retorno: any[];
   auth = getAuth();
   public selectedIndex = 0;
-  temaCambiado = false;
   constructor(
               private appVersion: AppVersion,
               private audio: NativeAudio,
@@ -83,36 +82,65 @@ export class AppComponent implements OnInit {
       notifR.complete(notificationR);
     });
     OneSignal.setNotificationOpenedHandler(notifO => {
-      console.log('notificationOpenedCallback: ', JSON.stringify(notifO));
-        if (notifO.notification.additionalData['nombre'] === 'Aviso de visita') {
-          this.fbSrvc.expandidoAccesos = true;
-          this.router.navigateByUrl('/folder/inicio#visitas');
-        } else if (notifO.notification.additionalData['nombre'] === 'Nueva noticia') {
+      // console.log('notificationOpenedCallback: ', JSON.stringify(notifO));
+      switch (notifO.notification.additionalData['nombre']) {
+        case 'Aviso de visita':
+          setTimeout(() => {
+            this.fbSrvc.expandidoAccesos = true;
+            this.router.navigateByUrl('/folder/inicio#visitas');          
+          }, 3000);
+          break;
+        case 'Nueva noticia':
+        setTimeout(() => {
           this.fbSrvc.lanzarSonido('sms');
           this.fbSrvc.expandidoNoticias = true;
           this.router.navigateByUrl('/folder/inicio#noticias');
-        } else if (notifO.notification.additionalData['nombre'] === 'Alerta de residente' ) {
+        }, 3000);
+        break;
+        case 'Alerta de residente':  
+        setTimeout(() => {
           this.fbSrvc.lanzarSonido('smokeAlarm');
           this.fbSrvc.expandidoEmergencias = true;
           this.router.navigateByUrl('/folder/inicio#emergencias');
-        } else if (notifO.notification.additionalData['nombre'] === 'Alerta de guardia') {
+        }, 3000);
+        break;
+        case 'Alerta de guardia':
+        setTimeout(() => {
           this.fbSrvc.lanzarSonido('siren');
           this.fbSrvc.expandidoEmergencias = true;
           this.router.navigateByUrl('/folder/inicio#emergencias');
-        } else if (notifO.notification.additionalData['nombre'] === 'Nuevo usuario esperando aprobación') {
+        }, 3000);
+        break;
+        case 'Nuevo usuario esperando aprobación':
           setTimeout(() => {
             this.router.navigateByUrl('/usuarios');
           }, 3000);
-        } else if (notifO.notification.additionalData['nombre'] === 'Visita no informada') {
-          this.fbSrvc.expandidoAccesos = true;
-          this.router.navigateByUrl('/folder/inicio#visitas');
-        } else if (notifO.notification.additionalData['nombre'] === 'Tu aviso de pago ha cambiado de estado' ||
-                   notifO.notification.additionalData['nombre'] === 'Nuevo aviso de pago esperando aprobación') {
-          this.router.navigate(['/mis-pagos']);
-        } else if (notifO.notification.additionalData['nombre'] === 'reservas de multicancha') {
-          this.router.navigateByUrl('/reservas-cancha');
-        }
-      });
+          break;
+        case 'Visita no informada':
+          setTimeout(() => {
+            this.fbSrvc.expandidoAccesos = true;
+            this.router.navigateByUrl('/folder/inicio#visitas');
+          }, 3000);
+          break;
+        case 'Tu aviso de pago ha cambiado de estado':
+          setTimeout(() => {
+            this.router.navigate(['/mis-pagos']);
+          }, 3000);
+          break;
+        case 'Nuevo aviso de pago esperando aprobación':
+          setTimeout(() => {
+            this.router.navigate(['/mis-pagos']);
+          }, 3000);
+          break;
+        case 'reservas de multicancha':
+          setTimeout(() => {
+            this.router.navigateByUrl('/reservas-cancha');
+          }, 3000);
+          break;
+        default:
+          break;
+      }
+    });
     OneSignal.promptForPushNotificationsWithUserResponse(accepted => {
       console.log('User accepted notifications: ' + accepted);
     });
@@ -295,9 +323,10 @@ export class AppComponent implements OnInit {
     // Listen for changes to the prefers-color-scheme media query
     prefersDark.addEventListener('change', mediaQuery => {
       this.fbSrvc.dark = mediaQuery.matches;
-      if (!this.temaCambiado) { // Para que lo haga una sola vez 
-        this.temaCambiado = true;
-        this.fbSrvc.toggleDarkTheme(mediaQuery.matches);
+      if (!this.fbSrvc.temaCambiado) { // Para que lo haga una sola vez 
+        this.fbSrvc.temaCambiado = true;
+        this.fbSrvc.toggleDarkTheme(mediaQuery.matches, 'listener');
+        console.log('Tema cambiado...')
       }
     });
 
