@@ -131,12 +131,8 @@ export class MisAvisosDePagoPage implements OnInit {
     this.fbSrvc.getMisAvisosDePago()
     .subscribe( dataAP => {
       this.misAvisosDePago = [];
-      // console.log('%ccambio en getMisAvisosDePago', 'color: #007acc;');
       if (dataAP && dataAP.length > 0) {
         this.misAvisosDePago = dataAP;
-        // setTimeout(() => {
-        //   this.rebajarPendientes(this.misAvisosDePago);
-        // }, 1000);
       }
     });
     if (this.fbSrvc.persona.esAdmin) {
@@ -212,21 +208,6 @@ export class MisAvisosDePagoPage implements OnInit {
       this.fbSrvc.mostrarMensaje('No puedes aprobar avisos de pago.');
     }
   }
-  // rebajarPendientes(avisos: AvisoDePago[]) {
-  //   console.log('RebajarPendientes()');
-  //   // rebajo los pagos pendientes de los impagos
-  //   avisos.forEach( element => {
-  //     if (element.estadoAviso === '0-Pendiente') {
-  //       element.mesesPagados.forEach( mesP => {
-  //         // ubico la fecha en el arreglo de meses impagos
-  //         const posImpago = this.fbSrvc.misMesesImpagos.findIndex( mesesImp => mesesImp.mesAno === mesP.mesAno );
-  //         if (posImpago > -1) {
-  //           this.fbSrvc.misMesesImpagos.splice(posImpago, 1);
-  //         }
-  //       });
-  //     }
-  //   });
-  // }
   rechazar( aviso: AvisoDePago) {
     if (this.fbSrvc.persona.esTesorero) {
       this.modalMotivo('rechazar')

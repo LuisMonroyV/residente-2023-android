@@ -16,12 +16,12 @@
     <!-- PASO 1 -->
     <div *ngIf="paso === 1" class="ion-padding">
       <!-- Total Deuda -->
-      <div>
+      <div style="display: flex;">
         <ion-chip color="warning" mode="ios" outline="false" class="ion-text-left">
-          <ion-label>Total Pendiente: ${{totalDeuda | number : '1.0-0'}}</ion-label>
+          <ion-label>Pendiente: ${{totalDeuda | number : '1.0-0'}}</ion-label>
         </ion-chip>
-        <ion-badge *ngIf="!verElFuturo" class="proximos-periodos" color="success" mode="ios"(click)="verElFuturo = !verElFuturo;">Ver próximos períodos</ion-badge> 
-        <ion-badge *ngIf="verElFuturo" class="proximos-periodos" color="success" mode="ios" (click)="verElFuturo = !verElFuturo;">Ver sólo períodos atrasados</ion-badge>
+        <ion-chip *ngIf="!verElFuturo" class="proximos-periodos" color="primary" mode="ios"(click)="verElFuturo = !verElFuturo;">Próximos períodos ></ion-chip> 
+        <ion-chip *ngIf="verElFuturo" class="proximos-periodos" color="danger" mode="ios" (click)="verElFuturo = !verElFuturo;">< Períodos actuales</ion-chip>
       </div> 
       <div *ngIf="!verElFuturo">
         <div *ngIf="totalDeuda === 0 || (totalDeuda > 0 && fbSrvc.misMesesImpagos.length === 0)"

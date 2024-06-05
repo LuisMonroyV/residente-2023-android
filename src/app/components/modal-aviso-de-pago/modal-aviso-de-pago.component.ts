@@ -174,7 +174,6 @@ export class ModalAvisoDePagoComponent implements OnInit {
     //console.log('%cthis.nuevoAvisoDePago ', 'color: #007acc;', this.nuevoAvisoDePago);
   }
   rebajarPendientes(avisos: AvisoDePago[]) {
-    // this.fbSrvc.consola('RebajarPendientes()');
     // rebajo los pagos pendientes de los impagos
     avisos.forEach( element => {
       if (element.estadoAviso === '0-Pendiente') {
@@ -182,9 +181,7 @@ export class ModalAvisoDePagoComponent implements OnInit {
           // ubico la fecha en el arreglo de meses impagos
           const posImpago = this.fbSrvc.misMesesImpagos.findIndex( mesesImp => mesesImp.mesAno === mesP.mesAno );
           if (posImpago > -1) {
-            // this.fbSrvc.misMesesImpagos.splice(posImpago, 1);
             this.fbSrvc.misMesesImpagos[posImpago].idTransaccion = 'Pendiente';
-            // this.fbSrvc.consola('%Rebajado Aviso de ', mesP.mesAno);
           }
         });
       }
