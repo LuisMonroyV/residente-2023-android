@@ -62,12 +62,12 @@ export class MisDatosPage implements OnInit {
     cambios.emailOk = false;
     cambios.estado = '1-rechazado';
     cambios.obs = 'Eliminación de datos solicitada por el residente';
-    this.fbSrvc.putPersona(cambios)
-    .then( () => {
+    this.fbSrvc.putPersona(cambios);
+    this.fbSrvc.persona.adminOk = false;
+    setTimeout(() => {
       this.limpiarParametros();
-      // this.fbSrvc.logOutFirebase();
-      this.router.navigate(['activar-mail']);
-    })
+      this.router.navigate(['activar-mail']);      
+    }, 500);
   }
   eliminarVisitaAutorizada( pos: number) {
     this.misVisitas.autorizados.splice(pos, 1);
@@ -109,7 +109,7 @@ export class MisDatosPage implements OnInit {
   }
   async confirmacion( pos: number, tipo: string ) {
     let header = 'Eliminación de datos de tu cuenta';
-    let message = '¿Estás seguro que deseas eliminar tu cuenta?'
+    let message = '¿Estás seguro que deseas eliminar tu cuenta?, no podrás registrarte nuevamente hasta 30 días más.'
     if (tipo != 'Cuenta') {
       header = 'Eliminar Visita ' + tipo;
       message = 'Seguro deseas <strong>eliminar</strong> esta visita?'  
@@ -126,7 +126,7 @@ export class MisDatosPage implements OnInit {
             console.log('Confirm Cancel: blah');
           }
         }, {
-          text: 'Si',
+          text: 'Si, estoy seguro',
           handler: () => {
             if (tipo === 'Autorizada') {
               this.eliminarVisitaAutorizada( pos );

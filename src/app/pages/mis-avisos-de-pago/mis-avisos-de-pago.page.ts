@@ -47,35 +47,6 @@ export class MisAvisosDePagoPage implements OnInit {
       this.listaP.closeSlidingItems();
     }
   }
-  avisarAdmins() {
-    this.fbSrvc.getAdministradores()
-    .subscribe( adm => {
-      let cont = 0;
-      if (adm && !adm.empty) {
-        console.log('# Administradores: ', adm.size);
-        this.interv = setInterval(() => {
-          if (cont < adm.size) {
-            if (adm.docs[cont].data().idMovil) {
-              this.pushSrvc.notificarNuevoAvisoDePago(adm.docs[cont].data().idMovil)
-              .then( () => {
-                console.log('notificación de aviso de pago enviada');
-              })
-              .catch( err => {
-                console.log('Error al enviar notificación de aviso de pago: ', err);
-              });
-            } else {
-              if (cont >= adm.size) {
-                clearInterval(this.interv);
-              }
-            }
-          } else {
-            clearInterval(this.interv);
-          }
-          cont++;
-        }, 1000);
-      }
-    });
-  }
   avisarResidentes(aviso: AvisoDePago) {
     this.fbSrvc.getPersonasxDireccion(aviso.idDireccion)
     .subscribe( personas => {
@@ -97,7 +68,7 @@ export class MisAvisosDePagoPage implements OnInit {
     .then( () => {
       this.fbSrvc.mostrarMensaje('Aviso de Pago enviado correctamente.');
       this.fbSrvc.misMesesImpagos = [];
-      this.avisarAdmins();
+      this.pushSrvc.avisarAdmins('Aviso de pago');
     })
     .catch( err => {
       this.fbSrvc.mostrarMensaje('No se pudo guardar el aviso de pago. Error: ', err);

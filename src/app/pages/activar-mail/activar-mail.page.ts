@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
+import { PushService } from 'src/app/services/push.service';
 
 
 @Component({
@@ -11,15 +12,16 @@ import * as moment from 'moment';
 })
 export class ActivarMailPage implements OnInit {
   inter: any;
-  intervalMinutos: any;
+  intervalsegundos: any;
   verificando = false;
   eliminando = false;
   chequeoInicial = true;
-  minutosRevision = 2;
-  horaRevision = moment().add(this.minutosRevision, 'minutes').toDate();
+  segundosRevision = 2;
+  horaRevision = moment().add(this.segundosRevision, 'seconds').toDate();
   public siguienteRevision = moment().to(this.horaRevision);
   constructor(public fbSrvc: FirebaseService,
-              private router: Router) {
+              private router: Router,
+              private pushSrvc: PushService) {
   }
   private activarUsuario() {
     clearInterval(this.inter);
@@ -33,11 +35,11 @@ export class ActivarMailPage implements OnInit {
       this.fbSrvc.loginFirebase(this.fbSrvc.login.email, this.fbSrvc.login.contrasena)
       .then( usr => {
         if (!this.chequeoInicial) {
-          this.minutosRevision = this.minutosRevision * 2;
+          this.segundosRevision = this.segundosRevision * 2;
         }
         this.chequeoInicial = false;
-        this.horaRevision = moment().add(this.minutosRevision, 'minutes').toDate();
-        console.log('Minutos: +', this.minutosRevision);
+        this.horaRevision = moment().add(this.segundosRevision, 'seconds').toDate();
+        console.log('segundos: +', this.segundosRevision);
         console.log('Próxima revisión: ', moment(this.horaRevision).format('HH:mm:ss'));
         this.fbSrvc.persona.emailOk = usr.user.emailVerified;
         this.fbSrvc.parametros.verificado = usr.user.emailVerified;
@@ -91,6 +93,7 @@ export class ActivarMailPage implements OnInit {
 
   }
   eliminarCuenta() {
+    this.fbSrvc.loading('Eliminando información...');
     this.eliminando = true;
     console.log('Usuario a eliminar: ', this.fbSrvc.persona.idPersona);
     this.fbSrvc.deleteUsuario(this.fbSrvc.persona.idPersona)
@@ -99,11 +102,14 @@ export class ActivarMailPage implements OnInit {
       setTimeout(() => {
         this.fbSrvc.logOutFirebase();
         this.limpiarParametros();
+        this.pushSrvc.avisarAdmins('Eliminacion');
         window.location.reload();
+        this.fbSrvc.stopLoading();
       }, 3000);
     })
     .catch( err => {
       console.log('error al eliminar cuenta del usuario: ', err);
+      this.fbSrvc.stopLoading();
     });
   }
   ionViewWillLeave() {
@@ -118,7 +124,7 @@ export class ActivarMailPage implements OnInit {
   }
   irLogin() {
     clearInterval(this.inter);
-    clearInterval(this.intervalMinutos);
+    clearInterval(this.intervalsegundos);
     if (this.fbSrvc.persona.adminOk && this.fbSrvc.persona.emailOk) {
       this.router.navigate(['/folder/inicio']);
     } else {
@@ -150,7 +156,7 @@ export class ActivarMailPage implements OnInit {
       console.log('Login: ', this.fbSrvc.login);
       if ((this.fbSrvc.login.email.length > 0) && (this.fbSrvc.login.contrasena.length > 0)) {
         console.log('Interval activado');
-        console.log('Minutos: +', this.minutosRevision);
+        console.log('segundos: +', this.segundosRevision);
         console.log('Próxima revisión: ', moment(this.horaRevision).format('HH:mm:ss'));
         this.inter = setInterval( () => {
           this.checkEstadoUsuario();

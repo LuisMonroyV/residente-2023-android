@@ -1,6 +1,9 @@
 .texto-atrasado {
     color: red;
 }
+.texto-pendiente {
+    color: var(--ion-color-warning);
+}
 .periodo {
     vertical-align: text-bottom; 
     padding-left: 15px;

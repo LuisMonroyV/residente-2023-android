@@ -10,6 +10,7 @@ import { ParametrosApp, Persona, Calle, Parametros, RegistroVisita, Emergencia, 
 import { Storage } from '@ionic/storage';
 import { ToastController } from '@ionic/angular';
 import * as moment from 'moment';
+import { PushService } from './push.service';
 
 @Injectable({
   providedIn: 'root'
@@ -174,7 +175,7 @@ export class FirebaseService {
                private audio: NativeAudio,
                public loadCtrl: LoadingController,
                private afStorage: AngularFireStorage,
-               private appRef: ApplicationRef
+               private appRef: ApplicationRef              
               ) {
     this.db.firestore.enablePersistence()
     .then ( () => {
@@ -286,7 +287,9 @@ export class FirebaseService {
     });
   }
   getAdministradores() {
-    return this.db.collection<Persona>('persona', ref => ref.where('esAdmin', '==', true)).get();
+    return this.db.collection<Persona>('persona', ref => ref.where('esAdmin', '==', true)
+                                                            .where('idMovil', '!=', ''))
+                                                            .get();
   }
   getAvisosDePago() {
     console.log('getAvisosDePago()');

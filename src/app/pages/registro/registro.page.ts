@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { PushService } from '../../services/push.service';
 import { Calle } from 'src/app/interfaces/fb-interface';
+import { id } from '@swimlane/ngx-charts';
 
 @Component({
   selector: 'app-registro',
@@ -26,37 +27,8 @@ export class RegistroPage implements OnInit {
                ];
   constructor( private router: Router,
                public fbSrvc: FirebaseService,
-               private pushSrvc: PushService ) { }
+               private pushSrvc: PushService) { }
 
-  avisarAdmins() {
-    this.fbSrvc.getAdministradores()
-    .subscribe( adm => {
-      let cont = 0;
-      if (adm && !adm.empty) {
-        console.log('# Administradores: ', adm.size);
-        this.interv = setInterval(() => {
-          if (cont < adm.size) {
-            if (adm.docs[cont].data().idMovil) {
-              this.pushSrvc.notificarNuevoUsuario(adm.docs[cont].data().idMovil)
-              .then( () => {
-                console.log('notificación enviada');
-              })
-              .catch( err => {
-                console.log('Error al enviar notificación: ', err);
-              });
-            } else {
-              if (cont >= adm.size) {
-                clearInterval(this.interv);
-              }
-            }
-          } else {
-            clearInterval(this.interv);
-          }
-          cont++;
-        }, 1000);
-      }
-    });
-  }
   creaCuenta(form: NgForm) {
     if (form.valid) {
       this.creandoCuenta = true;
@@ -70,8 +42,6 @@ export class RegistroPage implements OnInit {
             this.fbSrvc.parametros.identificado = true;
             this.fbSrvc.creaCodigo();
             this.fbSrvc.loading('Creando cuenta...');
-            // console.log('Registrado en Firebase!');
-            // console.log('authUid:', respFB.user.uid);
             this.fbSrvc.sendEmailVerification();
             this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
             this.fbSrvc.persona.authUid = respFB.user.uid;
@@ -79,10 +49,9 @@ export class RegistroPage implements OnInit {
             this.fbSrvc.persona.estado = '0-nuevo';
             this.fbSrvc.persona.obs = 'Los datos de tu cuenta deben ser validados por el administrador de la aplicación.';
             await this.fbSrvc.postPersona(this.fbSrvc.persona);
-            this.avisarAdmins();
+            this.pushSrvc.avisarAdmins('Registro');
             this.fbSrvc.mostrarMensaje('Cuenta creada. Bienvenido!');
             this.fbSrvc.stopLoading();
-            // console.log(this.fbSrvc.persona);
             this.router.navigate(['/activar-mail']);
           }
         }).catch( err => {

@@ -5,8 +5,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { OneSignal } from '@awesome-cordova-plugins/onesignal/ngx';
 import { oneSignalConfig, firebaseConfig, losMostosBDConfig } from '../../environments/environment';
-// import { Router } from '@angular/router';
-import * as moment from 'moment';
 
 
 const oSAppIdCliente = oneSignalConfig.OSapiId;
@@ -36,27 +34,44 @@ export class PushService {
     this.oneSignal.startInit(oSAppIdCliente, fBId);
     this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification );
   }
-  // async actualizarAvisoDePagos(aviso: AvisoDePago ) {
-  //     const query = `${apiLosMostosAVP}?filter=idAvisoPago,eq,${aviso.idAvisoPago}`;
-  //     this.http.get<ArrAvisoDePagoLM>(query)
-  //     .subscribe( avisoLM => {
-  //       const queryPut = `${apiLosMostosAVP}/${avisoLM.records[0].id}`;
-  //       const body = { estadoAviso: aviso.estadoAviso,
-  //                      fechaAprobacion: aviso.fechaAprobacion ? moment(aviso.fechaAprobacion).format('YYYY-MM-DD') : null,
-  //                      fechaRechazo: aviso.fechaRechazo ? moment(aviso.fechaRechazo).format('YYYY-MM-DD') : null,
-  //                      obsRevisor: aviso.obsRevisor ? aviso.obsRevisor : null,
-  //                      revisor: aviso.revisor,
-  //                    };
-  //       console.log('queryPut:', queryPut);
-  //       console.log('body:', body);
-  //       return this.http.put(queryPut, body, { headers: headersLosMostos })
-  //       .subscribe( respLM => {
-  //         if (respLM) {
-  //           console.log('respuesta api LosMostos: ', respLM);
-  //         }
-  //       });
-  //     });
-  // }
+  avisarAdmins(tipo: string) {
+    this.fbSrvc.getAdministradores()
+    .subscribe( adm => {
+      if (adm && !adm.empty) {
+        console.log('# Administradores: ', adm.size);
+        let idsAdmins = [];
+        adm.docs.forEach( id => {
+          idsAdmins.push(id.data().idMovil)
+        });
+        if (tipo === 'Registro') {
+          this.notificarNuevoUsuario(idsAdmins)
+          .then( () => {
+            console.log('notificación enviada');
+          })
+          .catch( err => {
+            console.log('Error al enviar notificación: ', err);
+          });
+        } else if (tipo === 'Eliminacion') {
+          this.notificarEliminacionDeUsuario(idsAdmins)
+          .then( () => {
+            console.log('notificación enviada');
+          })
+          .catch( err => {
+            console.log('Error al enviar notificación: ', err);
+          });
+        } else if (tipo === 'Aviso de pago') {
+          this.notificarNuevoAvisoDePago(idsAdmins)
+          .then( () => {
+            console.log('notificación de aviso de pago enviada');
+          })
+          .catch( err => {
+            console.log('Error al enviar notificación de aviso de pago: ', err);
+          });
+        }
+      }
+    });
+  }
+
   async notificarAlerta(tipo: string) {
     let audiencia = '';
     if ( this.fbSrvc.persona.esAdmin && this.fbSrvc.parametrosFB.pruebasTienda) {
@@ -119,10 +134,10 @@ export class PushService {
       console.log('Respuesta oneSignal: ', data2);
     });
   }
-  async notificarNuevoAvisoDePago(idAdmin: string) {
+  async notificarNuevoAvisoDePago(idAdmins: string[]) {
     const body = {
       app_id: oSAppIdCliente,
-      include_player_ids: [idAdmin],
+      include_player_ids: idAdmins,
       data: {
         nombre: 'Nuevo aviso de pago esperando aprobación',
         calle: this.fbSrvc.persona.calle,
@@ -147,10 +162,10 @@ export class PushService {
       console.log('Respuesta oneSignal: ', data2);
     });
   }
-  async notificarNuevoUsuario(idAdmin: string) {
+  async notificarNuevoUsuario(idAdmins: string[]) {
     const body = {
       app_id: oSAppIdCliente,
-      include_player_ids: [idAdmin],
+      include_player_ids: idAdmins,
       data: {
         nombre: 'Nuevo usuario esperando aprobación',
         calle: this.fbSrvc.persona.calle,
@@ -168,6 +183,32 @@ export class PushService {
       },
       ios_sound: 'woopWoop.mp3',
       android_sound: 'woopWoop',
+    };
+    console.log({body});
+    return this.http.post(oSApiUrl, body, { headers } )
+    .subscribe( data2 => {
+      console.log('Respuesta oneSignal: ', data2);
+    });
+  }
+  async notificarEliminacionDeUsuario(idAdmins: string[]) {
+    const body = {
+      app_id: oSAppIdCliente,
+      include_player_ids: idAdmins,
+      data: {
+        nombre: `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno} ha eliminado su cuenta.`,
+        calle: this.fbSrvc.persona.calle,
+        numero: this.fbSrvc.persona.numero,
+      },
+      contents: {
+        // tslint:disable-next-line: max-line-length
+        en: `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno} has left the community.`,
+        // tslint:disable-next-line: max-line-length
+        es: `${this.fbSrvc.persona.nombres} ${this.fbSrvc.persona.apellidoPaterno} ha dejado la comunidad.`
+      },
+      headings: {
+        en: 'Un usuario ha eliminado sus datos de la app.',
+        es: 'Un usuario ha eliminado sus datos de la app.'
+      },
     };
     console.log({body});
     return this.http.post(oSApiUrl, body, { headers } )
@@ -198,26 +239,4 @@ export class PushService {
       console.log('Respuesta oneSignal: ', data2);
     });
   }
-  // async respaldarAvisoDePagos(aviso: AvisoDePago ) {
-  //   const body: AvisoDePagoLM = { estadoAviso: aviso.estadoAviso,
-  //                                 id: null,
-  //                                 fechaAprobacion: null,
-  //                                 fechaAviso: moment(aviso.fechaAviso).format('YYYY-MM-DD'),
-  //                                 fechaRechazo: null,
-  //                                 idAvisoPago: aviso.idAvisoPago,
-  //                                 idDireccion: aviso.idDireccion,
-  //                                 mesesPagados: JSON.stringify(aviso.mesesPagados),
-  //                                 montoPago: aviso.montoPago.toString(),
-  //                                 obsResidente: aviso.obsResidente,
-  //                                 obsRevisor: null,
-  //                                 revisor: null,
-  //                               };
-  //   console.log('%cpush.service.ts respaldarAvisoDePagos body', 'color: #007acc;', body);
-  //   this.http.post(apiLosMostosAVP, body, { headers: headersLosMostos } )
-  //   .subscribe( resp => {
-  //     if (resp) {
-  //       console.log('respuesta api LosMostos: ', resp);
-  //     }
-  //   });
-  // }
 }
