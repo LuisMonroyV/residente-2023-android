@@ -24,11 +24,11 @@ semana: Dia[] = [];
 dia: Hora[] = [];
 solicitudesHoy = 0;
 
-  constructor( private fbSrvc: FirebaseService,
+  constructor( public fbSrvc: FirebaseService,
                private modalCtrl: ModalController,
                private alertCtrl: AlertController,
                private appRef: ApplicationRef,
-               private pushSrvc: PushService
+               public pushSrvc: PushService
              ) { }
   alertaReserva() {
     this.fbSrvc.mostrarMensaje('Para reservar esa hora toca el botón (+).', 3000);
