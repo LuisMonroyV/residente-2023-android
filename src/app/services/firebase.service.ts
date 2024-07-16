@@ -20,12 +20,6 @@ export class FirebaseService {
   actualizarAppObligatorio = false;
   alertaEnviada = false;
   appPages = [
-    // {
-    //   title: 'Inicio',
-    //   url: '/folder/Inicio',
-    //   icon: 'home',
-    //   visible: true
-    // },
     {
       title: 'Agenda',
       url: '/agenda',
@@ -77,6 +71,7 @@ export class FirebaseService {
   expandidoAccesos = false;
   expandidoRondas = false;
   estadisticas: Estadistica[] = [];
+  idDirConsulta = '';
   idEncuesta = '';
   imagenEmergenciaActivar = 'assets/images/boton-emergencia-activar.png';
   imagenEmergenciaIncendio = 'assets/images/boton-emergencia-incendio.png';

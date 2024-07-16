@@ -88,6 +88,13 @@ export class ModalAvisoDePagoComponent implements OnInit {
   anterior() {
     this.paso--;
   }
+  casoEspecialCero( idDir: string, mesAno: string) : boolean {
+    const anoMes = moment(`1-${mesAno}`,'DD-MM-YYYY').format('YYYY-MM');
+    const  casoEsp = this.fbSrvc.casosEspeciales.filter( caso => caso.idDireccion === idDir &&
+                  caso.cuotaEspecial === 0 &&
+                  moment(anoMes).isBetween(`${caso.fechaInicioCuotaEspecial}-01`, caso.fechaTerminoCuotaEspecial ? `${caso.fechaTerminoCuotaEspecial}-01` : undefined, 'day', '[]'));
+    return casoEsp.length > 0; 
+  }
   cerrarModal() {
     console.log('%ccerrarModal()', 'color: #007acc;');
     this.modalCtrl.dismiss();
@@ -140,14 +147,20 @@ export class ModalAvisoDePagoComponent implements OnInit {
       const estaPagado = this.fbSrvc.pagosDir.findIndex( dir => dir.ano ===  año && dir.mes === index && dir.pagado === true);
       const estaAgregado = this.fbSrvc.misMesesImpagos.findIndex( dir => dir.mesAno ===  mesAno);
       if (estaPagado === -1 && estaAgregado === -1) {
-        const newMesImpago: MesImpago = {
-          fecha: moment(`1-${index}-${año}`,'DD-MM-YYYY').toDate(),
-          mesAno,
-          monto: this.fbSrvc.parametrosFB.montoCuotaActual,
-          documento: '',
-          idTransaccion: ''
-        };
-        this.fbSrvc.misMesesImpagos.push(newMesImpago);
+        if ( !this.casoEspecialCero(this.fbSrvc.idDirConsulta, mesAno )) {
+          const newMesImpago: MesImpago = {
+            fecha: moment(`1-${index}-${año}`,'DD-MM-YYYY').toDate(),
+            mesAno,
+            monto: this.fbSrvc.parametrosFB.montoCuotaActual,
+            documento: '',
+            idTransaccion: ''
+          };
+          this.fbSrvc.misMesesImpagos.push(newMesImpago);
+        }
+        else {
+          // Si el período es un CE-0 entonces se csca de los impagos
+          this.fbSrvc.misMesesImpagos.splice(index, 1);
+        }
       }
     }
     this.fbSrvc.getMisAvisosDePago()

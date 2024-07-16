@@ -18,7 +18,7 @@ export class MisPagosPage implements OnInit {
   direcciones: Pago[] = [];
   estadoMisPagos = '';
   idDir = '';
-  idDireccion = '';
+  // idDireccion = '';
   idNum = '';
   mesesImpagos = 0;
   misPagos: Pago[] = [];
@@ -29,7 +29,7 @@ export class MisPagosPage implements OnInit {
   ubicacionBoton = 'center';
   vacio: Pago = { ano: 0,
                   comentario: null,
-                  idDireccion: this.idDireccion,
+                  idDireccion: this.fbSrvc.idDirConsulta,
                   mes: 0,
                   pagado: false,
                   ultAct: null
@@ -71,7 +71,7 @@ export class MisPagosPage implements OnInit {
           const valorAno = ano.ano;
           const objVacio: Pago = { ano: valorAno,
                                    comentario: null,
-                                   idDireccion: this.idDireccion,
+                                   idDireccion: this.fbSrvc.idDirConsulta,
                                    mes,
                                    pagado: false,
                                    ultAct: null
@@ -148,9 +148,9 @@ export class MisPagosPage implements OnInit {
   }
   getPagosDir() {
     console.log('getPagosDir :', this.idDir + '-' + this.idNum.toUpperCase());
-    this.idDireccion = this.idDir + '-' + this.idNum.toUpperCase();
+    this.fbSrvc.idDirConsulta = this.idDir + '-' + this.idNum.toUpperCase();
     this.fbSrvc.loading('Actualizando pagos...');
-    this.fbSrvc.getPagosDir(this.idDir + '-' + this.idNum.toUpperCase())
+    this.fbSrvc.getPagosDir(this.fbSrvc.idDirConsulta)
     .subscribe( pag => {
       if (pag && pag.length > 0) {
         this.fbSrvc.pagosDir = pag;
@@ -183,7 +183,7 @@ export class MisPagosPage implements OnInit {
     this.idDir = this.fbSrvc.parametros.codigoDir.substring(0, this.fbSrvc.parametros.codigoDir.search('-'));
     // eslint-disable-next-line max-len
     this.idNum = this.fbSrvc.parametros.codigoDir.substring(this.fbSrvc.parametros.codigoDir.search('-') + 1, this.fbSrvc.parametros.codigoDir.length);
-    this.idDireccion = this.idDir + '-' + this.idNum.toUpperCase();
+    this.fbSrvc.idDirConsulta = this.idDir + '-' + this.idNum.toUpperCase();
     // En Diciembre ya se visualiza el año siguiente
     if (moment().month() === 11) { // 0 a 11
       const obj1 = { ano: moment().year()+1,
@@ -220,7 +220,7 @@ export class MisPagosPage implements OnInit {
         console.error('mis-pagos.page.ts Error en getMisPagosNoadm(): ', err );
       });
     } else {
-      this.fbSrvc.getPagosDir(this.idDireccion)
+      this.fbSrvc.getPagosDir(this.fbSrvc.idDirConsulta)
       .subscribe( pag => {
         if (pag && pag.length > 0) {
           this.completarPagos(pag);

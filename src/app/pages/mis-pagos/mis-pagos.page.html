@@ -27,7 +27,7 @@
     <!-- </div> -->
   </div>
   <div class="ion-text-center">
-    <span><ion-chip [color]="colorEstado">{{idDireccion}}: {{estadoMisPagos}} </ion-chip></span>
+    <span><ion-chip [color]="colorEstado">{{fbSrvc.idDirConsulta}}: {{estadoMisPagos}} </ion-chip></span>
   </div>
   <div *ngFor="let ano of anos; let a=index">
     <ion-card *ngIf="misPagos"
