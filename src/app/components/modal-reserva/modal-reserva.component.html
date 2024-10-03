@@ -18,7 +18,7 @@
     <ion-card>
       <ion-list>
         <div *ngIf="paso === 1">
-          <ion-item>
+          <ion-item lines="none">
             <span class="tam-14">Primero selecciona la fecha</span>
           </ion-item>
           <ion-item>
@@ -28,7 +28,7 @@
                   <ion-chip color="primary" mode="ios" outline="true" (click)="recalculaMinMax(i)"
                             class="grilla"
                             [ngClass]="{'seleccionado': fbSrvc.soloFecha(this.nuevaReserva.fechaInicioReserva) == fbSrvc.soloFecha(dia)}">
-                    <ion-label [ngClass]="{'feriado': fbSrvc.esFeriado(dia)}">{{dia | date : 'EEE dd-MMM' | titlecase }}</ion-label>
+                    <ion-label  class="tam-20" [ngClass]="{'feriado': fbSrvc.esFeriado(dia)}">{{dia | date : 'EEE dd-MMM' | titlecase }}</ion-label>
                   </ion-chip>
               </ion-col>
             </ion-row>
@@ -49,28 +49,28 @@
           </ion-item>
         </div>
         <div *ngIf="paso === 2">
-          <ion-item class="ion-text-center">
+          <ion-item lines="none" class="ion-text-center">
             <ion-chip color="primary" mode="ios">
-              <ion-label>{{nuevaReserva.fechaInicioReserva | date : 'EEE dd-MMM' | titlecase }}</ion-label>
+              <ion-label class="tam-20">{{nuevaReserva.fechaInicioReserva | date : 'EEE dd-MMM' | titlecase }}</ion-label>
             </ion-chip>
           </ion-item>
-          <ion-item>
+          <ion-item lines="none">
             <span class="tam-14">Ahora selecciona el horario</span>
           </ion-item>
-          <ion-item *ngIf="horariosDisponibles.length === 0" class="ion-text-center">
-            <ion-label><h1>No hay horarios disponibles</h1></ion-label>
+          <ion-item *ngIf="horariosDisponibles.length === 0" class="ion-text-center" lines="none">
+            <span><h1 color="warning">No hay horarios disponibles para esta fecha.</h1></span>
           </ion-item>
           <ion-item> 
             <ion-row>
               <ion-col *ngFor="let hora of horariosDisponibles; let i = index" class="ion-text-center">
                 <ion-chip color="primary" mode="ios" outline="true" (click)="seleccionaHora(i)"
                           [ngClass]="{'seleccionado': fbSrvc.soloHora(nuevaReserva.fechaInicioReserva) == fbSrvc.soloHora(hora)}">
-                  <ion-label>{{hora | date : 'HH:mm'}} a {{sumarMinutos(hora) | date : 'HH:mm'}}</ion-label>
+                  <ion-label class="tam-20">{{hora | date : 'HH:mm'}} a {{sumarMinutos(hora) | date : 'HH:mm'}}</ion-label>
                 </ion-chip>
               </ion-col>
             </ion-row>
           </ion-item>
-          <ion-item>
+          <ion-item lines="none">
             <ion-button (click)="anterior()" 
                         class="btn-anterior"
                         fill="outline">
@@ -84,18 +84,18 @@
           </ion-item>
         </div>
         <div *ngIf="paso === 3" id="paso3">
-          <ion-item class="ion-text-center">
+          <ion-item lines="none" class="ion-text-center">
             <ion-chip color="primary" mode="ios">
-              <ion-label>{{nuevaReserva.fechaInicioReserva | date : 'EEE dd-MMM' | titlecase }}</ion-label>
+              <ion-label class="tam-20">{{nuevaReserva.fechaInicioReserva | date : 'EEE dd-MMM' | titlecase }}</ion-label>
             </ion-chip>
             <ion-chip color="primary" mode="ios">
-              <ion-label>de {{nuevaReserva.fechaInicioReserva | fechaCorta : 'HH:mm' : ''}} a {{nuevaReserva.fechaFinReserva | fechaCorta : 'HH:mm' : ''}}</ion-label>
+              <ion-label class="tam-20">de {{nuevaReserva.fechaInicioReserva | fechaCorta : 'HH:mm' : ''}} a {{nuevaReserva.fechaFinReserva | fechaCorta : 'HH:mm' : ''}}</ion-label>
             </ion-chip>
           </ion-item>
-          <ion-item>
-            <span class="tam-14">Finalmente agrega una descripción</span>
+          <ion-item lines="none" class="py-10">
+            <span class="tam-14">Finalmente agrega una descripción de la actividad e indica si requieres implementos. </span>
           </ion-item>
-          <ion-item> 
+          <ion-item lines="none"> 
             <ion-row>
               <ion-col>
                 <ion-label color="primary" position="stacked">Descripción: </ion-label>
@@ -110,7 +110,7 @@
               </ion-col>
             </ion-row>
           </ion-item>
-          <ion-item class="ion-text-center">
+          <ion-item lines="none" class="ion-text-center">
             <ion-button (click)="anterior()" 
                         fill="outline" 
                         class="btn-anterior">

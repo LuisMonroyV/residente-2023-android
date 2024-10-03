@@ -714,7 +714,7 @@ export class FirebaseService {
     const toast = await this.toast.create({
       message: texto,
       duration: duracion ? duracion : 2000,
-      position: 'bottom'
+      position: 'top'
     });
     toast.present();
   }
