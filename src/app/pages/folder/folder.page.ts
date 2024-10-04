@@ -1,8 +1,7 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { PushService } from '../../services/push.service';
-import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-folder',
@@ -10,21 +9,24 @@ import { MenuController } from '@ionic/angular';
   styleUrls: ['./folder.page.scss'],
 })
 export class FolderPage implements OnInit {
-  public folder: string;
+  eliminacionesOK: boolean;
   public selectedIndex = 0;
-  constructor(private activatedRoute: ActivatedRoute,
-              public fbSrvc: FirebaseService,
-              private menu: MenuController,
+  constructor(public fbSrvc: FirebaseService,
               private pushSrvc: PushService,
               private router: Router,
               ) {
-      this.folder = this.activatedRoute.snapshot.paramMap.get('id');
+    fbSrvc.leerStorage('eliminacionesAdmin') // Boolean
+      .then(resp => {
+        this.eliminacionesOK = resp;
+      })
+      .catch( () => {
+        this.eliminacionesOK = false;
+      });
   }
   alerta() {
     this.router.navigate(['alerta']);
   }
   cerrarSesion() {
-    this.menu.close();
     this.fbSrvc.logOutFirebase();
     this.limpiarParametros();
     this.router.navigate(['login']);
@@ -52,9 +54,9 @@ export class FolderPage implements OnInit {
     this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
   }
   ngOnInit() {
+    console.log(`Es admin: ${this.fbSrvc.persona.esAdmin}`);
     setTimeout(() => {
       this.pushSrvc.configuracionInicialCliente();
-      console.log(`Es admin: ${this.fbSrvc.persona.esAdmin}`);
       if (this.fbSrvc.persona.esAdmin) {
         this.fbSrvc.getNuevosRegistros()
         // tslint:disable-next-line: deprecation
@@ -70,16 +72,38 @@ export class FolderPage implements OnInit {
           }
         });
       }
-    }, 5000);
-
-    if (this.fbSrvc.persona.esAdmin) {
       setTimeout(() => {
         this.fbSrvc.getUrlImagenesNoticias();
       }, 10000);
-      setTimeout(() => {
-        this.fbSrvc.deleteNoticias();
-      }, 15000);
-    }
+
+      if (!this.eliminacionesOK) {
+        console.log('%cEliminando datos como admin', 'color: #007acc;');
+        setTimeout(() => {
+          this.fbSrvc.deleteNoticias();
+        }, 15000);
+        setTimeout(() => {
+          this.fbSrvc.deleteEstadisticas();
+        }, 20000);
+        setTimeout(() => {
+          this.fbSrvc.deletePatentes();
+        }, 25000);
+        setTimeout(() => {
+          this.fbSrvc.deletePagos();
+        }, 30000);
+        setTimeout(() => {
+          this.fbSrvc.deleteRegistros();
+        }, 35000);
+        setTimeout(() => {
+          this.fbSrvc.deleteRondas();
+        }, 40000);
+        setTimeout(() => {
+          this.fbSrvc.deleteVisitas();
+        }, 45000);
+        this.fbSrvc.guardarStorage('eliminacionesAdmin', true);
+      } else {
+        console.log('%cYa se eliminaron datos en esta sesión', 'color: #007acc;');
+      }
+    }, 5000); 
   }
   nuevaNoticia() {
     this.router.navigate(['noticia-add']);

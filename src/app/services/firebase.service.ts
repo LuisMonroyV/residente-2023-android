@@ -112,6 +112,11 @@ export class FirebaseService {
     maxDiasNoticias: 365,
     maxDiasAvisos: 30,
     maxDiasAvisosDePago: 30,
+    maxDiasPatentes: 30,
+    maxDiasRegistros: 30,
+    maxDiasRondas: 30,
+    maxDiasVisitas: 30,
+    minDiasRespaldo: 30,
     maxEstadisticas: 6,
     maxNumAccesos: 5,
     maxNumEmergencias: 5,
@@ -199,17 +204,151 @@ export class FirebaseService {
     }
 
   }
+
+  deleteEstadisticas() {
+    const fechaAnt = moment().startOf('day').subtract(7, 'months').toDate();
+    console.log(`Eliminando estadísticas anteriores a: ${moment(fechaAnt).format('DD-MM-YYYY')}`);
+    this.db.collection('estadisticas', ref => ref.where('fechaCreacion', '<', fechaAnt))
+    .get()
+    .subscribe( est => {
+      if ( !est.empty ) {
+        est.forEach( result => {
+          result.ref.delete();
+        });
+        console.log(`Eliminadas ${est.size} estadísticas`);
+      } else {
+        console.log(`No se eliminaron estadísticas.`);
+      }
+    });
+  }
+  deletePatentes() {
+    if (this.parametrosFB.maxDiasPatentes && this.parametrosFB.maxDiasPatentes > 0) {
+      const fechaAnt = moment().startOf('day').subtract(this.parametrosFB.maxDiasPatentes, 'days').toDate();
+      console.log(`Eliminando patentes anteriores a: ${moment(fechaAnt).format('DD-MM-YYYY')}`);
+      this.db.collection('patentes', ref => ref.where('ultimaVisita', '<', fechaAnt))
+      .get()
+      .subscribe( ppu => {
+        if (!ppu.empty ) {
+          ppu.forEach( result => {
+            result.ref.delete();
+          });
+          console.log(`Eliminadas ${ppu.size} patentes.`);
+        } else {
+          console.log(`No se eliminaron patentes.`);
+        }
+      });
+    } else {
+      console.log('%cNo hay parámetro de maxDiasPatentes', 'color: #007acc;');
+      return;
+    }
+  }
+  async deletePagos() {
+    // ELIMINACION DE PAGOS
+    this.db.collection('pagos', ref => ref.where('ano', '<', this.parametrosFB.maxAnoPagos))
+    .get()
+    .subscribe( pagElim => {
+      pagElim.forEach( result => {
+        result.ref.delete(); 
+      });
+      console.log(`Eliminados ${pagElim.size} registros de Pagos`);
+    });
+    // ELIMINACION DE AVISOS DE PAGOS
+    const fechaMin = moment('01-01-'+ this.parametrosFB.maxAnoPagos).toDate();
+    this.db.collection<AvisoDePago>('avisosDePago')
+    .get()
+    .subscribe( avisoP => {
+      avisoP.docs.forEach( result => {
+        const periodosElim = result.data().mesesPagados.filter(elim => this.timestampToDate(elim.fecha) < fechaMin);
+        const periodosOk = result.data().mesesPagados.filter(noElim => this.timestampToDate(noElim.fecha) >= fechaMin);
+        
+        if (result.data().mesesPagados.length === periodosOk.length) {
+          // Aviso OK
+        } else if (result.data().mesesPagados.length === periodosElim.length) {
+          // Eliminar Aviso
+          result.ref.delete();
+          console.log('%cfirebase.service.ts Aviso Eliminado', 'color: #007acc;');
+        } else {
+          // Actualizar aviso
+          // this.putMesesPagados(result.data().idAvisoPago, periodosOk);
+          // console.log('%cfirebase.service.ts Aviso Actualizado', 'color: #007acc;');
+        }
+        // Eliminación de la(s) imagen(es)
+        periodosElim.forEach(async mes => {
+          if (mes.documento.length > 0) {
+            const url = mes.documento;
+            const ref = this.afStorage.storage.refFromURL(url);
+            await ref.delete();
+          }    
+        });
+        if (periodosElim.length > 0) {
+          console.log('%cfirebase.service.ts imágenes eliminadas: ', 'color: #ff0000;', periodosElim.length);
+        }
+      });
+    })
+  }
+  deleteRegistros() {
+    if (this.parametrosFB.maxDiasRegistros && this.parametrosFB.maxDiasRegistros > 0) {
+      const fechaAnt = moment().startOf('day').subtract(this.parametrosFB.maxDiasRegistros, 'days').toDate();
+      console.log(`Eliminando registros de visitantes anteriores a: ${moment(fechaAnt).format('DD-MM-YYYY')}`);
+      this.db.collection('registro', ref => ref.where('fecha', '<', fechaAnt))
+      .get()
+      .subscribe( vis => {
+        vis.forEach( result => {
+          result.ref.delete();
+        });
+        console.log(`Eliminados ${vis.size} registros de Visitantes.`);
+      });
+    } else {
+      console.log('%cfirebase.service.ts no hay parámetro de maxDiasRegistros', 'color: #007acc;');
+      return;
+    }
+  }
+  deleteRondas() {
+    if (this.parametrosFB.maxDiasRondas && this.parametrosFB.maxDiasRondas > 0) {
+      const fechaAnt = moment().startOf('day').subtract(this.parametrosFB.maxDiasRondas, 'days').toDate();
+      console.log(`Eliminando rondas anteriores a: ${moment(fechaAnt).format('DD-MM-YYYY')}`);
+      this.db.collection('rondas', ref => ref.where('fechaInicio', '<', fechaAnt))
+      .get()
+      .subscribe( rnd => {
+        rnd.forEach( result => {
+          result.ref.delete();
+        });
+        console.log(`Eliminadas ${rnd.size} Rondas.`);
+      });
+    } else {
+      console.log('%cNo hay parámetro de maxDiaRondas', 'color: #ff0000;');
+      return;
+    }
+  }
+  deleteVisitas() {
+    if (this.parametrosFB.maxDiasAvisos && this.parametrosFB.maxDiasAvisos > 0) {
+      const fechaAnt = moment().startOf('day').subtract(this.parametrosFB.maxDiasAvisos, 'days').toDate();
+      console.log(`Eliminando avisos de visitas anteriores a: ${moment(fechaAnt).format('DD-MM-YYYY')}`);
+      this.db.collection('avisos', ref => ref.where('fecha', '<', fechaAnt))
+      .get()
+      .subscribe( avis => {
+        avis.forEach( result => {
+          result.ref.delete();
+        });
+        console.log(`Eliminados ${avis.size} avisos de visitas.`);
+      });
+    } else {
+      console.log('%cNo hay parámetro de maxDiasAvisos', 'color: #ff0000;');
+      return;
+    }
+  }
+
   async deleteNoticias() {
     if (this.persona.esAdmin) {
       const fechaHoy = moment().startOf('day').toDate();
-      console.log(`Eliminando registros de Noticias finalizadas.`);
+      console.log(`Eliminando noticias ya finalizadas.`);
       return this.db.collection('noticias', ref => ref.where('fechaFin', '<', fechaHoy))
       .get()
       .subscribe( noti => {
         noti.forEach( async result => {
           await result.ref.delete();
         });
-        console.log(`Eliminados ${noti.size} registros`);
+        console.log(`Eliminadas ${noti.size} noticias.`);
       });
     } else {
       return;
@@ -227,14 +366,14 @@ export class FirebaseService {
   async deleteAvisos() {
     if (this.parametrosFB.maxDiasAvisos && this.parametrosFB.maxDiasAvisos > 0 && this.persona.esAdmin) {
       const fechaAnt = moment().startOf('day').subtract(this.parametrosFB.maxDiasAvisos, 'days').toDate();
-      console.log(`Eliminando registros de Avisos anteriores a: '${fechaAnt}`);
+      console.log(`Eliminando registros de Avisos de visitas anteriores a: '${moment(fechaAnt).format('DD-MM-YYYY')}`);
       return this.db.collection('avisos', ref => ref.where('fecha', '<', fechaAnt))
       .get()
       .subscribe( avi => {
         avi.forEach( async result => {
           await result.ref.delete();
         });
-        console.log(`Eliminados ${avi.size} registros`);
+        console.log(`Eliminados ${avi.size} avisos de visitas.`);
       });
     } else {
       return;
@@ -249,7 +388,7 @@ export class FirebaseService {
         qrsUsados.forEach( async result => {
           await result.ref.delete();
         });
-        console.log(`Eliminados ${qrsUsados.size} registros`);
+        console.log(`Eliminados ${qrsUsados.size} códigos QR utilizados.`);
       });
       console.log(`Eliminando códigos QR vencidos`);
       this.db.collection('qr', ref => ref.where('generado', '<', hoy)
@@ -259,7 +398,7 @@ export class FirebaseService {
         qrsVencidos.forEach( async result => {
           await result.ref.delete();
         });
-        console.log(`Eliminados ${qrsVencidos.size} registros`);
+        console.log(`Eliminados ${qrsVencidos.size} códigos QR vencidos`);
       });
   }
   async deleteUsuario(id: string) {
@@ -390,7 +529,7 @@ export class FirebaseService {
                                                          .valueChanges();
   }
   getPagosDir(idDireccion: string) {
-    console.log(`getPagosDir(${this.parametros.codigoDir})`);
+    console.log(`getPagosDir(${idDireccion})`);
     return this.db.collection<Pago>('pagos', ref => ref.where('idDireccion', '==', idDireccion)
                                                        .orderBy('ano', 'desc')
                                                        .orderBy('mes', 'asc'))
@@ -477,6 +616,10 @@ export class FirebaseService {
       this.parametrosFB.maxDiasAvisos = params.docs[2].get('maxDiasAvisos');
       this.parametrosFB.maxDiasAvisosDePago = params.docs[2].get('maxDiasAvisosDePago');
       this.parametrosFB.maxDiasNoticias = params.docs[2].get('maxDiasNoticias');
+      this.parametrosFB.maxDiasPatentes = params.docs[2].get('maxDiasPatentes');
+      this.parametrosFB.maxDiasRegistros = params.docs[2].get('maxDiasRegistros');
+      this.parametrosFB.maxDiasRondas = params.docs[2].get('maxDiasRondas');
+      this.parametrosFB.maxDiasVisitas = params.docs[2].get('maxDiasVisitas');
       this.parametrosFB.maxEstadisticas = params.docs[2].get('maxEstadisticas');
       this.parametrosFB.maxNumAccesos = params.docs[2].get('maxNumAccesos');
       this.parametrosFB.maxNumEmergencias = params.docs[2].get('maxNumEmergencias');

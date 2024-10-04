@@ -124,6 +124,11 @@ export interface Parametros {
     maxDiasAvisos: number;
     maxDiasAvisosDePago: number;
     maxDiasNoticias: number;
+    maxDiasPatentes: number;
+    maxDiasRegistros: number;
+    maxDiasRondas: number;
+    maxDiasVisitas: number;
+    minDiasRespaldo: number;
     maxNumAccesos: number;
     maxNumEmergencias: number;
     maxNumNoticias: number;

@@ -193,6 +193,7 @@ export class AppComponent implements OnInit {
   }
   initializeApp() {
       this.cargarSonidos();
+      this.fbSrvc.guardarStorage('eliminacionesAdmin', false);
       this.platform.backButton.subscribeWithPriority(9999, () => {
         document.addEventListener('backbutton', (event => {
           event.preventDefault();
