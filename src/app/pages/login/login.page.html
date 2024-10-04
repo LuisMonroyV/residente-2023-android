@@ -47,6 +47,16 @@
           </ion-button>
       </ion-col>
     </ion-row>
+
+    <ion-row *ngIf="fbSrvc.parametros && fbSrvc.parametros.loginBiometrico && fbSrvc.parametros.email?.length > 0 && fbSrvc.parametros.contrasena?.length > 0">
+      <ion-col class="ion-text-center" >
+        <img class="touch-id" 
+                 src="assets/images/touch-id.png"
+                 (click)="fbSrvc.touchId()">
+
+      </ion-col>
+    </ion-row>
+
   </form>
 </ion-grid>
 </ion-content>

@@ -1,12 +1,14 @@
 /* eslint-disable max-len */
 import firebase from 'firebase/compat/app';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ApplicationRef, Injectable } from '@angular/core';
+import { FingerprintAIO, FingerprintOptions } from "@ionic-native/fingerprint-aio/ngx";
 import { LoadingController } from '@ionic/angular';
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
 import { CasoEspecial, MesImpago, Noticia, Pago, Qr, Visita, Aviso, AvisoDePago } from '../interfaces/fb-interface';
 import { ParametrosApp, Persona, Calle, Parametros, RegistroVisita, Emergencia, Estadistica, Ronda } from '../interfaces/fb-interface';
+import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
 import { ToastController } from '@ionic/angular';
 import * as moment from 'moment';
@@ -90,9 +92,12 @@ export class FirebaseService {
   misMesesImpagos: MesImpago[] = [];
   pagosCreados = false;
   parametros: ParametrosApp = {
-    codigoDir: '',
-    identificado: false,
     codigoAlerta: '000',
+    codigoDir: '',
+    contrasena: '',
+    email: '',
+    identificado: false,
+    loginBiometrico: false,
     primeraVez: true,
     validado: false,
     verificado: false,
@@ -163,13 +168,15 @@ export class FirebaseService {
   verAppStr = '';
 
 
-  constructor( private db: AngularFirestore,
-               private toast: ToastController,
-               private storage: Storage,
+  constructor( private afStorage: AngularFireStorage,
+               private appRef: ApplicationRef,
                private audio: NativeAudio,
+               private db: AngularFirestore,
+               private fingerAIO: FingerprintAIO,
                public loadCtrl: LoadingController,
-               private afStorage: AngularFireStorage,
-               private appRef: ApplicationRef
+               private route: Router,
+               private storage: Storage,
+               private toast: ToastController,
               ) {
     this.db.firestore.enablePersistence()
     .then ( () => {
@@ -280,6 +287,31 @@ export class FirebaseService {
       console.log('auth - Error al eliminar usuario: ', err);
     });
   }
+  touchId() {
+    const options: FingerprintOptions = {
+      title: 'Comunidad Los Mostos',
+      subtitle: 'Reconocimiento dactilar'
+    };
+
+    this.fingerAIO.isAvailable()
+    .then((result: any) => {
+      console.log(result)
+      if (result && result === 'biometric'){
+        this.fingerAIO.show(options)
+        .then( result => {
+          console.log('result', result);
+          this.login.email = this.parametros.email; 
+          this.login.contrasena = this.parametros.contrasena;
+          this.route.navigate(['/contrasena']);
+        })
+        .catch( err => {
+          console.log('error show()', err);
+        });
+      }
+    })
+    .catch((error: any) => 
+      console.log('error isAvailable():', error));
+  }
   getAdministradores() {
     return this.db.collection<Persona>('persona', ref => ref.where('esAdmin', '==', true)).get();
   }
@@ -353,6 +385,12 @@ export class FirebaseService {
                                                                       });
                                                                       console.log('fbsrvc.getEstadisticasAll: ',this.estadisticas);
                                                                      });
+  }
+  async getIdAvisoDePago( aviso: AvisoDePago) {
+    return await this.db.collection('avisosDePago', ref => ref.where('idDireccion', '==', aviso.idDireccion)
+                                                       .where('fechaAviso', '==', aviso.fechaAviso))
+                                                       .get()
+                                                       .toPromise();
   }
   getMisAccesos() {
     console.log(`getMisAccesos(${this.parametrosFB.maxNumAccesos}): ${this.parametros.codigoDir}`);
@@ -756,6 +794,15 @@ export class FirebaseService {
   putEmergencia( eme: Emergencia) {
     return this.db.collection('emergencias').doc(eme.idEmergencia).update(eme);
   }
+  putIdAvisoDePago( id: string) {
+    return this.db.collection('avisosDePago').doc(id).update({ 'idAvisoPago': id });
+  }
+  putIdQr( id: string) {
+    return this.db.collection('qr').doc(id).update({ idQr: id });
+  }
+  putInvalidarQr( id: string) {
+    return this.db.collection('qr').doc(id).update({ utilizado: true });
+  }
   putNoticia( noti: Noticia) {
     return this.db.collection('noticias').doc(noti.idNoticia).update(noti);
   }
@@ -775,12 +822,7 @@ export class FirebaseService {
   putPersonaEmailOk( per: Persona) {
     return this.db.collection('persona').doc(per.idPersona).update({ emailOk: true });
   }
-  putIdQr( id: string) {
-    return this.db.collection('qr').doc(id).update({ idQr: id });
-  }
-  putInvalidarQr( id: string) {
-    return this.db.collection('qr').doc(id).update({ utilizado: true });
-  }
+  
   async registroFirebase( email: string, pass: string ) {
     console.log('registroFirebase()');
     return await this.auth.createUserWithEmailAndPassword( email, pass);

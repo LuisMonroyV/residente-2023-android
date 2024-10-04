@@ -34,31 +34,39 @@
                         *ngIf="fbSrvc.persona.esAdmin"
                         (click)="usuarios()"
                         >
-                <ion-icon slot="start" name="people-sharp"></ion-icon>
-                <ion-label>Validar Usuarios</ion-label>
+                    <ion-icon slot="start" name="people-sharp"></ion-icon>
+                    <ion-label>Validar Usuarios</ion-label>
                 </ion-item>
                 <ion-item lines="none">
-                <ion-icon slot="start" name="moon-sharp"></ion-icon>
-                <ion-label>Modo Oscuro</ion-label>
-                <ion-toggle (ionChange)="fbSrvc.toggleDarkTheme(!fbSrvc.dark)"
-                            name="darkMode"
-                            [checked]="fbSrvc.dark"
-                            mode="ios">
-                </ion-toggle>
+                    <ion-icon slot="start" name="moon-sharp"></ion-icon>
+                    <ion-label>Modo Oscuro</ion-label>
+                    <ion-toggle (ionChange)="fbSrvc.toggleDarkTheme(!fbSrvc.dark)"
+                                name="darkMode"
+                                [checked]="fbSrvc.dark"
+                                mode="ios">
+                    </ion-toggle>
+                </ion-item>
+                <ion-item lines="none"(click)= "guardarTouchId()">
+                    <ion-img style="width: 25px;" src="assets/images/touch-id.png"></ion-img>
+                    <ion-label style="padding-left: 19px;">Activar Touch ID</ion-label>
+                    <ion-toggle [ngModel]="fbSrvc.parametros.loginBiometrico"
+                                name="biometrico"
+                                mode="ios">
+                    </ion-toggle>
                 </ion-item>
                 <ion-item lines="none"(click)= "cerrarSesion()">
-                <ion-icon slot="start" name="log-out-sharp"></ion-icon>
-                <ion-label>Cerrar Sesión</ion-label>
-                <ion-toggle [ngModel]="!fbSrvc.parametros.identificado"
-                            name="sesion"
-                            mode="ios">
-                </ion-toggle>
+                    <ion-icon slot="start" name="log-out-sharp"></ion-icon>
+                    <ion-label>Cerrar Sesión</ion-label>
+                    <ion-toggle [ngModel]="!fbSrvc.parametros.identificado"
+                                name="sesion"
+                                mode="ios">
+                    </ion-toggle>
                 </ion-item>
                 <ion-item lines="none" *ngIf="fbSrvc.actualizarApp">
-                <ion-icon *ngIf="fbSrvc.actualizarApp && fbSrvc.esAndroid" slot="start" name="logo-google-playstore" color="primary"></ion-icon>
-                <a [href]="fbSrvc.parametrosFB.urlAppAndroid">
-                    <ion-label>Act. Disponible</ion-label>
-                </a>
+                    <ion-icon *ngIf="fbSrvc.actualizarApp && fbSrvc.esAndroid" slot="start" name="logo-google-playstore" color="primary"></ion-icon>
+                    <a [href]="fbSrvc.parametrosFB.urlAppAndroid">
+                        <ion-label>Act. Disponible</ion-label>
+                    </a>
                 </ion-item>
                 <ion-item lines="none" *ngIf="!fbSrvc.actualizarApp">
                     <ion-icon *ngIf="fbSrvc.esAndroid" slot="start" name="logo-google-playstore"></ion-icon>

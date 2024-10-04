@@ -20,7 +20,11 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit() {
+    console.log('%cloginBiometrico', 'color: #007acc;', this.fbSrvc.parametros.loginBiometrico);
+    console.log('%cemail', 'color: #007acc;', this.fbSrvc.parametros.email);
+    console.log('%ccontraseña', 'color: #007acc;', this.fbSrvc.parametros.contrasena);
   }
+  
   ionViewWillEnter() {
     console.log(' login - ionViewWillEnter()');
     this.fbSrvc.logOutFirebase();

@@ -191,6 +191,11 @@ export class AppComponent implements OnInit {
       this.redirigir();
     });
   }
+  guardarTouchId() {
+    this.fbSrvc.parametros.loginBiometrico = !this.fbSrvc.parametros.loginBiometrico;
+    this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
+    this.fbSrvc.mostrarMensaje(`Touch-ID ${this.fbSrvc.parametros.loginBiometrico ? 'Activado' : 'Desactivado'}` );
+  }
   initializeApp() {
       this.cargarSonidos();
       this.platform.backButton.subscribeWithPriority(9999, () => {

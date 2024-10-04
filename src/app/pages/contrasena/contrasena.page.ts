@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import firebase from 'firebase/compat/app';
 import { FirebaseService } from '../../services/firebase.service';
 import { Router } from '@angular/router';
@@ -35,6 +35,9 @@ export class ContrasenaPage implements OnInit {
     this.fbSrvc.stopLoading();
   }
   ngOnInit() {
+    if (this.fbSrvc.login.email.length > 0 && this.fbSrvc.login.contrasena.length > 0) {
+      this.validaContrasena( null );
+    }
     setTimeout(() => {
       this.passInput.setFocus();
     }, 500);
@@ -52,7 +55,8 @@ export class ContrasenaPage implements OnInit {
               this.fbSrvc.parametros.verificado = aut.emailVerified;
               this.fbSrvc.parametros.validado = this.fbSrvc.persona.adminOk;
               this.fbSrvc.persona.emailOk = aut.emailVerified;
-              this.fbSrvc.persona.email = this.fbSrvc.login.email;
+              this.fbSrvc.parametros.email = this.fbSrvc.login.email;
+              this.fbSrvc.parametros.contrasena = this.fbSrvc.login.contrasena;
               this.fbSrvc.creaCodigo();
               this.fbSrvc.guardarStorage('parametros', this.fbSrvc.parametros);
               if ((aut.emailVerified) && (this.fbSrvc.persona.adminOk)) {

@@ -143,14 +143,17 @@ export interface Parametros {
     urlAppIos: string;
 }
 export interface ParametrosApp {
-    codigoDir: string; // codigo calle + numero
-    identificado: boolean; // Login
     codigoAlerta: string;
+    codigoDir: string; // codigo calle + numero
+    contrasena: string;
+    email: string;
+    identificado: boolean; // Login
+    loginBiometrico: boolean;
     primeraVez: boolean; // para mostrar slides
     validado: boolean; // por el administrador
-    verificado: boolean; // email verificado
-    verEmergencias: boolean;
     verAccesos: boolean;
+    verEmergencias: boolean;
+    verificado: boolean; // email verificado
     verRondas: boolean;
 }
 export interface Persona {

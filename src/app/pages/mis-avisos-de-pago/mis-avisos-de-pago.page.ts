@@ -139,7 +139,34 @@ export class MisAvisosDePagoPage implements OnInit {
       this.fbSrvc.getAvisosDePago()
       .subscribe( dataAPP => {
         this.avisosDePagoPendientes = [];
-        // console.log('%ccambio en getAvisosDePago', 'color: #007acc;');
+        // Reviso que los id de avisos no estén en blanco (no debería pero hay)
+        dataAPP.forEach((aviso, index)  => {
+          // debugger;
+          if (aviso.idAvisoPago === '') {
+            this.fbSrvc.getIdAvisoDePago(aviso)
+            .then( encontrado => {
+              if (encontrado && encontrado.docs.length > 0) {
+                aviso.idAvisoPago = encontrado.docs[0].id;
+                this.fbSrvc.putIdAvisoDePago(encontrado.docs[0].id)
+                .then( () => {
+                  console.log('%cID de aviso de pago actualizado', 'color: #007acc;');
+                })
+                .catch( err => {
+                  console.log('%cID no se pudo actualizar', 'color: #007acc;', err);
+                  dataAPP.slice(index, 1);
+                });
+              }
+              else {
+                // se va
+                dataAPP.slice(index, 1);
+              }
+            })
+            .catch( err => {
+              dataAPP.slice(index, 1);
+              console.log('%cID no se pudo encontrar el id del aviso', 'color: #007acc;', err);
+            });
+          }
+        });
         if (dataAPP && dataAPP.length > 0) {
           this.avisosDePagoPendientes = dataAPP;
         }
