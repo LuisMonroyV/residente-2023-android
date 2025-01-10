@@ -9,3 +9,7 @@ resources/
 plugins/
 www/
 .angular/
+.gradle/
+gradle/
+package-lock.json
+gradle/wrapper/gradle-wrapper.properties

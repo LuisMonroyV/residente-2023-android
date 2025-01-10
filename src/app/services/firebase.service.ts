@@ -253,7 +253,8 @@ export class FirebaseService {
       console.log(`Eliminados ${pagElim.size} registros de Pagos`);
     });
     // ELIMINACION DE AVISOS DE PAGOS
-    const fechaMin = moment('01-01-'+ this.parametrosFB.maxAnoPagos).toDate();
+    const fechaMin = moment('01-01-'+ this.parametrosFB.maxAnoPagos.toString(10), 'DD-MM-YYYY').toDate();
+    console.log(`Eliminando avisos de pago anteriores a: ${moment(fechaMin).format('DD-MM-YYYY')}`);
     this.db.collection<AvisoDePago>('avisosDePago')
     .get()
     .subscribe( avisoP => {
