@@ -1,5 +1,5 @@
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+// import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { Noticia } from '../../interfaces/fb-interface';
@@ -32,7 +32,7 @@ export class NoticiaAddPage implements OnInit {
 
   constructor( private fbSrvc: FirebaseService,
                private router: Router,
-               private cam: Camera,
+              //  private cam: Camera,
                private fbStorage: AngularFireStorage,
                private pushSrvc: PushService,
                private webview: WebView) { }
@@ -61,82 +61,82 @@ export class NoticiaAddPage implements OnInit {
     }
     this.router.navigate(['/folder/inicio']);
   }
-  async tomarFoto() {
-    console.log('iniciando cámara...');
-    const name = 'noticia-' + new Date().getTime();
-    const options: CameraOptions = {
-      targetWidth: 600,
-      targetHeight: 600,
-      destinationType: this.cam.DestinationType.DATA_URL,
-      encodingType: this.cam.EncodingType.JPEG,
-      mediaType: this.cam.MediaType.PICTURE,
-      correctOrientation: true
-    };
-    await this.cam.getPicture(options)
-    .then( async (result) => {
-      this.fbSrvc.loading('Iniciando cámara...');
-      const image = `data:image/jpeg;base64,${result}`;
-      const ref = this.fbStorage.ref(`losMostos/noticias/${name}`);
-      this.fbSrvc.stopLoading();
-      this.fbSrvc.loading('Cargando fotografía...');
-      const pictures = await ref.putString(image, 'data_url')
-      .then( task => {
-        console.log('Foto cargada ok: ', task);
-        const fbUrl = ref.getDownloadURL()
-        .subscribe( url => {
-          console.log({url});
-          this.nuevaNoticia.urlImagen = url;
-          this.fbSrvc.stopLoading();
-        });
-        this.fbSrvc.stopLoading();
-      })
-      .catch( err => {
-        console.log('Error al cargar la foto: ', err);
-        this.fbSrvc.mostrarMensaje('No se pudo cargar la foto.');
-        this.fbSrvc.stopLoading();
-      });
+  // async tomarFoto() {
+  //   console.log('iniciando cámara...');
+  //   const name = 'noticia-' + new Date().getTime();
+  //   // const options: CameraOptions = {
+  //   //   targetWidth: 600,
+  //   //   targetHeight: 600,
+  //   //   destinationType: this.cam.DestinationType.DATA_URL,
+  //   //   encodingType: this.cam.EncodingType.JPEG,
+  //   //   mediaType: this.cam.MediaType.PICTURE,
+  //   //   correctOrientation: true
+  //   // };
+  //   // await this.cam.getPicture(options)
+  //   // .then( async (result) => {
+  //   //   this.fbSrvc.loading('Iniciando cámara...');
+  //   //   const image = `data:image/jpeg;base64,${result}`;
+  //   //   const ref = this.fbStorage.ref(`losMostos/noticias/${name}`);
+  //   //   this.fbSrvc.stopLoading();
+  //   //   this.fbSrvc.loading('Cargando fotografía...');
+  //   //   const pictures = await ref.putString(image, 'data_url')
+  //   //   .then( task => {
+  //   //     console.log('Foto cargada ok: ', task);
+  //   //     const fbUrl = ref.getDownloadURL()
+  //   //     .subscribe( url => {
+  //   //       console.log({url});
+  //   //       this.nuevaNoticia.urlImagen = url;
+  //   //       this.fbSrvc.stopLoading();
+  //   //     });
+  //   //     this.fbSrvc.stopLoading();
+  //   //   })
+  //   //   .catch( err => {
+  //   //     console.log('Error al cargar la foto: ', err);
+  //   //     this.fbSrvc.mostrarMensaje('No se pudo cargar la foto.');
+  //   //     this.fbSrvc.stopLoading();
+  //   //   });
 
-    })
-    .catch( err => {
-      console.log('Error al tomar la foto. ', err);
-      this.fbSrvc.stopLoading();
-    });
-  }
+  //   // })
+  //   // .catch( err => {
+  //   //   console.log('Error al tomar la foto. ', err);
+  //   //   this.fbSrvc.stopLoading();
+  //   // });
+  // }
   async abrirGaleria() {
     console.log('Abriendo Galería...');
     // debugger;
     this.fbSrvc.loading('Abriendo galería...');
     const name = 'noticia-' + new Date().getTime();
-    const options: CameraOptions = {
-      sourceType: this.cam.PictureSourceType.PHOTOLIBRARY,
-      destinationType: this.cam.DestinationType.DATA_URL,
-    };
-    await this.cam.getPicture(options)
-    .then( async (result) => {
-      this.fbSrvc.stopLoading();
-      this.fbSrvc.loading('Cargando imagen...');
-      const image = `data:image/jpeg;base64,${result}`;
-      const ref = this.fbStorage.ref(`losMostos/noticias/${name}`);
-      await ref.putString(image, 'data_url')
-      .then( task => {
-        console.log('Imagen cargada ok: ', task);
-        ref.getDownloadURL()
-        .subscribe( url => {
-          this.nuevaNoticia.urlImagen = url;
-        });
-        this.fbSrvc.stopLoading();
-      })
-      .catch( err => {
-        console.log('Error al cargar la imagen: ', err);
-        this.fbSrvc.mostrarMensaje('No se pudo cargar la imagen.');
-        this.fbSrvc.stopLoading();
-      });
-    })
-    .catch( err => {
-      console.log('Error al recuperar foto de la galería. ', err);
-      this.fbSrvc.mostrarMensaje('No se pudo abrir la galería.');
-      this.fbSrvc.stopLoading();
-    });
+    // const options: CameraOptions = {
+    //   sourceType: this.cam.PictureSourceType.PHOTOLIBRARY,
+    //   destinationType: this.cam.DestinationType.DATA_URL,
+    // };
+    // await this.cam.getPicture(options)
+    // .then( async (result) => {
+    //   this.fbSrvc.stopLoading();
+    //   this.fbSrvc.loading('Cargando imagen...');
+    //   const image = `data:image/jpeg;base64,${result}`;
+    //   const ref = this.fbStorage.ref(`losMostos/noticias/${name}`);
+    //   await ref.putString(image, 'data_url')
+    //   .then( task => {
+    //     console.log('Imagen cargada ok: ', task);
+    //     ref.getDownloadURL()
+    //     .subscribe( url => {
+    //       this.nuevaNoticia.urlImagen = url;
+    //     });
+    //     this.fbSrvc.stopLoading();
+    //   })
+    //   .catch( err => {
+    //     console.log('Error al cargar la imagen: ', err);
+    //     this.fbSrvc.mostrarMensaje('No se pudo cargar la imagen.');
+    //     this.fbSrvc.stopLoading();
+    //   });
+    // })
+    // .catch( err => {
+    //   console.log('Error al recuperar foto de la galería. ', err);
+    //   this.fbSrvc.mostrarMensaje('No se pudo abrir la galería.');
+    //   this.fbSrvc.stopLoading();
+    // });
   }
   limpiarNoticia() {
     this.nuevaNoticia.fecha = null;

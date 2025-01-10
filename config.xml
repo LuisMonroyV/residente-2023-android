@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="cl.monroyramirez.CSResidente" version="1.7.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="cl.monroyramirez.CSResidente" version="1.7.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Comunidad Segura - Residentes</name>
     <description>Comunidad Segura - Aplicación para residentes (ANDROID).</description>
     <author email="luis.monroyv@gmail.com" href="https://monroy-ramirez.cl/">Grupo Monroy-Ramirez</author>
-    <content original-src="index.html" src="http://localhost:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -13,7 +13,7 @@
     <allow-intent href="geo:*" />
     <preference name="android-minSdkVersion" value="26" />
     <preference name="android-targetSdkVersion" value="34" />
-    <preference name="android-compileSdkVersion" value="33" />
+    <preference name="android-compileSdkVersion" value="34" />
     <preference name="AndroidXEnabled" value="true" />
     <preference name="AutoHideSplashScreen" value="true" />
     <preference name="FadeSplashScreen" value="true" />
@@ -57,7 +57,6 @@
     <plugin name="cordova-plugin-device" spec="2.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^4.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
-    <plugin name="cordova-plugin-camera" spec="https://github.com/jalios/cordova-plugin-camera.git" />
     <allow-navigation href="http://localhost:8100" sessionid="c37af3e9" />
     <allow-navigation href="http://localhost:8101" sessionid="f12a02f9" />
     <allow-navigation href="http://localhost:8102" sessionid="724aac4b" />

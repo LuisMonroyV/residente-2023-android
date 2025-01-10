@@ -1,5 +1,6 @@
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+// import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { ImagePicker, ImagePickerOptions } from '@awesome-cordova-plugins/image-picker/ngx';
 import { AvisoDePago, MesImpago } from '../../interfaces/fb-interface';
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
@@ -39,7 +40,8 @@ export class ModalAvisoDePagoComponent implements OnInit {
   validacionAvisoP3 = 'Seleccionar la imagen del período a informar.';
   verElFuturo = false;
   constructor(
-              private cam: Camera,
+              private imagePicker: ImagePicker,
+              // private cam: Camera,
               public fbSrvc: FirebaseService,
               private fbStorage: AngularFireStorage,
               private modalCtrl: ModalController,
@@ -49,17 +51,21 @@ export class ModalAvisoDePagoComponent implements OnInit {
     console.log(`%cabrirGalería(${pos})`);
     this.fbSrvc.loading('Abriendo galería...');
     const name = `${this.nuevoAvisoDePago.idDireccion}-` + new Date().getTime();
-    const options: CameraOptions = {
-      allowEdit: true,
-      sourceType: this.cam.PictureSourceType.PHOTOLIBRARY,
-      destinationType: this.cam.DestinationType.DATA_URL,
-      // destinationType: this.cam.DestinationType.FILE_URI,
+    const options: ImagePickerOptions = {
+      allow_video: false,
+      maximumImagesCount: 1,
+      width: 800,
+      quality: 100,
+      // FILE_URI : 0, Return image file URI,
+      // DATA_URL : 1 Return image as base64-encoded string
+      outputType: 0, 
     };
-    await this.cam.getPicture(options)
+    
+    await this.imagePicker.getPictures(options)
     .then( async (result) => {
       this.fbSrvc.stopLoading();
       this.fbSrvc.loading('Cargando imagen...');
-      const image = `data:image/jpeg;base64,${result}`;
+      const image = `data:image/jpeg;base64,${result[0]}`;
       const ref = this.fbStorage.ref(`losMostos/avisosDePago/${this.nuevoAvisoDePago.idDireccion}/${name}`);
       await ref.putString(image, 'data_url')
       .then( task => {
@@ -74,13 +80,13 @@ export class ModalAvisoDePagoComponent implements OnInit {
         this.fbSrvc.stopLoading();
       })
       .catch( err => {
-        console.log('Error al cargar la imagen: ', err);
+        console.error('Error al cargar la imagen: ', err);
         this.fbSrvc.mostrarMensaje('No se pudo cargar la imagen.');
         this.fbSrvc.stopLoading();
       });
     })
     .catch( err => {
-      console.log('Error al recuperar foto de la galería. ', err);
+      console.error('Error al recuperar foto de la galería. ', err);
       this.fbSrvc.mostrarMensaje('No se pudo abrir la galería.');
       this.fbSrvc.stopLoading();
     });
@@ -206,50 +212,50 @@ export class ModalAvisoDePagoComponent implements OnInit {
     this.validarAviso();
   }
 
-  async tomarFoto(pos: number) {
-    console.log(`%ctomarFoto(${pos})`);
-    const name = `${this.nuevoAvisoDePago.idDireccion}-` + new Date().getTime();
-    const options: CameraOptions = {
-      quality: 50,
-      targetWidth: 1000,
-      targetHeight: 1000,
-      destinationType: this.cam.DestinationType.DATA_URL,
-      encodingType: this.cam.EncodingType.PNG,
-      mediaType: this.cam.MediaType.PICTURE,
-      correctOrientation: true
-    };
-    await this.cam.getPicture(options)
-    .then( async (result) => {
-      const image = `data:image/jpeg;base64,${result}`;
-      const ref = this.fbStorage.ref(`losMostos/avisosDePago/${this.nuevoAvisoDePago.idDireccion}/${name}`);
-      this.fbSrvc.stopLoading();
-      this.fbSrvc.loading('Cargando fotografía...');
-      const pictures = await ref.putString(image, 'data_url')
-      .then( task => {
-        console.log('Foto cargada ok: ', task);
-        const fbUrl = ref.getDownloadURL()
-        .subscribe( url => {
-          console.log({url});
-          this.nuevoAvisoDePago.mesesPagados[pos].documento = url;
-          this.totalAviso += this.nuevoAvisoDePago.mesesPagados[pos].monto;
-          console.log('%cthis.nuevoAvisoDePago', 'color: #007acc;', this.nuevoAvisoDePago);
-          this.validarAviso();
-          this.fbSrvc.stopLoading();
-        });
-        this.fbSrvc.stopLoading();
-      })
-      .catch( err => {
-        console.log('Error al cargar la foto: ', err);
-        this.fbSrvc.mostrarMensaje('No se pudo cargar la foto.');
-        this.fbSrvc.stopLoading();
-      });
+  // async tomarFoto(pos: number) {
+  //   console.log(`%ctomarFoto(${pos})`);
+  //   const name = `${this.nuevoAvisoDePago.idDireccion}-` + new Date().getTime();
+  //   const options: CameraOptions = {
+  //     quality: 50,
+  //     targetWidth: 1000,
+  //     targetHeight: 1000,
+  //     destinationType: this.cam.DestinationType.DATA_URL,
+  //     encodingType: this.cam.EncodingType.PNG,
+  //     mediaType: this.cam.MediaType.PICTURE,
+  //     correctOrientation: true
+  //   };
+  //   await this.cam.getPicture(options)
+  //   .then( async (result) => {
+  //     const image = `data:image/jpeg;base64,${result}`;
+  //     const ref = this.fbStorage.ref(`losMostos/avisosDePago/${this.nuevoAvisoDePago.idDireccion}/${name}`);
+  //     this.fbSrvc.stopLoading();
+  //     this.fbSrvc.loading('Cargando fotografía...');
+  //     const pictures = await ref.putString(image, 'data_url')
+  //     .then( task => {
+  //       console.log('Foto cargada ok: ', task);
+  //       const fbUrl = ref.getDownloadURL()
+  //       .subscribe( url => {
+  //         console.log({url});
+  //         this.nuevoAvisoDePago.mesesPagados[pos].documento = url;
+  //         this.totalAviso += this.nuevoAvisoDePago.mesesPagados[pos].monto;
+  //         console.log('%cthis.nuevoAvisoDePago', 'color: #007acc;', this.nuevoAvisoDePago);
+  //         this.validarAviso();
+  //         this.fbSrvc.stopLoading();
+  //       });
+  //       this.fbSrvc.stopLoading();
+  //     })
+  //     .catch( err => {
+  //       console.log('Error al cargar la foto: ', err);
+  //       this.fbSrvc.mostrarMensaje('No se pudo cargar la foto.');
+  //       this.fbSrvc.stopLoading();
+  //     });
 
-    })
-    .catch( err => {
-      console.log('Error al tomar la foto. ', err);
-      this.fbSrvc.stopLoading();
-    });
-  }
+  //   })
+  //   .catch( err => {
+  //     console.log('Error al tomar la foto. ', err);
+  //     this.fbSrvc.stopLoading();
+  //   });
+  // }
   validarAviso() {
     if (this.paso === 1) {
       // saco posible avisos pendientes
