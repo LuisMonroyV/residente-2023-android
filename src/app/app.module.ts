@@ -12,7 +12,7 @@ import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { ComponentsModule } from './components/components.module';
 import { firebaseConfig } from '../environments/environment';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ImagePicker } from '@awesome-cordova-plugins/image-picker/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
@@ -28,10 +28,8 @@ import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
 
 registerLocaleData(localeEs, 'es');
-@NgModule({
-    declarations: [AppComponent],
-    imports: [
-        AngularFireModule.initializeApp(firebaseConfig),
+@NgModule({ declarations: [AppComponent],
+    bootstrap: [AppComponent], imports: [AngularFireModule.initializeApp(firebaseConfig),
         AngularFireDatabaseModule,
         AngularFirestoreModule,
         AngularFireStorageModule,
@@ -40,12 +38,9 @@ registerLocaleData(localeEs, 'es');
         BrowserAnimationsModule,
         ComponentsModule,
         FormsModule,
-        HttpClientModule,
         IonicModule.forRoot(),
         IonicStorageModule.forRoot(),
-        ReactiveFormsModule,
-    ],
-    providers: [
+        ReactiveFormsModule], providers: [
         AppVersion,
         CallNumber,
         // Camera,
@@ -58,7 +53,6 @@ registerLocaleData(localeEs, 'es');
         WebView,
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         { provide: LOCALE_ID, useValue: 'es-CL' },
-    ],
-    bootstrap: [AppComponent]
-})
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}
