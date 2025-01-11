@@ -24,7 +24,7 @@
             <ion-row>
                 <ion-col class="diseño-1" >
                     <strong class="tam-45 text-titular">{{ noticia.titulo }}</strong>  <br>      
-                    <ion-text class="tam-12" color="primary"><i> por @{{noticia.creadaPor}} {{noticia.fecha | fechaCorta : '' : 'pasado' }}</i></ion-text>
+                    <ion-text class="tam-12" color="primary"><i> por &#64;{{noticia.creadaPor}} {{noticia.fecha | fechaCorta : '' : 'pasado' }}</i></ion-text>
                     <a [href]="noticia.urlImagen" target="blank"><img [src]="noticia.urlImagen" /> </a>
                     <br><br>
                     <ion-text [innerHTML]="noticia.texto"></ion-text>

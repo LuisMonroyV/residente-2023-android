@@ -30,7 +30,7 @@
                 Novedades:
                 <div *ngFor="let novedad of ronda.data().novedades">
                     <ion-chip color="primary" mode="ios">
-                        <ion-label>@{{ novedad.fecha | fechaCorta : 'HH:mm': '' }}</ion-label>
+                        <ion-label>&#64;{{ novedad.fecha | fechaCorta : 'HH:mm': '' }}</ion-label>
                     </ion-chip>
                     <ion-text>
                         : {{ novedad.descripcion }}

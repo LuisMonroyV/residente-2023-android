@@ -24,7 +24,7 @@
           <ion-icon slot="end" name="share-social-outline" color="primary" (click)="compartirQr()"></ion-icon>
         </ion-item>
         <ion-item>
-          <ion-label *ngIf="validez === '24h'" color="primary">Vence en 24 horas (desde ahora @{{horaHoy}})</ion-label>
+          <ion-label *ngIf="validez === '24h'" color="primary">Vence en 24 horas (desde ahora &#64;{{horaHoy}})</ion-label>
           <ion-label *ngIf="validez !== '24h'">Vence en 24 horas (desde ahora)</ion-label>
           <ion-radio mode="ios" color="primary" slot="start" value="24h" (click)="cambiarValidez('24h')"></ion-radio>
         </ion-item>
