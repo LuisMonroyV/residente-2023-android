@@ -43,75 +43,84 @@ export class AppComponent implements OnInit {
   }
   oneSignalInit() {
     console.log('%capp.component.ts oneSignalInit()', 'color: #007acc;');
-    OneSignal.setAppId(oneSignalConfig.OSapiId);
-    OneSignal.getDeviceState( stat => {
-      console.log('%capp.component.ts line:95 getDeviceState:', 'color: #007acc;', stat);
-      // id Suscriptor
-        console.log('ID Movil: ', stat.userId);
-        this.fbSrvc.persona.idMovil = stat.userId;
-        if (this.fbSrvc.persona.idPersona.length > 0) {
-          this.fbSrvc.putPersona(this.fbSrvc.persona);
-        } else {
-          console.log('Esperamos 10 segs para que vuelva el servicio getPersona()');
-          setTimeout(() => {
-            this.fbSrvc.persona.idMovil = stat.userId;
-            this.fbSrvc.putPersona(this.fbSrvc.persona);
-          }, 10000);
-        }
-    });
-    OneSignal.setNotificationWillShowInForegroundHandler(notifR => {
-      console.log('notificación recibida', notifR);
-      const notificationR = notifR.getNotification();
-      const dataR = notificationR.additionalData;
-      console.log('additionalData: ', dataR);
-      if (notifR.getNotification().additionalData['nombre'] === 'Alerta de residente' ) {
+    // OneSignal.User.setAppId(oneSignalConfig.OSapiId);
+    OneSignal.initialize(oneSignalConfig.OSapiId);
+    OneSignal.login(this.fbSrvc.persona.idPersona); // Establece el externalId
+    // OneSignal.getDeviceState( stat => {
+    //   console.log('%capp.component.ts line:95 getDeviceState:', 'color: #007acc;', stat);
+    //   // id Suscriptor
+    //     console.log('ID Movil: ', stat.userId);
+    //     this.fbSrvc.persona.idMovil = stat.userId;
+    //     if (this.fbSrvc.persona.idPersona.length > 0) {
+    //       this.fbSrvc.putPersona(this.fbSrvc.persona);
+    //     } else {
+    //       console.log('Esperamos 10 segs para que vuelva el servicio getPersona()');
+    //       setTimeout(() => {
+    //         this.fbSrvc.persona.idMovil = stat.userId;
+    //         this.fbSrvc.putPersona(this.fbSrvc.persona);
+    //       }, 10000);
+    //     }
+    // });
+    // OneSignal.setNotificationWillShowInForegroundHandler(notifR => {
+    //   console.log('notificación recibida', notifR);
+    //   const notificationR = notifR.getNotification();
+    //   const dataR = notificationR.additionalData;
+    //   console.log('additionalData: ', dataR);
+    //   if (notifR.getNotification().additionalData['nombre'] === 'Alerta de residente' ) {
+    //     this.fbSrvc.lanzarSonido('smokeAlarm');
+    //     console.log('moviendo a Emergencias...');
+    //     this.fbSrvc.expandidoEmergencias = true;
+    //     this.router.navigateByUrl('/folder/inicio#emergencias');
+    //   } else if (notifR.getNotification().additionalData['nombre'] === 'Alerta de guardia') {
+    //     this.fbSrvc.lanzarSonido('siren');
+    //     console.log('moviendo a Emergencias...');
+    //     this.fbSrvc.expandidoEmergencias = true;
+    //     this.router.navigateByUrl('/folder/inicio#emergencias');
+    //   }
+    //   notifR.complete(notificationR);
+    // });
+
+
+    // OneSignal.setNotificationOpenedHandler(notifO => {
+    OneSignal.Notifications.addEventListener('click', async (e) => {
+      let clickData = await e.notification;
+      console.log("Notification Clicked : " + JSON.stringify(clickData));
+      if (clickData.additionalData['nombre'] === 'Aviso de visita') {
+        this.fbSrvc.expandidoAccesos = true;
+        this.router.navigateByUrl('/folder/inicio#visitas');
+      } else if (clickData.additionalData['nombre'] === 'Nueva noticia') {
+        this.fbSrvc.lanzarSonido('sms');
+        this.fbSrvc.expandidoNoticias = true;
+        this.router.navigateByUrl('/folder/inicio#noticias');
+      } else if (clickData.additionalData['nombre'] === 'Alerta de residente' ) {
         this.fbSrvc.lanzarSonido('smokeAlarm');
-        console.log('moviendo a Emergencias...');
         this.fbSrvc.expandidoEmergencias = true;
         this.router.navigateByUrl('/folder/inicio#emergencias');
-      } else if (notifR.getNotification().additionalData['nombre'] === 'Alerta de guardia') {
+      } else if (clickData.additionalData['nombre'] === 'Alerta de guardia') {
         this.fbSrvc.lanzarSonido('siren');
-        console.log('moviendo a Emergencias...');
         this.fbSrvc.expandidoEmergencias = true;
         this.router.navigateByUrl('/folder/inicio#emergencias');
+      } else if (clickData.additionalData['nombre'] === 'Nuevo usuario esperando aprobación') {
+        setTimeout(() => {
+          this.router.navigateByUrl('/usuarios');
+        }, 3000);
+      } else if (clickData.additionalData['nombre'] === 'Visita no informada') {
+        this.fbSrvc.expandidoAccesos = true;
+        this.router.navigateByUrl('/folder/inicio#visitas');
+      } else if (clickData.additionalData['nombre'] === 'Tu aviso de pago ha cambiado de estado' ||
+                  clickData.additionalData['nombre'] === 'Nuevo aviso de pago esperando aprobación') {
+        this.router.navigate(['/mis-pagos']);
       }
-      notifR.complete(notificationR);
-    });
-    OneSignal.setNotificationOpenedHandler(notifO => {
-      console.log('notificationOpenedCallback: ', JSON.stringify(notifO));
-        if (notifO.notification.additionalData['nombre'] === 'Aviso de visita') {
-          this.fbSrvc.expandidoAccesos = true;
-          this.router.navigateByUrl('/folder/inicio#visitas');
-        } else if (notifO.notification.additionalData['nombre'] === 'Nueva noticia') {
-          this.fbSrvc.lanzarSonido('sms');
-          this.fbSrvc.expandidoNoticias = true;
-          this.router.navigateByUrl('/folder/inicio#noticias');
-        } else if (notifO.notification.additionalData['nombre'] === 'Alerta de residente' ) {
-          this.fbSrvc.lanzarSonido('smokeAlarm');
-          this.fbSrvc.expandidoEmergencias = true;
-          this.router.navigateByUrl('/folder/inicio#emergencias');
-        } else if (notifO.notification.additionalData['nombre'] === 'Alerta de guardia') {
-          this.fbSrvc.lanzarSonido('siren');
-          this.fbSrvc.expandidoEmergencias = true;
-          this.router.navigateByUrl('/folder/inicio#emergencias');
-        } else if (notifO.notification.additionalData['nombre'] === 'Nuevo usuario esperando aprobación') {
-          setTimeout(() => {
-            this.router.navigateByUrl('/usuarios');
-          }, 3000);
-        } else if (notifO.notification.additionalData['nombre'] === 'Visita no informada') {
-          this.fbSrvc.expandidoAccesos = true;
-          this.router.navigateByUrl('/folder/inicio#visitas');
-        } else if (notifO.notification.additionalData['nombre'] === 'Tu aviso de pago ha cambiado de estado' ||
-                   notifO.notification.additionalData['nombre'] === 'Nuevo aviso de pago esperando aprobación') {
-          this.router.navigate(['/mis-pagos']);
-        }
     });
     // Prompts the user for notification permissions.
     //    * Since this shows a generic native prompt, we recommend instead using an In-App Message to prompt
     //   for notification permission (See step 7) to better communicate to your users what notifications they will get.
-    OneSignal.promptForPushNotificationsWithUserResponse(accepted => {
-      console.log('User accepted notifications: ' + accepted);
-    });
+    // OneSignal.promptForPushNotificationsWithUserResponse(accepted => {
+    //   console.log('User accepted notifications: ' + accepted);
+    // });
+    OneSignal.Notifications.requestPermission(true).then((success: Boolean) => {
+      console.log("Notification permission granted " + success);
+    })
   }
   cargarSonidos() {
     this.audio.preloadComplex('woop', 'assets/sounds/woopWoop.mp3', 1, 1, 0)
