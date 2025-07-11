@@ -4,7 +4,7 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
+// import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
@@ -41,7 +41,7 @@ registerLocaleData(localeEs, 'es');
         IonicModule.forRoot(),
         IonicStorageModule.forRoot(),
         ReactiveFormsModule], providers: [
-        AppVersion,
+        // AppVersion,
         CallNumber,
         // Camera,
         Clipboard,

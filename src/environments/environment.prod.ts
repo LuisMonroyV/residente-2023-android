@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 export const environment = {
   production: true
 };
@@ -17,13 +16,11 @@ export const oneSignalConfig = {
   OSRestApiKey: 'NmYwODI4ZDMtOWYzNS00ODhkLTk2OWUtMDNlOGRkZGU1NTA4',
 };
 export const telefonos = {
-  guardia: '56222667587',
   carabineros: '133',
   bomberos: '132',
   ambulancia: '131',
   pdi: '134',
   familia: '149',
-  cuadrante: '56984289103'
 };
 export const losMostosBDConfig = {
   apiUrl: 'https://losmostos.cl/api6.php/records',

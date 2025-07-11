@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
+// import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
+import { App } from '@capacitor/app';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FirebaseService } from './services/firebase.service';
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
@@ -23,7 +24,6 @@ export class AppComponent implements OnInit {
   auth = getAuth();
   public selectedIndex = 0;
   constructor(
-              private appVersion: AppVersion,
               private audio: NativeAudio,
               public fbSrvc: FirebaseService,
               private menu: MenuController,
@@ -43,84 +43,84 @@ export class AppComponent implements OnInit {
   }
   oneSignalInit() {
     console.log('%capp.component.ts oneSignalInit()', 'color: #007acc;');
-    // OneSignal.User.setAppId(oneSignalConfig.OSapiId);
-    OneSignal.initialize(oneSignalConfig.OSapiId);
-    OneSignal.login(this.fbSrvc.persona.idPersona); // Establece el externalId
-    // OneSignal.getDeviceState( stat => {
-    //   console.log('%capp.component.ts line:95 getDeviceState:', 'color: #007acc;', stat);
-    //   // id Suscriptor
-    //     console.log('ID Movil: ', stat.userId);
-    //     this.fbSrvc.persona.idMovil = stat.userId;
-    //     if (this.fbSrvc.persona.idPersona.length > 0) {
-    //       this.fbSrvc.putPersona(this.fbSrvc.persona);
-    //     } else {
-    //       console.log('Esperamos 10 segs para que vuelva el servicio getPersona()');
-    //       setTimeout(() => {
-    //         this.fbSrvc.persona.idMovil = stat.userId;
-    //         this.fbSrvc.putPersona(this.fbSrvc.persona);
-    //       }, 10000);
-    //     }
-    // });
-    // OneSignal.setNotificationWillShowInForegroundHandler(notifR => {
-    //   console.log('notificación recibida', notifR);
-    //   const notificationR = notifR.getNotification();
-    //   const dataR = notificationR.additionalData;
-    //   console.log('additionalData: ', dataR);
-    //   if (notifR.getNotification().additionalData['nombre'] === 'Alerta de residente' ) {
-    //     this.fbSrvc.lanzarSonido('smokeAlarm');
-    //     console.log('moviendo a Emergencias...');
-    //     this.fbSrvc.expandidoEmergencias = true;
-    //     this.router.navigateByUrl('/folder/inicio#emergencias');
-    //   } else if (notifR.getNotification().additionalData['nombre'] === 'Alerta de guardia') {
-    //     this.fbSrvc.lanzarSonido('siren');
-    //     console.log('moviendo a Emergencias...');
-    //     this.fbSrvc.expandidoEmergencias = true;
-    //     this.router.navigateByUrl('/folder/inicio#emergencias');
-    //   }
-    //   notifR.complete(notificationR);
-    // });
+    OneSignal.setAppId(oneSignalConfig.OSapiId);
+    // OneSignal.initialize(oneSignalConfig.OSapiId);
+    // OneSignal.login(this.fbSrvc.persona.idPersona); // Establece el externalId
+    OneSignal.getDeviceState( stat => {
+      console.log('%capp.component.ts line:95 getDeviceState:', 'color: #007acc;', stat);
+      // id Suscriptor
+        console.log('ID Movil: ', stat.userId);
+        this.fbSrvc.persona.idMovil = stat.userId;
+        if (this.fbSrvc.persona.idPersona.length > 0) {
+          this.fbSrvc.putPersona(this.fbSrvc.persona);
+        } else {
+          console.log('Esperamos 10 segs para que vuelva el servicio getPersona()');
+          setTimeout(() => {
+            this.fbSrvc.persona.idMovil = stat.userId;
+            this.fbSrvc.putPersona(this.fbSrvc.persona);
+          }, 10000);
+        }
+    });
+    OneSignal.setNotificationWillShowInForegroundHandler(notifR => {
+      console.log('notificación recibida', notifR);
+      const notificationR = notifR.getNotification();
+      const dataR = notificationR.additionalData;
+      console.log('additionalData: ', dataR);
+      if (notifR.getNotification().additionalData['nombre'] === 'Alerta de residente' ) {
+        this.fbSrvc.lanzarSonido('smokeAlarm');
+        console.log('moviendo a Emergencias...');
+        this.fbSrvc.expandidoEmergencias = true;
+        this.router.navigateByUrl('/folder/inicio#emergencias');
+      } else if (notifR.getNotification().additionalData['nombre'] === 'Alerta de guardia') {
+        this.fbSrvc.lanzarSonido('siren');
+        console.log('moviendo a Emergencias...');
+        this.fbSrvc.expandidoEmergencias = true;
+        this.router.navigateByUrl('/folder/inicio#emergencias');
+      }
+      notifR.complete(notificationR);
+    });
 
 
-    // OneSignal.setNotificationOpenedHandler(notifO => {
-    OneSignal.Notifications.addEventListener('click', async (e) => {
-      let clickData = await e.notification;
-      console.log("Notification Clicked : " + JSON.stringify(clickData));
-      if (clickData.additionalData['nombre'] === 'Aviso de visita') {
+    OneSignal.setNotificationOpenedHandler(notifO => {
+    // OneSignal.Notifications.addEventListener('click', async (e) => {
+      // let clickData = await e.notification;
+      console.log("Notification Clicked : " + JSON.stringify(notifO));
+      if (notifO.notification.additionalData['nombre'] === 'Aviso de visita') {
         this.fbSrvc.expandidoAccesos = true;
         this.router.navigateByUrl('/folder/inicio#visitas');
-      } else if (clickData.additionalData['nombre'] === 'Nueva noticia') {
+      } else if (notifO.notification.additionalData['nombre'] === 'Nueva noticia') {
         this.fbSrvc.lanzarSonido('sms');
         this.fbSrvc.expandidoNoticias = true;
         this.router.navigateByUrl('/folder/inicio#noticias');
-      } else if (clickData.additionalData['nombre'] === 'Alerta de residente' ) {
+      } else if (notifO.notification.additionalData['nombre'] === 'Alerta de residente' ) {
         this.fbSrvc.lanzarSonido('smokeAlarm');
         this.fbSrvc.expandidoEmergencias = true;
         this.router.navigateByUrl('/folder/inicio#emergencias');
-      } else if (clickData.additionalData['nombre'] === 'Alerta de guardia') {
+      } else if (notifO.notification.additionalData['nombre'] === 'Alerta de guardia') {
         this.fbSrvc.lanzarSonido('siren');
         this.fbSrvc.expandidoEmergencias = true;
         this.router.navigateByUrl('/folder/inicio#emergencias');
-      } else if (clickData.additionalData['nombre'] === 'Nuevo usuario esperando aprobación') {
+      } else if (notifO.notification.additionalData['nombre'] === 'Nuevo usuario esperando aprobación') {
         setTimeout(() => {
           this.router.navigateByUrl('/usuarios');
         }, 3000);
-      } else if (clickData.additionalData['nombre'] === 'Visita no informada') {
+      } else if (notifO.notification.additionalData['nombre'] === 'Visita no informada') {
         this.fbSrvc.expandidoAccesos = true;
         this.router.navigateByUrl('/folder/inicio#visitas');
-      } else if (clickData.additionalData['nombre'] === 'Tu aviso de pago ha cambiado de estado' ||
-                  clickData.additionalData['nombre'] === 'Nuevo aviso de pago esperando aprobación') {
+      } else if (notifO.notification.additionalData['nombre'] === 'Tu aviso de pago ha cambiado de estado' ||
+                  notifO.notification.additionalData['nombre'] === 'Nuevo aviso de pago esperando aprobación') {
         this.router.navigate(['/mis-pagos']);
       }
     });
     // Prompts the user for notification permissions.
     //    * Since this shows a generic native prompt, we recommend instead using an In-App Message to prompt
     //   for notification permission (See step 7) to better communicate to your users what notifications they will get.
-    // OneSignal.promptForPushNotificationsWithUserResponse(accepted => {
-    //   console.log('User accepted notifications: ' + accepted);
+    OneSignal.promptForPushNotificationsWithUserResponse(accepted => {
+      console.log('User accepted notifications: ' + accepted);
+    });
+    // OneSignal.Notifications.requestPermission(true).then((success: Boolean) => {
+    //   console.log("Notification permission granted " + success);
     // });
-    OneSignal.Notifications.requestPermission(true).then((success: Boolean) => {
-      console.log("Notification permission granted " + success);
-    })
   }
   cargarSonidos() {
     this.audio.preloadComplex('woop', 'assets/sounds/woopWoop.mp3', 1, 1, 0)
@@ -211,7 +211,7 @@ export class AppComponent implements OnInit {
           if (contBack === 2) {
             console.log ('exit');
             // eslint-disable-next-line @typescript-eslint/dot-notation
-            navigator['app'].exitApp();
+            App.exitApp();
           } else {
             this.fbSrvc.mostrarMensaje('Doble tap para salir de la aplicación.');
             contBack++;
@@ -227,20 +227,22 @@ export class AppComponent implements OnInit {
         if (this.platform.is('desktop')) {
           this.fbSrvc.verAppStr = 'Desktop';
           this.fbSrvc.actualizarApp = false;
-        } else if (this.platform.is('android')) {
-          this.appVersion.getVersionNumber()
-          .then( data => {
-            console.log('%capp.component.ts getVersionNumber()', 'color: #007acc;', data);
-            this.fbSrvc.verAppStr = data;
-            this.fbSrvc.persona.versionApp = data;
+        } else if (this.platform.is('capacitor')) {
+          App.getInfo()
+          .then(info => {
+            this.fbSrvc.verAppStr = info.version;
+            this.fbSrvc.persona.versionApp = info.version;
+            console.log('%capp.component.ts info.version()', 'color: #007acc;', info.version);
             this.fbSrvc.putPersona(this.fbSrvc.persona);
-            this.fbSrvc.validarVersionApp(data);
+            this.fbSrvc.validarVersionApp(info.version);
           })
           .catch( err => {
             this.fbSrvc.actualizarApp = false;
             this.fbSrvc.verAppStr = '---';
-            console.error('error getVersionNumber: ', err);
+            console.error('error en App.getInfo(): ', err);
           });
+        } else {
+          console.log('no es plataforma capacitor, no uso App.getInfo()', this.platform.platforms());
         }
       }, 5000);
   }
